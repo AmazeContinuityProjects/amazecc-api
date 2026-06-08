@@ -1,5 +1,4 @@
-import ClassData, { IClassData } from './models/classData';
-import { connectDB } from './clients/mongodb';
+import { getDbPool } from './db';
 
 export interface IClassStatistics {
     mean: number;
@@ -8,11 +7,7 @@ export interface IClassStatistics {
     count: number;
 }
 
-type LegacyClassData = IClassData & {
-    sd?: number;
-};
-
-function getStatistics(data: Pick<IClassData, 'count' | 'mean' | 'm2'>): IClassStatistics {
+function getStatistics(data: { count: number; mean: number; m2: number }): IClassStatistics {
     const variance = data.count > 0 ? data.m2 / data.count : 0;
 
     return {
@@ -37,54 +32,58 @@ export default async function AddClassData(classID: string, userId: string, mark
     }
 
     try {
-        await connectDB();
+        const pool = getDbPool();
 
-        const existingClassData = await ClassData.findOne({ classID });
-
-        if (!existingClassData) {
-            const newClassData = await ClassData.create({
-                classID,
-                includesUsers: [userId],
+        // 1. Check if class data exists
+        const res = await pool.query(`SELECT * FROM class_data WHERE class_id = $1`, [classID]);
+        
+        if (res.rows.length === 0) {
+            // Create new
+            const newClassData = {
                 count: 1,
                 mean: marks,
                 m2: 0,
-            });
+            };
+            
+            await pool.query(
+                `INSERT INTO class_data (class_id, includes_users, count, mean, m2) VALUES ($1, $2, $3, $4, $5)`,
+                [classID, JSON.stringify([userId]), newClassData.count, newClassData.mean, newClassData.m2]
+            );
 
             return getStatistics(newClassData);
         }
 
+        const existingClassData = res.rows[0];
+        let includesUsers = existingClassData.includes_users || [];
+        
         // Prevent duplicate users from mutating class statistics.
-        if (existingClassData.includesUsers.includes(userId)) {
-            return getStatistics(existingClassData);
+        if (includesUsers.includes(userId)) {
+            return getStatistics({
+                count: existingClassData.count,
+                mean: existingClassData.mean,
+                m2: existingClassData.m2
+            });
         }
 
-        const legacyExistingClassData = existingClassData as LegacyClassData;
-
-        // Backfill count/m2 for records created before the Welford refactor.
-        if (!Number.isFinite(existingClassData.count) || existingClassData.count < 0) {
-            existingClassData.count = existingClassData.includesUsers.length;
-        }
-
-        if (!Number.isFinite(existingClassData.m2) || existingClassData.m2 < 0) {
-            const legacySd = Number.isFinite(legacyExistingClassData.sd) ? legacyExistingClassData.sd : 0;
-            existingClassData.m2 = ((legacySd || 0) ** 2) * existingClassData.count;
-        }
-
-        const oldCount = existingClassData.count;
+        const oldCount = Number(existingClassData.count);
         const newCount = oldCount + 1;
 
         // Welford's online update keeps running mean/variance numerically stable.
-        const delta = marks - existingClassData.mean;
-        const updatedMean = existingClassData.mean + delta / newCount;
+        const existingMean = Number(existingClassData.mean);
+        const existingM2 = Number(existingClassData.m2);
+        
+        const delta = marks - existingMean;
+        const updatedMean = existingMean + delta / newCount;
         const delta2 = marks - updatedMean;
-        const updatedM2 = existingClassData.m2 + delta * delta2;
+        const updatedM2 = existingM2 + delta * delta2;
 
-        existingClassData.includesUsers.push(userId);
-        existingClassData.count = newCount;
-        existingClassData.mean = updatedMean;
-        existingClassData.m2 = updatedM2;
+        includesUsers.push(userId);
 
-        await existingClassData.save();
+        await pool.query(
+            `UPDATE class_data SET includes_users = $1, count = $2, mean = $3, m2 = $4 WHERE class_id = $5`,
+            [JSON.stringify(includesUsers), newCount, updatedMean, updatedM2, classID]
+        );
+
     } catch (error) {
         throw new Error(
             `Failed to add class data for classID "${classID}": ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -97,14 +96,18 @@ export const fetchClassStatistics = async (classID: string): Promise<IClassStati
         throw new Error('classID is required.');
     }
     try {
-        await connectDB();
+        const pool = getDbPool();
+        const res = await pool.query(`SELECT * FROM class_data WHERE class_id = $1`, [classID]);
 
-        const classData = await ClassData.findOne({ classID });
-
-        if (!classData) {
+        if (res.rows.length === 0) {
             throw new Error(`No data found for classID "${classID}".`);
         }
-        return getStatistics(classData);
+        
+        return getStatistics({
+            count: Number(res.rows[0].count),
+            mean: Number(res.rows[0].mean),
+            m2: Number(res.rows[0].m2)
+        });
     } catch (error) {
         throw new Error(
             `Failed to fetch class statistics for classID "${classID}": ${error instanceof Error ? error.message : 'Unknown error'}`

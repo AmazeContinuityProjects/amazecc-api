@@ -3,8 +3,6 @@ import * as cheerio from "cheerio";
 import LMSClient from "@/lib/clients/LMSClient";
 import getVitolClient from "@/lib/clients/VitolClient";
 import axios from "axios";
-import { maskUserID } from "@/lib/mask";
-import User from "@/lib/models/Users";
 
 
 
@@ -94,39 +92,6 @@ export async function POST(req: Request) {
         }
 
         const result = await ScrapeVitolData(username, pass, vitolSite);
-
-        const maskedID = maskUserID(username.toUpperCase());
-        const user = await User.findOne({ UserID: maskedID });
-
-        if (
-            user?.notifications?.enabled &&
-            user.notifications.sources.vitol?.enabled
-        ) {
-            const existing = user.notifications.sources.vitol.data
-
-            const merged = result
-                .filter(a => !a.done)
-                .map(a => {
-                    const prev = existing.find(e => e.url === a.url)
-
-                    return {
-                        name: a.name,
-                        opens: a.opens,
-                        done: a.done,
-                        day: a.day,
-                        month: a.month,
-                        year: a.year,
-                        url: a.url,
-                        hidden: prev?.hidden ?? false,
-                        reminders: prev?.reminders instanceof Map
-                            ? prev.reminders
-                            : new Map<string, boolean>(),
-                    }
-                })
-
-            user.notifications.sources.vitol.data = merged
-            await user.save()
-        }
 
         return NextResponse.json(result, { status: 200 });
     } catch (err: any) {

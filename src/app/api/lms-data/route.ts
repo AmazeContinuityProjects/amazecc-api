@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import LMSClient from "@/lib/clients/LMSClient";
-import { maskUserID } from "@/lib/mask";
-import User from "@/lib/models/Users";
 
 
 
@@ -89,38 +87,6 @@ export async function POST(req: Request) {
         }
 
         const result = await ScrapeLMS(username, pass);
-
-        const maskedID = maskUserID(username.toUpperCase());
-        const user = await User.findOne({ UserID: maskedID });
-
-        if (
-            user?.notifications?.enabled &&
-            user.notifications.sources.moodle?.enabled
-        ) {
-            const existing = user.notifications.sources.moodle.data
-
-            const merged = result
-                .filter(a => !a.done)
-                .map(a => {
-                    const prev = existing.find(e => e.name === a.name)
-
-                    return {
-                        name: a.name,
-                        due: a.due,
-                        done: a.done,
-                        day: a.day,
-                        month: a.month,
-                        year: a.year,
-                        hidden: false,
-                        reminders: prev?.reminders instanceof Map
-                            ? prev.reminders
-                            : new Map<string, boolean>(),
-                    }
-                })
-
-            user.notifications.sources.moodle.data = merged
-            await user.save()
-        }
 
         return NextResponse.json(result, { status: 200 });
     } catch (err: any) {

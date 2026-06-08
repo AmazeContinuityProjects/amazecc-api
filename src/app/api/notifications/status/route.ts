@@ -1,31 +1,38 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { getDbPool } from '@/lib/db';
 
-import User from "@/lib/models/Users";
-import { maskUserID } from "@/lib/mask";
-
-
-
-export async function GET(req: Request) {
-    const UserID = new URL(req.url).searchParams.get("UserID");
+export async function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const UserID = searchParams.get('UserID');
 
     if (!UserID) {
-        return NextResponse.json({ error: "UserID required" }, { status: 400 });
+        return NextResponse.json({ error: "Missing UserID" }, { status: 400 });
     }
 
-    const maskedID = maskUserID(String(UserID).toUpperCase());
-    const user = await User.findOne({ UserID: maskedID });
+    try {
+        const pool = getDbPool();
+        const { rows } = await pool.query(
+            `SELECT vitol_enabled, vitol_reminder_day, vitol_reminder_time 
+             FROM push_subscriptions 
+             WHERE user_id = $1 LIMIT 1`,
+            [UserID]
+        );
 
-    if (!user || !user.notifications) {
+        if (rows.length === 0) {
+            return NextResponse.json({
+                vitol: false,
+                vitol_reminder_day: 1,
+                vitol_reminder_time: "10:00"
+            });
+        }
+
         return NextResponse.json({
-            vitol: false,
-            moodle: false,
+            vitol: rows[0].vitol_enabled,
+            vitol_reminder_day: rows[0].vitol_reminder_day,
+            vitol_reminder_time: rows[0].vitol_reminder_time
         });
+    } catch (error) {
+        console.error("Status check error:", error);
+        return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
-
-    return NextResponse.json({
-        vitol: !!user.notifications.sources?.vitol?.enabled,
-        moodle: !!user.notifications.sources?.moodle?.enabled,
-    });
 }
-
-

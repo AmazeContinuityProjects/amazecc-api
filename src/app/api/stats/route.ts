@@ -1,267 +1,138 @@
 import { NextResponse } from "next/server";
-//import { Router } from "express";
-import { RouteLog } from "@/lib/models/RouteLog";
-import { VisitorLog } from "@/lib/models/VisitorLog";
-import { fn, col, Op } from "sequelize";
-
-
+import { getDbPool } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
     const range = new URL(req.url).searchParams.get("range") || "30d";
-    let startDate: Date | null = null;
-    const now = new Date();
-
+    let dateFilter = "";
+    
     switch (range) {
       case "24h":
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        dateFilter = "created_at >= NOW() - INTERVAL '24 HOURS'";
         break;
       case "7d":
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        dateFilter = "created_at >= NOW() - INTERVAL '7 DAYS'";
         break;
       case "30d":
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        dateFilter = "created_at >= NOW() - INTERVAL '30 DAYS'";
         break;
       case "full":
       default:
-        startDate = null;
+        dateFilter = "1=1";
         break;
     }
 
-    const whereClause = startDate ? { createdAt: { [Op.gte]: startDate } } : {};
+    const pool = getDbPool();
 
-    const hourlyData = await RouteLog.findAll({
-      where: whereClause,
-      attributes: [
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            col("createdAt"),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "hour",
-        ],
-        [fn("COUNT", col("id")), "count"],
-      ],
-      group: ["hour"],
-      order: [["hour", "ASC"]],
-      raw: true,
-    });
-
+    // 1. Hourly Data
+    const hourlyRes = await pool.query(`
+      SELECT 
+        to_char(created_at + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as hour, 
+        COUNT(id) as count 
+      FROM api_route_logs 
+      WHERE ${dateFilter} 
+      GROUP BY hour 
+      ORDER BY hour ASC
+    `);
+    const hourlyData = hourlyRes.rows;
     const hourLabels = hourlyData.map((d: any) => d.hour);
     const hourCounts = hourlyData.map((d: any) => Number(d.count));
 
-    const routeHourlyData = await RouteLog.findAll({
-      where: whereClause,
-      attributes: [
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            col("createdAt"),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "hour",
-        ],
-        ["route", "route"],
-        [fn("COUNT", col("id")), "count"],
-      ],
-      group: ["hour", "route"],
-      order: [["hour", "ASC"]],
-      raw: true,
-    });
+    // 2. Route Hourly Data
+    const routeRes = await pool.query(`
+      SELECT 
+        to_char(created_at + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as hour, 
+        route, 
+        COUNT(id) as count 
+      FROM api_route_logs 
+      WHERE ${dateFilter} 
+      GROUP BY hour, route 
+      ORDER BY hour ASC
+    `);
+    const routeHourlyData = routeRes.rows;
 
-    const sourceHourlyData = await RouteLog.findAll({
-      where: whereClause,
-      attributes: [
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            col("createdAt"),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "hour",
-        ],
-        ["source", "source"],
-        [fn("COUNT", col("id")), "count"],
-      ],
-      group: ["hour", "source"],
-      order: [["hour", "ASC"]],
-      raw: true,
-    });
+    // 3. Source Hourly Data
+    const sourceRes = await pool.query(`
+      SELECT 
+        to_char(created_at + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as hour, 
+        source, 
+        COUNT(id) as count 
+      FROM api_route_logs 
+      WHERE ${dateFilter} 
+      GROUP BY hour, source 
+      ORDER BY hour ASC
+    `);
+    const sourceHourlyData = sourceRes.rows;
 
-    const globalFirstSeen = await VisitorLog.findAll({
-      attributes: [
-        [fn("COALESCE", col("hashedIP"), "unknown"), "user"],
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            fn("MIN", col("createdAt")),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "firstHour",
-        ],
-      ],
-      group: ["user"],
-      raw: true,
-    });
-
+    // 4. Global First Seen
+    const firstSeenRes = await pool.query(`
+      SELECT 
+        COALESCE(hashed_ip, 'unknown') as "user", 
+        to_char(MIN(created_at) + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as "firstHour"
+      FROM visitor_logs 
+      GROUP BY "user"
+    `);
     const firstSeenHourPerUser = new Map<string, string>();
-    globalFirstSeen.forEach((row: any) => {
+    firstSeenRes.rows.forEach((row: any) => {
       firstSeenHourPerUser.set(row.user, row.firstHour);
     });
 
-    const uniqueUsersHourly = await VisitorLog.findAll({
-      where: whereClause,
-      attributes: [
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            col("createdAt"),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "hour",
-        ],
-        [
-          fn(
-            "COUNT",
-            fn("DISTINCT", fn("COALESCE", col("hashedIP"), "unknown"))
-          ),
-          "uniqueUsers",
-        ],
-      ],
-      group: ["hour"],
-      order: [["hour", "ASC"]],
-      raw: true,
+    // 5. Unique Users Hourly
+    const uniqueUsersRes = await pool.query(`
+      SELECT 
+        to_char(created_at + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as hour, 
+        COUNT(DISTINCT COALESCE(hashed_ip, 'unknown')) as "uniqueUsers"
+      FROM visitor_logs 
+      WHERE ${dateFilter} 
+      GROUP BY hour 
+      ORDER BY hour ASC
+    `);
+    const uniqueUsersHourly = uniqueUsersRes.rows;
+
+    // Raw records for returning users calculation
+    const visitorRecordsRes = await pool.query(`
+      SELECT 
+        to_char(created_at + INTERVAL '5 hours 30 minutes', 'YYYY-MM-DD HH24:00') as hour, 
+        COALESCE(hashed_ip, 'unknown') as "user"
+      FROM visitor_logs 
+      WHERE ${dateFilter}
+    `);
+    
+    // Process returning vs new users
+    const userHourlyGroups = new Map<string, Set<string>>();
+    visitorRecordsRes.rows.forEach((row: any) => {
+        if (!userHourlyGroups.has(row.hour)) {
+            userHourlyGroups.set(row.hour, new Set());
+        }
+        userHourlyGroups.get(row.hour)?.add(row.user);
     });
+
+    const returningUserCounts: any[] = [];
+    uniqueUsersHourly.forEach((row: any) => {
+        const hour = row.hour;
+        const usersInHour = userHourlyGroups.get(hour) || new Set();
+        let newCount = 0;
+        let returningCount = 0;
+
+        for (const u of usersInHour) {
+            if (firstSeenHourPerUser.get(u) === hour) {
+                newCount++;
+            } else {
+                returningCount++;
+            }
+        }
+        returningUserCounts.push(returningCount);
+    });
+
+    const uniqueUserCounts = uniqueUsersHourly.map((d: any) => Number(d.uniqueUsers));
+    const sortedHours = uniqueUsersHourly.map((d: any) => d.hour);
 
     const sourceHours = [...new Set(sourceHourlyData.map((d: any) => d.hour))].sort();
     const sources = [...new Set(sourceHourlyData.map((d: any) => d.source || "unknown"))];
 
-    const uniqueUserHours = uniqueUsersHourly.map((d: any) => d.hour);
-    const uniqueUserCounts = uniqueUsersHourly.map((d: any) => Number(d.uniqueUsers));
+const allHours = [...new Set(routeHourlyData.map((d: any) => d.hour))].sort();
 
-    const usersPerHour = await VisitorLog.findAll({
-      where: whereClause,
-      attributes: [
-        [
-          fn(
-            "strftime",
-            "%Y-%m-%d %H:00",
-            col("createdAt"),
-            "+5 hours",
-            "+30 minutes"
-          ),
-          "hour",
-        ],
-        [fn("COALESCE", col("hashedIP"), "unknown"), "user"],
-      ],
-      group: ["hour", "user"],
-      raw: true,
-    });
-
-    const usersByHour = new Map<string, Set<string>>();
-
-    usersPerHour.forEach((row: any) => {
-      const hour = row.hour;
-      const user = row.user;
-
-      if (!usersByHour.has(hour)) {
-        usersByHour.set(hour, new Set());
-      }
-      usersByHour.get(hour)!.add(user);
-    });
-    const newUserCounts: number[] = [];
-    const returningUserCounts: number[] = [];
-
-    const sortedHours = [...uniqueUserHours].sort();
-
-    sortedHours.forEach((hour) => {
-      const usersThisHour = usersByHour.get(hour) || new Set();
-
-      let newUsers = 0;
-      let returningUsers = 0;
-
-      for (const user of usersThisHour) {
-        const firstHour = firstSeenHourPerUser.get(user);
-
-        if (!firstHour) continue;
-
-        if (firstHour === hour) {
-          newUsers++;
-        } else if (firstHour < hour) {
-          returningUsers++;
-        }
-      }
-
-      newUserCounts.push(newUsers);
-      returningUserCounts.push(returningUsers);
-    });
-
-    let totalNewUsers = 0;
-    let totalReturningUsers = 0;
-
-    const seenUsers = new Set<string>();
-
-    firstSeenHourPerUser.forEach((_firstHour, user) => {
-      seenUsers.add(user);
-    });
-
-    usersPerHour.forEach((row: any) => {
-      const user = row.user;
-      const hour = row.hour;
-      const firstHour = firstSeenHourPerUser.get(user);
-
-      if (!firstHour) return;
-
-      if (hour !== firstHour) {
-        totalReturningUsers++;
-      }
-    });
-
-    totalNewUsers = seenUsers.size - totalReturningUsers;
-
-    const sourceColors = [
-      "rgb(54, 162, 235)",
-      "rgb(255, 99, 132)",
-      "rgb(75, 192, 192)",
-      "rgb(255, 206, 86)",
-      "rgb(153, 102, 255)",
-      "rgb(255, 159, 64)",
-    ];
-
-    const sourceDatasets = sources.map((source, index) => {
-      const color = sourceColors[index % sourceColors.length] || 'rgb(100, 100, 100)';
-
-      const data = sourceHours.map(hour => {
-        const entry: any = sourceHourlyData.find(
-          (d: any) => d.hour === hour && (d.source || "unknown") === source
-        );
-        return entry ? Number(entry.count) : 0;
-      });
-
-      return {
-        label: source,
-        data,
-        borderColor: color,
-        backgroundColor: color.replace("rgb", "rgba").replace(")", ", 0.15)"),
-        borderWidth: 2,
-        tension: 0.3,
-        fill: false,
-      };
-    });
-
-    const routes = [...new Set(routeHourlyData.map((d: any) => d.route))];
-    const allHours = [...new Set(routeHourlyData.map((d: any) => d.hour))].sort();
+    const routes = routeRes.rows.map((r: any) => r.route);
 
     const routeDatasets = routes.map((route, index) => {
       const colors = [
@@ -288,6 +159,34 @@ export async function GET(req: Request) {
 
       return {
         label: route,
+        data: data,
+        borderColor: color,
+        backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false
+      };
+    });
+
+    const sourceDatasets = sources.map((source, index) => {
+      const colors = [
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+        'rgb(75, 192, 192)',
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)'
+      ];
+      const color = colors[index % colors.length] || 'rgb(100, 100, 100)';
+      
+      const data = sourceHours.map(hour => {
+        const entry: any = sourceHourlyData.find(
+          (d: any) => d.hour === hour && (d.source || "unknown") === source
+        );
+        return entry ? Number(entry.count) : 0;
+      });
+
+      return {
+        label: source,
         data: data,
         borderColor: color,
         backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),

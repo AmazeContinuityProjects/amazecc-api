@@ -1,92 +1,25 @@
-
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/clients/mongodb";
+import { getDbPool } from "@/lib/db";
 import { maskUserID } from "@/lib/mask";
-import User from "@/lib/models/Users";
 import { s3 } from "@/lib/clients/s3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
-
-
-/**
- * @openapi
- * /api/files/download/{userID}/{fileID}:
- *   get:
- *     tags:
- *       - Files
- *     security: []
- *     summary: Download a file belonging to a user
- *     parameters:
- *       - in: path
- *         name: userID
- *         required: true
- *         schema:
- *           type: string
- *           example: 24BCE1234
- *       - in: path
- *         name: fileID
- *         required: true
- *         schema:
- *           type: string
- *           example: file_abc123
- *     responses:
- *       200:
- *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *       404:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: File not found
- *       410:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: File has expired
- *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error
- */
-
 export async function GET(req: Request, { params }: { params: Promise<{ userID: string, fileID: string }> }) {
     try {
-        await connectDB();
         const { userID, fileID } = await params;
-
         const maskedID = maskUserID(userID.toUpperCase());
+        const pool = getDbPool();
 
-        const user = await User.findOne({ UserID: maskedID });
-        if(!user) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
-
-        const file = user.files.find((f) => f.fileID === fileID);
-        if(!file) {
+        const { rows } = await pool.query(`SELECT * FROM files WHERE file_id = $1 AND user_id = $2`, [fileID, maskedID]);
+        if(rows.length === 0) {
             return NextResponse.json({ error: "File not found" }, { status: 404 });
         }
-
-        if(file.expiresAt && new Date(file.expiresAt) < new Date()) {
+        
+        const file = rows[0];
+        if(new Date(file.expires_at) < new Date()) {
             return NextResponse.json({ error: "File has expired" }, { status: 410 });
         }
 
-        
         const command = new GetObjectCommand({
             Bucket: process.env.B2_BUCKET_NAME!,
             Key: fileID,
@@ -104,10 +37,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ userID: 
                 "Content-Type": data.ContentType || "application/octet-stream",
             },
         });
-
     } catch (error) {
         console.error("Download Error:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-

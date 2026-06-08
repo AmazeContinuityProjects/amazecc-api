@@ -14,15 +14,16 @@ export const s3 = new S3Client({
 });
 
 export async function UploadFileToS3(
-  file: Express.Multer.File,
-  key: string
+  buffer: Buffer,
+  key: string,
+  mimetype: string
 ): Promise<void> {
   await s3.send(
     new PutObjectCommand({
       Bucket: process.env.B2_BUCKET_NAME!,
       Key: key,
-      Body: file.buffer,
-      ContentType: file.mimetype,
+      Body: buffer,
+      ContentType: mimetype,
     })
   );
 }

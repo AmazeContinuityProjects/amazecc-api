@@ -1,78 +1,51 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import User from '@/lib/models/Users';
-import { UploadFileToS3 } from '@/lib/clients/s3';
-import { v4 as uuidv4 } from 'uuid';
-import { connectDB } from '@/lib/clients/mongodb';
+import { getDbPool } from '@/lib/db';
 import { maskUserID } from '@/lib/mask';
-
-const MAX_STORAGE = 5 * 1024 * 1024;
-const ADMINS = (process.env.ADMINS || "").split(",").map(id => id.trim());
-
-/**
- * @openapi
- * /api/files/upload/{userID}:
- *   post:
- *     tags:
- *       - Files
- *     summary: Upload a file for a user
- */
+import { UploadFileToS3 } from '@/lib/clients/s3';
+import { v4 as uuid } from 'uuid';
 
 export async function POST(req: Request, { params }: { params: Promise<{ userID: string }> }) {
     try {
-        await connectDB();
-
         const { userID } = await params;
-        const maskedID = maskUserID(userID?.toUpperCase() || "");
-        
         const formData = await req.formData();
-        const file = formData.get("file") as File | null;
-        if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-
-        const isAdmin = ADMINS.includes(userID?.toUpperCase() || "");
-        let user = await User.findOne({ UserID: maskedID });
+        const files = formData.getAll("files") as File[];
         
-        if (!user) {
-            user = await User.create({ UserID: maskedID, files: [] });
+        if (!files || files.length === 0) {
+            return NextResponse.json({ error: "No files provided" }, { status: 400 });
         }
 
-        const currentStorage = user.files.reduce((acc: number, f: any) => acc + f.size, 0);
-        if (!isAdmin && currentStorage + file.size > MAX_STORAGE) {
-            return NextResponse.json({ error: "Storage limit exceeded" }, { status: 400 });
+        const maskedID = maskUserID(userID.toUpperCase());
+        const pool = getDbPool();
+
+        const fileRecords = [];
+        for (const file of files) {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            const fileID = uuid();
+            const extension = file.name.split('.').pop() || '';
+            
+            await UploadFileToS3(buffer, fileID, file.type);
+            
+            const expiresAt = new Date();
+            expiresAt.setMonth(expiresAt.getMonth() + 3);
+            
+            await pool.query(
+                `INSERT INTO files (file_id, user_id, extension, name, size, expires_at) 
+                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                [fileID, maskedID, extension, file.name, buffer.length, expiresAt]
+            );
+            
+            fileRecords.push({
+                fileID,
+                name: file.name,
+                extension,
+                size: buffer.length,
+                expiresAt
+            });
         }
-
-        const extension = path.extname(file.name);
-        const cleanName = path.basename(file.name, extension);
-        const uniqueKey = `${maskedID}/${uuidv4()}-${cleanName}${extension}`;
-
-        const buffer = Buffer.from(await file.arrayBuffer());
         
-        await UploadFileToS3({ originalname: file.name, buffer, mimetype: file.type } as any, uniqueKey);
-
-        const expiresAt = isAdmin
-            ? new Date("2099-12-31T23:59:59Z")
-            : new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-        const newFile = {
-            fileID: uniqueKey,
-            extension: extension.replace(".", ""),
-            name: file.name,
-            size: file.size,
-            expiresAt
-        };
-
-        user.files.push(newFile);
-        await user.save();
-
-        return NextResponse.json({
-            message: "File uploaded successfully",
-            file: newFile,
-            storageUsed: currentStorage + file.size,
-            isAdmin
-        }, { status: 201 });
-
-    } catch (err) {
-        console.error("Upload Error:", err);
-        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+        return NextResponse.json({ message: "Files uploaded successfully", files: fileRecords });
+    } catch (error) {
+        console.error("Upload Error:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
