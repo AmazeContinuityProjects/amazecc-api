@@ -1,38 +1,28 @@
 import cron from "node-cron";
-import User from "./models/Users";;
-import { connectDB } from "./clients/mongodb";
+import { getDbPool } from "./db";
 import { DeleteFromS3 } from "./clients/s3";
 
 async function cleanup() {
-    console.log("🧹 Running cleanup task…");
+    console.log("🛠 Running cleanup task...");
     try {
-        await connectDB();
-
-        const users = await User.find();
+        const pool = getDbPool();
         const now = new Date();
 
-        for (const user of users) {
-            const expiredFiles = user.files.filter(f => f.expiresAt < now);
-
-            for (const file of expiredFiles) {
-                try {
-                    await DeleteFromS3(file.fileID);
-                } catch (err) {
-                    console.error("❌ Failed to delete from S3:", err);
-                }
+        // Find all expired files
+        const res = await pool.query(`SELECT file_id FROM files WHERE expires_at < $1`, [now]);
+        
+        for (const row of res.rows) {
+            try {
+                await DeleteFromS3(row.file_id);
+            } catch (err) {
+                console.error("❌ Failed to delete from S3:", err);
             }
-
-            await User.updateOne(
-                { _id: user._id },
-                {
-                    $set: {
-                        files: user.files.filter(f => f.expiresAt > now)
-                    }
-                }
-            );
         }
 
-        console.log("✨ Cleanup completed.");
+        // Delete expired files from the database
+        await pool.query(`DELETE FROM files WHERE expires_at < $1`, [now]);
+
+        console.log("✅ Cleanup completed.");
     } catch (err) {
         console.error("Cleanup Failed:", err);
     }

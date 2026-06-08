@@ -14,6 +14,55 @@ export async function POST() {
 
     const sql = `
       -- Buses table
+      
+      -- Push subscriptions (if not exists)
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id SERIAL PRIMARY KEY,
+        user_id TEXT,
+        endpoint TEXT UNIQUE NOT NULL,
+        p256dh TEXT,
+        auth TEXT,
+        vitol_enabled BOOLEAN DEFAULT FALSE,
+        vitol_reminder_day INT DEFAULT 1,
+        vitol_reminder_time TEXT DEFAULT '10:00',
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+
+      -- Files table
+      CREATE TABLE IF NOT EXISTS class_data (
+        class_id TEXT PRIMARY KEY,
+        includes_users JSONB DEFAULT '[]',
+        count INT DEFAULT 0,
+        mean FLOAT DEFAULT 0,
+        m2 FLOAT DEFAULT 0
+      );
+      
+      CREATE TABLE IF NOT EXISTS files (
+        file_id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        extension TEXT,
+        name TEXT,
+        size INT,
+        expires_at TIMESTAMPTZ
+      );
+
+      -- API Route Logs
+      CREATE TABLE IF NOT EXISTS api_route_logs (
+        id SERIAL PRIMARY KEY,
+        method TEXT,
+        route TEXT,
+        source TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+
+      -- Visitor Logs
+      CREATE TABLE IF NOT EXISTS visitor_logs (
+        id SERIAL PRIMARY KEY,
+        source TEXT,
+        hashed_ip TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+
       CREATE TABLE IF NOT EXISTS buses (
         id SERIAL PRIMARY KEY,
         type TEXT,

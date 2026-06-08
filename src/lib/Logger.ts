@@ -1,17 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import { RouteLog } from "./models/RouteLog";
-import { VisitorLog } from "./models/VisitorLog";
+import { NextRequest } from "next/server";
+import { getDbPool } from "./db";
 import { maskIP } from "./mask";
 
-function getDailyUserId(req: Request) {
+function getDailyUserId(req: NextRequest) {
     const ip =
-        req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
-        req.socket.remoteAddress ||
+        req.headers.get("x-forwarded-for")?.split(",")[0] ||
         "unknown";
 
-    const ua = req.headers["user-agent"] || "unknown";
+    const ua = req.headers.get("user-agent") || "unknown";
 
-    const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const day = new Date().toISOString().slice(0, 10);
     return maskIP(ip + ua + day);
 }
 
@@ -20,39 +18,31 @@ function normalizeRoute(url: string) {
 
     if (path.startsWith("/api/files/")) {
         const parts = path.split("/").filter(Boolean);
-        // parts example:
-        // ["api","files","download","userID","fileID"]
-
         if (parts.length === 4) {
             return `/api/files/${parts[2]}/:userID`;
         }
-
         if (parts.length === 5) {
             return `/api/files/${parts[2]}/:userID/:fileID`;
         }
-
         return `/api/files/${parts[2]}`;
     }
 
     return path
-        // Mongo ObjectId / hashes
         .replace(/[a-f0-9]{24}/gi, ":id")
-        // numeric IDs
         .replace(/\b\d+\b/g, ":id")
-        // user IDs like 24BCE5274
         .replace(/\b[A-Z]{2}\d{5,}\b/g, ":userID");
 }
 
-function getSourceDomain(req: Request): string {
-    const origin = req.headers.origin;
-    if (typeof origin === "string") {
+function getSourceDomain(req: NextRequest): string {
+    const origin = req.headers.get("origin");
+    if (origin) {
         try {
             return new URL(origin).hostname;
         } catch { }
     }
 
-    const referer = req.headers.referer;
-    if (typeof referer === "string") {
+    const referer = req.headers.get("referer");
+    if (referer) {
         try {
             return new URL(referer).hostname;
         } catch { }
@@ -65,55 +55,32 @@ const routes = ["/api/calendar", "/api/login", "/api/hostel", "/api/grades", "/a
     "/api/all-grades", "/api/files/upload/:userID", "/api/files/delete/:userID/:fileID", "/api/files/download/:userID/:fileID",
     "/api/lms-data", "/api/files/mail/send"];
 
-export async function routeLogger(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
-    res.on("finish", async () => {
-        try {
-            if (req.originalUrl === "/favicon.ico") return;
+export async function logRouteAndVisitor(req: NextRequest) {
+    try {
+        const path = new URL(req.url).pathname;
+        if (path === "/favicon.ico") return;
 
-            let normalizedRoute = normalizeRoute(req.originalUrl);
-            const sourceDomain = getSourceDomain(req);
+        let normalizedRoute = normalizeRoute(path);
+        const sourceDomain = getSourceDomain(req);
 
-            if (!routes.includes(normalizedRoute)) {
-                normalizedRoute = "unknown"
-            }
-
-            await RouteLog.create({
-                method: req.method,
-                route: normalizedRoute,
-                source: sourceDomain,
-            });
-        } catch (err) {
-            console.error("Route log failed:", err);
+        if (!routes.includes(normalizedRoute)) {
+            normalizedRoute = "unknown"
         }
-    });
 
-    next();
-}
+        const pool = getDbPool();
+        
+        await pool.query(
+            `INSERT INTO api_route_logs (method, route, source) VALUES ($1, $2, $3)`,
+            [req.method, normalizedRoute, sourceDomain]
+        );
 
-export async function visitorLogger(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
-    res.on("finish", async () => {
-        try {
-            if (req.originalUrl === "/favicon.ico") return;
-
-            const sourceDomain = getSourceDomain(req);
-            const dailyUserId = getDailyUserId(req);
-
-            await VisitorLog.create({
-                source: sourceDomain,
-                hashedIP: dailyUserId,
-            });
-        } catch (err) {
-            console.error("Route log failed:", err);
-        }
-    });
-
-    next();
+        const dailyUserId = getDailyUserId(req);
+        
+        await pool.query(
+            `INSERT INTO visitor_logs (source, hashed_ip) VALUES ($1, $2)`,
+            [sourceDomain, dailyUserId]
+        );
+    } catch (err) {
+        console.error("Route/Visitor log failed:", err);
+    }
 }
