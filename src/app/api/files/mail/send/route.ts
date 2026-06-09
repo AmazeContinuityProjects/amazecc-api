@@ -1,13 +1,28 @@
 import { NextResponse } from 'next/server';
 import { mailTransporter } from "@/lib/clients/nodemailer";
 
+
+
 /**
  * @openapi
- * /api/mail/send:
+ * /api/files/mail/send:
  *   post:
  *     tags:
  *       - Files
- *     summary: Send files via email
+ *     summary: POST endpoint for /api/files/mail/send
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

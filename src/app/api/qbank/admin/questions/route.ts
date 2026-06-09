@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+
+
 /**
  * @openapi
  * /api/qbank/admin/questions:
@@ -18,6 +20,16 @@ import { isAdminAuthenticated } from '@/lib/auth';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  *   post:
  *     tags:
  *       - Qbank
@@ -37,9 +49,21 @@ import { isAdminAuthenticated } from '@/lib/auth';
  *             properties:
  *               paperId:
  *                 type: string
+ *               questionId:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  *   delete:
  *     tags:
  *       - Qbank
@@ -53,6 +77,16 @@ import { isAdminAuthenticated } from '@/lib/auth';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export const dynamic = 'force-dynamic';

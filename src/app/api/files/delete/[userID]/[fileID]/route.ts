@@ -3,6 +3,8 @@ import { getDbPool } from '@/lib/db';
 import { maskUserID } from '@/lib/mask';
 import { DeleteFromS3 } from '@/lib/clients/s3';
 
+
+
 /**
  * @openapi
  * /api/files/delete/[userID]/[fileID]:
@@ -24,6 +26,16 @@ import { DeleteFromS3 } from '@/lib/clients/s3';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ userID: string, fileID: string }> }) {

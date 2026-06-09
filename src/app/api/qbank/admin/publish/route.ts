@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+
+
 /**
  * @openapi
  * /api/qbank/admin/publish:
@@ -21,6 +23,16 @@ import { isAdminAuthenticated } from '@/lib/auth';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export const dynamic = 'force-dynamic';

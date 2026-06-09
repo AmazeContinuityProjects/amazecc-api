@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
 
+
+
 /**
  * @openapi
  * /api/admin/push/push:
@@ -9,9 +11,25 @@ import webpush from 'web-push';
  *     tags:
  *       - Admin
  *     summary: POST endpoint for /api/admin/push/push
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: NextRequest) {

@@ -8,84 +8,41 @@ import { URLSearchParams } from "url";
 
 
 
+
+
 /**
  * @openapi
  * /api/hostel:
  *   post:
  *     tags:
  *       - Hostel
- *     summary: Fetch hostel details and leave history
+ *     summary: POST endpoint for /api/hostel
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - cookies
- *               - authorizedID
- *               - csrf
  *             properties:
  *               cookies:
- *                 oneOf:
- *                   - type: string
- *                   - type: array
- *                     items:
- *                       type: string
+ *                 type: string
  *               authorizedID:
  *                 type: string
- *                 example: 24BCE1234
  *               csrf:
  *                 type: string
  *     responses:
  *       200:
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 hostelInfo:
- *                   type: object
- *                   properties:
- *                     gender:
- *                       type: string
- *                     isHosteller:
- *                       type: boolean
- *                     blockName:
- *                       type: string
- *                     roomNo:
- *                       type: string
- *                     messInfo:
- *                       type: string
- *                 leaveHistory:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       leaveId:
- *                         type: string
- *                       visitPlace:
- *                         type: string
- *                       reason:
- *                         type: string
- *                       leaveType:
- *                         type: string
- *                       from:
- *                         type: string
- *                       to:
- *                         type: string
- *                       status:
- *                         type: string
- *                       remarks:
- *                         type: string
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

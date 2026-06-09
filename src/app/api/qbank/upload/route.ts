@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { createClient } from '@supabase/supabase-js';
 
+
+
 /**
  * @openapi
  * /api/qbank/upload:
@@ -9,9 +11,25 @@ import { createClient } from '@supabase/supabase-js';
  *     tags:
  *       - Qbank
  *     summary: POST endpoint for /api/qbank/upload
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export const dynamic = 'force-dynamic';

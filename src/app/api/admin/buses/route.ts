@@ -48,6 +48,8 @@ import { cookies } from 'next/headers';
  *       500:
  *         description: Internal server error or DATABASE_URL not configured
  */
+
+
 /**
  * @openapi
  * /api/admin/buses:
@@ -55,9 +57,25 @@ import { cookies } from 'next/headers';
  *     tags:
  *       - Admin
  *     summary: POST endpoint for /api/admin/buses
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

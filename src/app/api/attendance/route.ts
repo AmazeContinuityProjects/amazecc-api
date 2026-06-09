@@ -11,105 +11,7 @@ import { fetchClassStatistics } from "@/lib/addClassData";
 
 
 
-/**
- * @openapi
- * /api/attendance:
- *   post:
- *     tags:
- *       - Academics
- *     summary: Fetch merged attendance, timetable, and marks for a semester
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - cookies
- *               - authorizedID
- *               - csrf
- *               - semesterId
- *             properties:
- *               cookies:
- *                 oneOf:
- *                   - type: string
- *                   - type: array
- *                     items:
- *                       type: string
- *               authorizedID:
- *                 type: string
- *                 example: 24BCE1234
- *               csrf:
- *                 type: string
- *               semesterId:
- *                 type: string
- *                 example: CH20242501
- *     responses:
- *       200:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 attRes:
- *                   type: object
- *                   properties:
- *                     semester:
- *                       type: string
- *                     attendance:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           courseCode:
- *                             type: string
- *                           courseTitle:
- *                             type: string
- *                           slotName:
- *                             type: string
- *                           faculty:
- *                             type: string
- *                             nullable: true
- *                           attendedClasses:
- *                             type: number
- *                             nullable: true
- *                           totalClasses:
- *                             type: number
- *                             nullable: true
- *                           attendancePercentage:
- *                             type: string
- *                             nullable: true
- *                           credits:
- *                             type: string
- *                             nullable: true
- *                           slotVenue:
- *                             type: string
- *                             nullable: true
- *                           category:
- *                             type: string
- *                             nullable: true
- *                           viewLink:
- *                             oneOf:
- *                               - type: string
- *                               - type: array
- *                                 items:
- *                                   type: object
- *                                   properties:
- *                                     date:
- *                                       type: string
- *                                     status:
- *                                       type: string
- *                 marksRes:
- *                   type: object
- *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- */
+
 
 function mergeAttendanceWithTimetable(attendance: attendanceItem[], timetable: courseItem[]): attendanceItem[] {
     const merged: attendanceItem[] = [];
@@ -159,6 +61,72 @@ function mergeAttendanceWithTimetable(attendance: attendanceItem[], timetable: c
     });
     return merged;
 }
+
+/**
+ * @openapi
+ * /api/attendance:
+ *   get:
+ *     tags:
+ *       - Attendance
+ *     summary: GET endpoint for /api/attendance
+ *     parameters:
+ *       - name: classId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ *   post:
+ *     tags:
+ *       - Attendance
+ *     summary: POST endpoint for /api/attendance
+ *     parameters:
+ *       - name: classId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cookies:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *               semesterId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
 
 export async function POST(req: Request) {
     try {

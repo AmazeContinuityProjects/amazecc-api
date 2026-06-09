@@ -46,6 +46,8 @@ import { signAdminToken } from '@/lib/auth';
  *       500:
  *         description: Internal Server Error
  */
+
+
 /**
  * @openapi
  * /api/admin/auth:
@@ -53,9 +55,25 @@ import { signAdminToken } from '@/lib/auth';
  *     tags:
  *       - Admin
  *     summary: POST endpoint for /api/admin/auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {
