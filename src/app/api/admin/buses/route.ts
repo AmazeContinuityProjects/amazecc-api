@@ -2,6 +2,64 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { cookies } from 'next/headers';
 
+/**
+ * @swagger
+ * /api/admin/buses:
+ *   post:
+ *     summary: Update the list of buses
+ *     description: Replaces the current buses list in the database with the provided array of buses. Requires admin authentication via cookies.
+ *     tags:
+ *       - Admin
+ *       - Buses
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 type:
+ *                   type: string
+ *                 route:
+ *                   type: string
+ *                 boardingPoints:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 driverPhone:
+ *                   type: string
+ *                 driverName:
+ *                   type: string
+ *                 whatsappGroup:
+ *                   type: string
+ *                 busLocation:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Buses updated successfully
+ *       400:
+ *         description: Expected an array of buses
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error or DATABASE_URL not configured
+ */
+/**
+ * @openapi
+ * /api/admin/buses:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: POST endpoint for /api/admin/buses
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: Request) {
   try {
     const cookieStore = await cookies();

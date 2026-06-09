@@ -1,6 +1,63 @@
 import { NextResponse } from 'next/server';
 import { signAdminToken } from '@/lib/auth';
 
+/**
+ * @swagger
+ * /api/admin/auth:
+ *   post:
+ *     summary: Authenticate an admin user
+ *     description: Authenticates a user against VTOP credentials and a VIP list of admin IDs.
+ *     tags:
+ *       - Admin
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful authentication
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 username:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Username and password required
+ *       401:
+ *         description: Invalid VTOP Credentials or VTOP is down
+ *       403:
+ *         description: Access Denied
+ *       500:
+ *         description: Internal Server Error
+ */
+/**
+ * @openapi
+ * /api/admin/auth:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: POST endpoint for /api/admin/auth
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();

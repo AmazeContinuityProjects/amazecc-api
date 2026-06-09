@@ -2,6 +2,18 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+/**
+ * @openapi
+ * /api/qbank/admin/queue:
+ *   get:
+ *     tags:
+ *       - Qbank
+ *     summary: GET endpoint for /api/qbank/admin/queue
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // GET /api/qbank/admin/queue — fetch all pending papers

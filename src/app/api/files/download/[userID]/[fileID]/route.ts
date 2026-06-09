@@ -4,6 +4,29 @@ import { maskUserID } from "@/lib/mask";
 import { s3 } from "@/lib/clients/s3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
+/**
+ * @openapi
+ * /api/files/download/[userID]/[fileID]:
+ *   get:
+ *     tags:
+ *       - Files
+ *     summary: GET endpoint for /api/files/download/[userID]/[fileID]
+ *     parameters:
+ *       - name: userID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: fileID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function GET(req: Request, { params }: { params: Promise<{ userID: string, fileID: string }> }) {
     try {
         const { userID, fileID } = await params;

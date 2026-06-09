@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 
+/**
+ * @openapi
+ * /api/marks/sync:
+ *   post:
+ *     tags:
+ *       - Marks
+ *     summary: POST endpoint for /api/marks/sync
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: Request) {
   const pool = getDbPool();
 

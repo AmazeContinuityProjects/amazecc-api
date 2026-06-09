@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/notifications/subscribe:
+ *   post:
+ *     tags:
+ *       - Notifications
+ *     summary: POST endpoint for /api/notifications/subscribe
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

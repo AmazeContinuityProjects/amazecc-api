@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
 
+/**
+ * @openapi
+ * /api/cron/reminders:
+ *   post:
+ *     tags:
+ *       - Cron
+ *     summary: POST endpoint for /api/cron/reminders
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;

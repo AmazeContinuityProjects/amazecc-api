@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/marks/stats:
+ *   get:
+ *     tags:
+ *       - Marks
+ *     summary: GET endpoint for /api/marks/stats
+ *     parameters:
+ *       - name: classes
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

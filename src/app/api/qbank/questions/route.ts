@@ -1,6 +1,24 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/qbank/questions:
+ *   get:
+ *     tags:
+ *       - Qbank
+ *     summary: GET endpoint for /api/qbank/questions
+ *     parameters:
+ *       - name: course
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // GET /api/qbank/questions?course=CSE1001

@@ -1,6 +1,54 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 
+/**
+ * @swagger
+ * /api/stats:
+ *   get:
+ *     tags:
+ *       - System
+ *     summary: Get API Usage Statistics
+ *     description: Returns an HTML page containing charts for API usage statistics.
+ *     parameters:
+ *       - in: query
+ *         name: range
+ *         schema:
+ *           type: string
+ *           enum: [24h, 7d, 30d, full]
+ *           default: 30d
+ *         description: The time range for the statistics.
+ *     responses:
+ *       200:
+ *         description: HTML page with statistics charts
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+/**
+ * @openapi
+ * /api/stats:
+ *   get:
+ *     tags:
+ *       - Stats
+ *     summary: GET endpoint for /api/stats
+ *     parameters:
+ *       - name: range
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function GET(req: Request) {
   try {
     const range = new URL(req.url).searchParams.get("range") || "30d";

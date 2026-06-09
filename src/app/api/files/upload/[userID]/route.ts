@@ -4,6 +4,24 @@ import { maskUserID } from '@/lib/mask';
 import { UploadFileToS3 } from '@/lib/clients/s3';
 import { v4 as uuid } from 'uuid';
 
+/**
+ * @openapi
+ * /api/files/upload/[userID]:
+ *   post:
+ *     tags:
+ *       - Files
+ *     summary: POST endpoint for /api/files/upload/[userID]
+ *     parameters:
+ *       - name: userID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: Request, { params }: { params: Promise<{ userID: string }> }) {
     try {
         const { userID } = await params;

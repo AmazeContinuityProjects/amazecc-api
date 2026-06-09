@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
 
+/**
+ * @openapi
+ * /api/admin/push/push:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: POST endpoint for /api/admin/push/push
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
