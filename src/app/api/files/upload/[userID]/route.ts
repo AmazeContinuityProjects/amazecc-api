@@ -4,6 +4,8 @@ import { maskUserID } from '@/lib/mask';
 import { UploadFileToS3 } from '@/lib/clients/s3';
 import { v4 as uuid } from 'uuid';
 
+
+
 /**
  * @openapi
  * /api/files/upload/[userID]:
@@ -20,6 +22,16 @@ import { v4 as uuid } from 'uuid';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request, { params }: { params: Promise<{ userID: string }> }) {

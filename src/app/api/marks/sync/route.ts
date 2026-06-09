@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 
+
+
 /**
  * @openapi
  * /api/marks/sync:
@@ -8,9 +10,25 @@ import { getDbPool } from "@/lib/db";
  *     tags:
  *       - Marks
  *     summary: POST endpoint for /api/marks/sync
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

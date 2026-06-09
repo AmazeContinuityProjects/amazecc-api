@@ -8,89 +8,41 @@ import { GradeItem, GradeResultsMap } from "@/types/data/allgrades";
 
 
 
+
+
 /**
  * @openapi
  * /api/all-grades:
  *   post:
  *     tags:
- *       - Academics
- *     summary: Fetch complete semester-wise grade history with detailed breakdown
+ *       - All-grades
+ *     summary: POST endpoint for /api/all-grades
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - cookies
- *               - authorizedID
- *               - csrf
  *             properties:
  *               cookies:
- *                 oneOf:
- *                   - type: string
- *                   - type: array
- *                     items:
- *                       type: string
+ *                 type: string
  *               authorizedID:
  *                 type: string
- *                 example: 24BCE1234
  *               csrf:
  *                 type: string
- *                 example: a1b2c3d4e5
  *     responses:
  *       200:
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 grades:
- *                   type: object
- *                   additionalProperties:
- *                     type: object
- *                     nullable: true
- *                     properties:
- *                       gpa:
- *                         type: string
- *                         example: "8.72"
- *                       grades:
- *                         type: array
- *                         items:
- *                           type: object
- *                           properties:
- *                             slNo:
- *                               type: string
- *                             courseCode:
- *                               type: string
- *                             courseTitle:
- *                               type: string
- *                             courseType:
- *                               type: string
- *                             grandTotal:
- *                               type: string
- *                             grade:
- *                               type: string
- *                             courseId:
- *                               type: string
- *                               nullable: true
- *                             range:
- *                               type: object
- *                               nullable: true
- *                             details:
- *                               type: array
- *                               nullable: true
- *                               items:
- *                                 type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

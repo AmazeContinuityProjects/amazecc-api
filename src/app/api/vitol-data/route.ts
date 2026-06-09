@@ -16,72 +16,47 @@ interface Assingment {
     url: string;
 }
 
+
+
 /**
  * @openapi
  * /api/vitol-data:
  *   post:
  *     tags:
- *       - Academics
- *     security: []
- *     summary: Fetch upcoming and completed Vitol Tests for current and next month
+ *       - Vitol-data
+ *     summary: POST endpoint for /api/vitol-data
+ *     parameters:
+ *       - name: id
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - username
- *               - pass
  *             properties:
  *               username:
  *                 type: string
- *                 example: 24BCE1234
  *               pass:
  *                 type: string
- *                 example: myLMSPassword
  *               vitolSite:
  *                 type: string
- *                 example: vitolcc
  *     responses:
  *       200:
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                   opens:
- *                     type: string
- *                   done:
- *                     type: boolean
- *                   day:
- *                     type: number
- *                   month:
- *                     type: number
- *                   year:
- *                     type: number
- *                   url:
- *                     type: string
+ *               type: object
  *       400:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+
+
 /**
  * @openapi
  * /api/qbank/papers:
@@ -17,6 +19,16 @@ import { getDbPool } from '@/lib/db';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export const dynamic = 'force-dynamic';

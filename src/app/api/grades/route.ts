@@ -8,105 +8,43 @@ import { RequestBody } from "@/types/custom";
 
 
 
+
+
 /**
  * @openapi
  * /api/grades:
  *   post:
  *     tags:
- *       - Academics
- *     summary: Fetch grade summary, curriculum progress, CGPA distribution, and feedback status
+ *       - Grades
+ *     summary: POST endpoint for /api/grades
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - cookies
- *               - authorizedID
- *               - csrf
- *               - semesterId
  *             properties:
  *               cookies:
- *                 oneOf:
- *                   - type: string
- *                   - type: array
- *                     items:
- *                       type: string
+ *                 type: string
  *               authorizedID:
  *                 type: string
- *                 example: 24BCE1234
  *               csrf:
  *                 type: string
  *               semesterId:
  *                 type: string
- *                 example: CH20242501
  *     responses:
  *       200:
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 effectiveGrades:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       basketTitle:
- *                         type: string
- *                       distributionType:
- *                         type: string
- *                       creditsEarned:
- *                         type: string
- *                       grade:
- *                         type: string
- *                 curriculum:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       basketTitle:
- *                         type: string
- *                       creditsRequired:
- *                         type: string
- *                       creditsEarned:
- *                         type: string
- *                 cgpa:
- *                   type: object
- *                   properties:
- *                     grades:
- *                       type: object
- *                       properties:
- *                         S: { type: number }
- *                         A: { type: number }
- *                         B: { type: number }
- *                         C: { type: number }
- *                         D: { type: number }
- *                         E: { type: number }
- *                         F: { type: number }
- *                         N: { type: number }
- *                 feedback:
- *                   type: object
- *                   properties:
- *                     MidSem:
- *                       type: object
- *                       properties:
- *                         Curriculum: { type: boolean }
- *                         Course: { type: boolean }
- *                     EndSem:
- *                       type: object
- *                       properties:
- *                         Curriculum: { type: boolean }
- *                         Course: { type: boolean }
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {

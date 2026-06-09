@@ -3,28 +3,28 @@ import { NextResponse } from "next/server";
 
 
 
+
+
 /**
  * @openapi
  * /api/status:
  *   get:
  *     tags:
- *       - System
- *     security: []
- *     summary: Check API health status
- *     description: >
- *       Simple health check endpoint used to verify that the API server
- *       is running and reachable.
+ *       - Status
+ *     summary: GET endpoint for /api/status
  *     responses:
  *       200:
- *         description: API is up and running
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 text:
- *                   type: string
- *                   example: API is working
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function GET(req: Request) {

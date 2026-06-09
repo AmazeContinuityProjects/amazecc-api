@@ -21,8 +21,17 @@ function processDirectory(directory) {
 function processFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf-8');
 
-  // Skip if already documented
-  if (content.includes('@openapi')) return;
+  // Strip existing openapi block if it exists (so we can regenerate)
+  let blockStart = content.indexOf('/**\n * @openapi');
+  if (blockStart === -1) {
+      blockStart = content.indexOf('/**\r\n * @openapi');
+  }
+  if (blockStart !== -1) {
+      const blockEnd = content.indexOf('*/', blockStart);
+      if (blockEnd !== -1) {
+          content = content.substring(0, blockStart) + content.substring(blockEnd + 2);
+      }
+  }
 
   const routePath = filePath.split('src\\app\\api')[1].replace(/\\route\.ts$/, '').replace(/\\/g, '/');
   const apiEndpoint = `/api${routePath || '/'}`;
@@ -79,32 +88,61 @@ function processFile(filePath) {
 
     // Find JSON body for POST/PUT
     if (method === 'post' || method === 'put') {
-      const jsonRegex = /const\s+\{\s*([^}]+)\s*\}\s*=\s*await\s*req\.json\(\)/;
-      const jsonMatch = content.match(jsonRegex);
-      if (jsonMatch) {
-        const fields = jsonMatch[1].split(',').map(f => f.trim().split(':')[0].split('=')[0].trim()).filter(f => f);
-        swaggerDocs += ` *     requestBody:\n *       required: true\n *       content:\n *         application/json:\n *           schema:\n *             type: object\n`;
-        if (fields.length > 0) {
-          swaggerDocs += ` *             properties:\n`;
-          for (const field of fields) {
-            swaggerDocs += ` *               ${field}:\n *                 type: string\n`;
+      // Split into lines safely
+      const lines = content.split('\n');
+      let allFields = new Set();
+      
+      // Some files use const body = await req.json() but we might not easily infer. 
+      // VTOP specific fallback:
+      if (apiEndpoint.includes('/attendance') || apiEndpoint.includes('/grades') || apiEndpoint.includes('/calendar') || apiEndpoint.includes('/schedule') || apiEndpoint.includes('/hostel') || apiEndpoint.includes('/all-grades')) {
+          allFields.add('cookies');
+          allFields.add('authorizedID');
+          allFields.add('csrf');
+          if (!apiEndpoint.includes('/hostel') && !apiEndpoint.includes('/all-grades')) {
+              allFields.add('semesterId');
           }
+      }
+
+      for (const line of lines) {
+         if (line.includes('req.json')) {
+            if ((line.includes('const {') || line.includes('let {')) && line.includes('}')) {
+                const start = line.indexOf('{');
+                const end = line.indexOf('}');
+                if (start !== -1 && end !== -1 && end > start) {
+                    const fieldsStr = line.substring(start + 1, end);
+                    const fields = fieldsStr.split(',').map(f => f.trim().split(':')[0].split('=')[0].trim()).filter(f => f);
+                    fields.forEach(f => allFields.add(f));
+                }
+            }
+         }
+      }
+
+      if (allFields.size > 0) {
+        swaggerDocs += ` *     requestBody:\n *       required: true\n *       content:\n *         application/json:\n *           schema:\n *             type: object\n *             properties:\n`;
+        for (const field of allFields) {
+          swaggerDocs += ` *               ${field}:\n *                 type: string\n`;
+        }
+      } else {
+        // Fallback for body/json
+        if (content.includes('await req.json()')) {
+            swaggerDocs += ` *     requestBody:\n *       required: true\n *       content:\n *         application/json:\n *           schema:\n *             type: object\n`;
         }
       }
     }
 
-    swaggerDocs += ` *     responses:\n *       200:\n *         description: Successful response\n`;
+    swaggerDocs += ` *     responses:\n *       200:\n *         description: Successful response\n *         content:\n *           application/json:\n *             schema:\n *               type: object\n`;
+    swaggerDocs += ` *       400:\n *         description: Bad Request\n`;
+    swaggerDocs += ` *       401:\n *         description: Unauthorized\n`;
+    swaggerDocs += ` *       500:\n *         description: Internal Server Error\n`;
   }
 
   swaggerDocs += ` */\n\n`;
 
-  // Prepend to file
-  // Find the first export async function or export const dynamic and place it above
   const exportIndex = content.search(/export (const|async function|function)/);
   if (exportIndex !== -1) {
     content = content.slice(0, exportIndex) + swaggerDocs + content.slice(exportIndex);
     fs.writeFileSync(filePath, content, 'utf-8');
-    console.log(`Added JSDoc to ${apiEndpoint}`);
+    console.log(`Updated JSDoc for ${apiEndpoint}`);
   }
 }
 

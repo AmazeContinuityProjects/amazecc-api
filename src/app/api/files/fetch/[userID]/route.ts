@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { maskUserID } from '@/lib/mask';
 
+
+
 /**
  * @openapi
  * /api/files/fetch/[userID]:
@@ -18,6 +20,16 @@ import { maskUserID } from '@/lib/mask';
  *     responses:
  *       200:
  *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 export async function GET(req: Request, { params }: { params: Promise<{ userID: string }> }) {

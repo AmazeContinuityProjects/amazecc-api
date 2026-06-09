@@ -8,82 +8,39 @@ import * as cheerio from "cheerio";
 
 
 
+
+
 /**
  * @openapi
  * /api/login:
  *   post:
  *     tags:
- *       - Authentication
- *     security: []
- *     summary: Authenticate user via VTOP and return session credentials
+ *       - Login
+ *     summary: POST endpoint for /api/login
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - username
- *               - password
  *             properties:
  *               username:
  *                 type: string
- *                 example: 24BCE1234
  *               password:
  *                 type: string
- *                 example: mySecretPassword
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Login successful!
- *                 cookies:
- *                   type: string
- *                   description: Session cookies required for authenticated requests
- *                   example: JSESSIONID=abc123; Path=/; HttpOnly
- *                 csrf:
- *                   type: string
- *                   description: CSRF token required for future form submissions
- *                   example: 533aba0b-ca27-489c-9c78-d0e117a3e2c7
- *                 authorizedID:
- *                   type: string
- *                   description: Authorized VTOP user ID extracted after login
- *                   example: 24BCE1234
+ *       400:
+ *         description: Bad Request
  *       401:
- *         description: Authentication failed due to invalid captcha or credentials
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: Invalid Username / Password
+ *         description: Unauthorized
  *       500:
- *         description: Internal server error or captcha fetch failure
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: Failed to get captcha
+ *         description: Internal Server Error
  */
 
 export async function POST(req: Request) {
