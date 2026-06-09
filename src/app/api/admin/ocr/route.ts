@@ -1,6 +1,27 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/admin/ocr:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: POST endpoint for /api/admin/ocr
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {

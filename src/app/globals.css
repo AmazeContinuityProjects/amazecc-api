@@ -17,6 +17,11 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+
+  .swagger-ui {
+    filter: invert(90%) hue-rotate(180deg) brightness(110%);
+    background: transparent !important;
+  }
 }
 
 body {

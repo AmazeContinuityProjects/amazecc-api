@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import defaultBuses from '@/data/dayscholar_buses.json';
 
+/**
+ * @openapi
+ * /api/buses:
+ *   get:
+ *     tags:
+ *       - Buses
+ *     summary: GET endpoint for /api/buses
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {

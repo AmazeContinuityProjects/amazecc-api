@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+/**
+ * @openapi
+ * /api/qbank/admin/publish:
+ *   post:
+ *     tags:
+ *       - Qbank
+ *     summary: POST endpoint for /api/qbank/admin/publish
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // POST /api/qbank/admin/publish — approve paper and make questions live

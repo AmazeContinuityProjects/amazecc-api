@@ -2,6 +2,29 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { cookies } from 'next/headers';
 
+/**
+ * @openapi
+ * /api/qbank/admin/questions/bulk:
+ *   post:
+ *     tags:
+ *       - Qbank
+ *     summary: POST endpoint for /api/qbank/admin/questions/bulk
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               questions:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {

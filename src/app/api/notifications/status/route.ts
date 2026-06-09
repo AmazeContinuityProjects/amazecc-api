@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/notifications/status:
+ *   get:
+ *     tags:
+ *       - Notifications
+ *     summary: GET endpoint for /api/notifications/status
+ *     parameters:
+ *       - name: UserID
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const UserID = searchParams.get('UserID');

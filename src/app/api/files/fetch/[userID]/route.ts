@@ -2,6 +2,24 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { maskUserID } from '@/lib/mask';
 
+/**
+ * @openapi
+ * /api/files/fetch/[userID]:
+ *   get:
+ *     tags:
+ *       - Files
+ *     summary: GET endpoint for /api/files/fetch/[userID]
+ *     parameters:
+ *       - name: userID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export async function GET(req: Request, { params }: { params: Promise<{ userID: string }> }) {
     try {
         const pool = getDbPool();

@@ -2,6 +2,59 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+/**
+ * @openapi
+ * /api/qbank/admin/questions:
+ *   get:
+ *     tags:
+ *       - Qbank
+ *     summary: GET endpoint for /api/qbank/admin/questions
+ *     parameters:
+ *       - name: paperId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *   post:
+ *     tags:
+ *       - Qbank
+ *     summary: POST endpoint for /api/qbank/admin/questions
+ *     parameters:
+ *       - name: paperId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *   delete:
+ *     tags:
+ *       - Qbank
+ *     summary: DELETE endpoint for /api/qbank/admin/questions
+ *     parameters:
+ *       - name: paperId
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // GET /api/qbank/admin/questions?paperId=xxx

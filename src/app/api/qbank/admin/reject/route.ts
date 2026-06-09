@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
+/**
+ * @openapi
+ * /api/qbank/admin/reject:
+ *   post:
+ *     tags:
+ *       - Qbank
+ *     summary: POST endpoint for /api/qbank/admin/reject
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // POST /api/qbank/admin/reject — reject a paper

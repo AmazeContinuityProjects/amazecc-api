@@ -2,6 +2,18 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { createClient } from '@supabase/supabase-js';
 
+/**
+ * @openapi
+ * /api/qbank/upload:
+ *   post:
+ *     tags:
+ *       - Qbank
+ *     summary: POST endpoint for /api/qbank/upload
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // We use the Supabase Storage REST API for uploads, server-side

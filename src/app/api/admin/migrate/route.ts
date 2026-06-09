@@ -1,9 +1,42 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
+/**
+ * @openapi
+ * /api/admin/migrate:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: GET endpoint for /api/admin/migrate
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: POST endpoint for /api/admin/migrate
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+
 export const dynamic = 'force-dynamic';
 
 // POST — run all migrations (buses + Q-Bank tables)
+/**
+ * @swagger
+ * /api/admin/migrate:
+ *   post:
+ *     summary: Run database migrations
+ *     description: Creates necessary tables for buses, papers archive, Q-Bank, push subscriptions, files, logs, etc.
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       200:
+ *         description: Tables created successfully
+ *       500:
+ *         description: Migration failed or DATABASE_URL not set
+ */
 export async function POST() {
   try {
     const pool = getDbPool();
@@ -125,6 +158,35 @@ export async function POST() {
 }
 
 // GET — health check: DB connectivity + list tables
+/**
+ * @swagger
+ * /api/admin/migrate:
+ *   get:
+ *     summary: Check database connectivity and list tables
+ *     description: Returns the database connectivity status, server time, and a list of tables.
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       200:
+ *         description: Database health and table list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 connected:
+ *                   type: boolean
+ *                 db:
+ *                   type: string
+ *                 serverTime:
+ *                   type: string
+ *                 tables:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 error:
+ *                   type: string
+ */
 export async function GET() {
   try {
     const pool = getDbPool();
