@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { isAdminAuthenticated } from '@/lib/auth';
+import { requireAdminAuth } from '@/lib/auth';
+
 
 
 
@@ -39,10 +40,11 @@ export const dynamic = 'force-dynamic';
 
 // POST /api/qbank/admin/reject — reject a paper
 export async function POST(req: Request) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
   try {
-    if (!(await isAdminAuthenticated())) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
     const { paperId } = await req.json();
     if (!paperId) return NextResponse.json({ success: false, error: 'paperId required' }, { status: 400 });
 

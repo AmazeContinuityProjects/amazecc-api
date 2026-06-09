@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { isAdminAuthenticated } from '@/lib/auth';
+import { requireAdminAuth } from '@/lib/auth';
+
 
 
 
@@ -29,11 +30,12 @@ import { isAdminAuthenticated } from '@/lib/auth';
 export const dynamic = 'force-dynamic';
 
 // GET /api/qbank/admin/queue — fetch all pending papers
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
   try {
-    if (!(await isAdminAuthenticated())) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
     const pool = getDbPool();
     const { rows } = await pool.query(
       `SELECT * FROM papers_archive WHERE approval_status IN ('PENDING', 'OCR_PROCESSING', 'PENDING_Q_APPROVAL') ORDER BY created_at DESC`
