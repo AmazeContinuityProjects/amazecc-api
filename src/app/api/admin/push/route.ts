@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
+import { requireAdminAuth } from '@/lib/auth';
+
 
 
 
@@ -33,6 +35,11 @@ import webpush from 'web-push';
  */
 
 export async function POST(req: NextRequest) {
+    const authResult = await requireAdminAuth(req);
+    if (authResult instanceof NextResponse) {
+        return authResult;
+    }
+
     try {
         const body = await req.json();
         const { title, body: message } = body;
@@ -67,10 +74,9 @@ export async function POST(req: NextRequest) {
         const payload = JSON.stringify({
             title,
             body: message,
-            icon: '/icon.png', // Assuming there's a default icon in public folder
+            icon: '/icon.png',
         });
 
-        // Send to all subscribers concurrently
         const sendPromises = rows.map(sub => {
             const pushSubscription = {
                 endpoint: sub.endpoint,
@@ -81,10 +87,8 @@ export async function POST(req: NextRequest) {
             };
             
             return webpush.sendNotification(pushSubscription, payload).catch(err => {
-                // Ignore individual errors (e.g. if a subscription has expired)
                 console.error("Failed to send to endpoint", sub.endpoint, err);
                 
-                // Optionally: delete from db if statusCode === 410 (Gone)
                 if (err.statusCode === 410) {
                     pool.query(`DELETE FROM push_subscriptions WHERE endpoint = $1`, [sub.endpoint]).catch(console.error);
                 }

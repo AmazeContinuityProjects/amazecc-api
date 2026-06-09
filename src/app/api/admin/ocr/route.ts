@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAdminAuth } from '@/lib/auth';
+
 
 
 
@@ -37,6 +39,11 @@ import { getDbPool } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
     const { paperId } = await req.json();
     if (!paperId) return NextResponse.json({ error: 'Paper ID is required' }, { status: 400 });

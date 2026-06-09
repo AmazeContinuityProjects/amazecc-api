@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { requireAdminAuth } from '@/lib/auth';
+
 
 
 
@@ -38,12 +39,12 @@ import { cookies } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  try {
-    const cookieStore = await cookies();
-    if (cookieStore.get('admin_auth')?.value !== 'true') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
 
+  try {
     const { paperId } = await req.json();
     if (!paperId) return NextResponse.json({ error: 'Paper ID is required' }, { status: 400 });
 
