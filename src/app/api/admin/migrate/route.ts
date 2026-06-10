@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAdminAuth } from '@/lib/auth';
+import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit';
 
 
 
@@ -59,7 +61,14 @@ export const dynamic = 'force-dynamic';
  *       500:
  *         description: Migration failed or DATABASE_URL not set
  */
-export async function POST() {
+export async function POST(req: Request) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) return authResult;
+
+  const ip = getClientIp(req);
+  const rl = checkRateLimit(`migrate:${ip}`, 3, 300000);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   try {
     const pool = getDbPool();
 
@@ -185,7 +194,7 @@ export async function POST() {
     return NextResponse.json({ success: true, message: 'All tables created: buses, papers_archive, qbank_questions, qbank_topics, qbank_question_topics' });
   } catch (error: any) {
     console.error('Migration failed:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -219,7 +228,10 @@ export async function POST() {
  *                 error:
  *                   type: string
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const pool = getDbPool();
 
@@ -243,6 +255,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('DB check failed:', error);
-    return NextResponse.json({ connected: false, error: error.message });
+    return NextResponse.json({ connected: false, error: "Internal server error" });
   }
 }

@@ -122,7 +122,7 @@ export async function PATCH(req: Request, context: RouteContext) {
   } catch (error: any) {
     console.error('Failed to update user:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -198,7 +198,7 @@ export async function DELETE(req: Request, context: RouteContext) {
   } catch (error: any) {
     console.error('Failed to delete user:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }

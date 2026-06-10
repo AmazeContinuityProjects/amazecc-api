@@ -1,7 +1,10 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
-const SECRET = process.env.ADMIN_SECRET || 'fallback_secret_change_me_in_production';
+if (!process.env.ADMIN_SECRET) {
+  throw new Error('ADMIN_SECRET environment variable is required');
+}
+const SECRET = process.env.ADMIN_SECRET;
 
 export interface AdminTokenPayload {
     username: string;
@@ -73,15 +76,6 @@ export function verifyAdminToken(token: string): AdminTokenPayload | null {
     }
 }
 
-import { cookies } from 'next/headers';
-
-export async function isAdminAuthenticated(): Promise<boolean> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin_token')?.value;
-    if (!token) return false;
-    return verifyAdminToken(token) !== null;
-}
-
 export function getAdminTokenFromRequest(req: Request): string | null {
     const authHeader = req.headers.get('Authorization');
     if (authHeader?.startsWith('Bearer ')) {
@@ -94,11 +88,6 @@ export async function verifyAdminFromRequest(req: Request): Promise<AdminTokenPa
     const token = getAdminTokenFromRequest(req);
     if (token) {
         return verifyAdminToken(token);
-    }
-    const cookieStore = await cookies();
-    const cookieToken = cookieStore.get('admin_token')?.value;
-    if (cookieToken) {
-        return verifyAdminToken(cookieToken);
     }
     return null;
 }

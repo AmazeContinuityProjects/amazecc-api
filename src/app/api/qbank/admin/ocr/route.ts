@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAdminAuth } from '@/lib/auth';
 
 
 
@@ -37,6 +38,9 @@ import { getDbPool } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  const authResult = await requireAdminAuth(req);
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const { paperId } = await req.json();
     if (!paperId) return NextResponse.json({ error: 'Paper ID is required' }, { status: 400 });
@@ -78,6 +82,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, count: extractedQuestions.length });
   } catch (error: any) {
     console.error('OCR Pipeline Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

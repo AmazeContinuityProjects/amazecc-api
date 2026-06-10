@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { signAdminToken } from '@/lib/auth';
 import { getDbPool } from '@/lib/db';
+import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit';
 
 /**
  * @swagger
@@ -78,6 +79,10 @@ import { getDbPool } from '@/lib/db';
  */
 
 export async function POST(req: Request) {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit(`admin-auth:${ip}`, 5, 60000);
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
     try {
         const body = await req.json();
         const { username, password } = body;

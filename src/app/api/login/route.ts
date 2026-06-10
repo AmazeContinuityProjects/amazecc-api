@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { LoginRequestBody } from "@/types/data/login";
+import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
 
 import { getCaptcha } from "../login/captcha";
 import { solveCaptcha } from "../login/solveCaptcha";
@@ -44,6 +45,10 @@ import * as cheerio from "cheerio";
  */
 
 export async function POST(req: Request) {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit(`login:${ip}`, 5, 60000);
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
     try {
         const {  username, password  } = await req.json().catch(()=>({}));
         const captchaRes = await getCaptcha();
@@ -123,7 +128,7 @@ export async function POST(req: Request) {
 
     } catch (err: any) {
         console.error(err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
 

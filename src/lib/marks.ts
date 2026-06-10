@@ -229,6 +229,6 @@ export async function getMarks(cookies: string[] | string, authorizedID: string,
         return { courses, cgpa };
     } catch (err: any) {
         console.error(err);
-        return err.message;
+        throw new Error(`Failed to fetch marks: ${err.message || 'Unknown error'}`);
     }
 }

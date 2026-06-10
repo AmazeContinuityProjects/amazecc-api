@@ -63,7 +63,9 @@ import { getDbPool } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
-    const range = new URL(req.url).searchParams.get("range") || "30d";
+    const ALLOWED_RANGES = ['24h', '7d', '30d', 'full'];
+    const rawRange = new URL(req.url).searchParams.get("range") || "30d";
+    const range = ALLOWED_RANGES.includes(rawRange) ? rawRange : "30d";
     let dateFilter = "";
     
     switch (range) {

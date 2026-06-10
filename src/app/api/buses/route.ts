@@ -59,6 +59,6 @@ export async function GET() {
   } catch (error: any) {
     console.error('Failed to fetch buses:', error);
     // On failure (like table not exists), fallback to default json
-    return NextResponse.json({ success: true, buses: fallbackBuses, error: error.message });
+    return NextResponse.json({ success: true, buses: fallbackBuses, error: "Internal server error" });
   }
 }

@@ -36,7 +36,7 @@ export async function GET(req: Request) {
   } catch (error: any) {
     console.error('Failed to fetch users:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Failed to add user:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }
