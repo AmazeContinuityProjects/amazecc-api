@@ -9,6 +9,24 @@ import { attendanceItem, courseItem } from "@/types/data/attendance";
 import { getMarks } from "@/lib/marks";
 import { fetchClassStatistics } from "@/lib/addClassData";
 
+async function batchAll<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+  concurrency: number
+): Promise<R[]> {
+  const results: R[] = [];
+  let index = 0;
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await fn(items[i]);
+    }
+  }
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
+  await Promise.all(workers);
+  return results;
+}
+
 
 
 
@@ -259,14 +277,14 @@ export async function POST(req: Request) {
             return course;
         }
 
-        const detailedAttendance: attendanceItem[] = await Promise.all(
-            mergedAttendance.map(fetchDetail)
+        const detailedAttendance: attendanceItem[] = await batchAll(
+            mergedAttendance, fetchDetail, 3
         );
 
         return NextResponse.json({ attRes: { semester: semesterId, attendance: detailedAttendance }, marksRes: marksRes }, { status: 200 });
     } catch (err: any) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
 
@@ -282,7 +300,7 @@ export async function GET(req: Request) {
         return NextResponse.json(stats, { status: 200 });
     } catch (err: any) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
 

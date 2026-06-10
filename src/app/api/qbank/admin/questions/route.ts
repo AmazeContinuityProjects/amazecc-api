@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
     );
     return NextResponse.json({ success: true, data: rows });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     );
     return NextResponse.json({ success: true, data: rows[0] });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -175,7 +175,7 @@ export async function PATCH(req: NextRequest) {
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -193,6 +193,6 @@ export async function DELETE(req: NextRequest) {
     await pool.query(`DELETE FROM qbank_questions WHERE question_id = $1`, [questionId]);
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }

@@ -16,17 +16,6 @@ function getDailyUserId(req: NextRequest) {
 function normalizeRoute(url: string) {
     const path = url.split("?")[0] || "undefined";
 
-    if (path.startsWith("/api/files/")) {
-        const parts = path.split("/").filter(Boolean);
-        if (parts.length === 4) {
-            return `/api/files/${parts[2]}/:userID`;
-        }
-        if (parts.length === 5) {
-            return `/api/files/${parts[2]}/:userID/:fileID`;
-        }
-        return `/api/files/${parts[2]}`;
-    }
-
     return path
         .replace(/[a-f0-9]{24}/gi, ":id")
         .replace(/\b\d+\b/g, ":id")
@@ -37,14 +26,16 @@ function getSourceDomain(req: NextRequest): string {
     const origin = req.headers.get("origin");
     if (origin) {
         try {
-            return new URL(origin).hostname;
+            const hostname = new URL(origin).hostname;
+            return hostname.replace(/[^a-zA-Z0-9.\-]/g, '').slice(0, 253);
         } catch { }
     }
 
     const referer = req.headers.get("referer");
     if (referer) {
         try {
-            return new URL(referer).hostname;
+            const hostname = new URL(referer).hostname;
+            return hostname.replace(/[^a-zA-Z0-9.\-]/g, '').slice(0, 253);
         } catch { }
     }
 
@@ -52,8 +43,7 @@ function getSourceDomain(req: NextRequest): string {
 }
 
 const routes = ["/api/calendar", "/api/login", "/api/hostel", "/api/grades", "/api/schedule", "/api/attendance",
-    "/api/all-grades", "/api/files/upload/:userID", "/api/files/delete/:userID/:fileID", "/api/files/download/:userID/:fileID",
-    "/api/lms-data", "/api/files/mail/send"];
+    "/api/all-grades", "/api/lms-data"];
 
 export async function logRouteAndVisitor(req: NextRequest) {
     try {

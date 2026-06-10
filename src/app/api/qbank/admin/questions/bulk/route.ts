@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { requireAdminAuth } from '@/lib/auth';
 
 
 
@@ -41,10 +41,8 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    if (cookieStore.get('admin_auth')?.value !== 'true') {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
+    const authResult = await requireAdminAuth(req);
+    if (authResult instanceof NextResponse) return authResult;
 
     const { paperId, questions } = await req.json();
 
@@ -91,6 +89,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Bulk questions import error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
