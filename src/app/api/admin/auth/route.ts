@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { signAdminToken } from '@/lib/auth';
+import { getDbPool } from '@/lib/db';
 
 /**
  * @swagger
  * /api/admin/auth:
  *   post:
  *     summary: Authenticate an admin user
- *     description: Authenticates a user against VTOP credentials and a VIP list of admin IDs.
+ *     description: Authenticates a user against VTOP credentials and checks admin status from env var or database.
  *     tags:
  *       - Admin
  *     requestBody:
@@ -99,19 +100,95 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid VTOP Credentials or VTOP is down" }, { status: 401 });
         }
 
-        // 2. Check against VIP list
+        const normalizedUsername = username.toUpperCase().trim();
+
+        // 2. Check if user is superadmin (from env var)
         const adminIdsEnv = process.env.ADMIN_VTOP_IDS || "";
         const adminIds = adminIdsEnv.split(',').map(id => id.trim().toUpperCase());
-        
-        if (!adminIds.includes(username.toUpperCase())) {
-            return NextResponse.json({ error: "Access Denied: You are not an authorized administrator." }, { status: 403 });
+        const isSuperadmin = adminIds.includes(normalizedUsername);
+
+        // 3. Check if user exists in admin_users table
+        let role: 'superadmin' | 'admin' = 'admin';
+        let permissions = ['dashboard', 'qbank', 'buses', 'push'];
+
+        if (isSuperadmin) {
+            // Superadmin from env var - full access
+            role = 'superadmin';
+            permissions = ['dashboard', 'qbank', 'buses', 'push', 'users'];
+            
+            // Ensure superadmin exists in database
+            try {
+                const pool = getDbPool();
+                const { rows: existing } = await pool.query(
+                    'SELECT username FROM admin_users WHERE username = $1',
+                    [normalizedUsername]
+                );
+                
+                if (existing.length === 0) {
+                    // Auto-create superadmin in database
+                    await pool.query(
+                        `INSERT INTO admin_users (username, role, permissions, added_by)
+                         VALUES ($1, 'superadmin', $2, 'SYSTEM')`,
+                        [normalizedUsername, JSON.stringify(permissions)]
+                    );
+                } else if (existing[0].role !== 'superadmin') {
+                    // Upgrade to superadmin if they were previously just admin
+                    await pool.query(
+                        'UPDATE admin_users SET role = $1, permissions = $2 WHERE username = $3',
+                        ['superadmin', JSON.stringify(permissions), normalizedUsername]
+                    );
+                }
+            } catch (dbError) {
+                // Database might not have admin_users table yet, proceed with env var auth
+                console.warn('Could not check admin_users table:', dbError);
+            }
+        } else {
+            // Check database for regular admin
+            try {
+                const pool = getDbPool();
+                const { rows } = await pool.query(
+                    'SELECT role, permissions, is_active FROM admin_users WHERE username = $1',
+                    [normalizedUsername]
+                );
+
+                if (rows.length === 0) {
+                    return NextResponse.json(
+                        { error: "Access Denied: You are not an authorized administrator." },
+                        { status: 403 }
+                    );
+                }
+
+                const user = rows[0];
+                if (!user.is_active) {
+                    return NextResponse.json(
+                        { error: "Access Denied: Your account has been deactivated." },
+                        { status: 403 }
+                    );
+                }
+
+                role = user.role;
+                permissions = user.permissions;
+            } catch (dbError) {
+                // Database might not have admin_users table yet, deny access
+                console.error('Database error checking admin status:', dbError);
+                return NextResponse.json(
+                    { error: "Access Denied: Unable to verify admin status." },
+                    { status: 403 }
+                );
+            }
         }
 
-        // 3. Generate signed token
-        const token = signAdminToken(username.toUpperCase());
+        // 4. Generate signed token with role and permissions
+        const token = signAdminToken(normalizedUsername, role, permissions);
 
-        // 4. Return token to frontend
-        return NextResponse.json({ success: true, username: username.toUpperCase(), token });
+        // 5. Return token to frontend
+        return NextResponse.json({
+            success: true,
+            username: normalizedUsername,
+            role,
+            permissions,
+            token
+        });
 
     } catch (err: any) {
         console.error("Admin auth error:", err);

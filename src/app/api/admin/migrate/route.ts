@@ -168,6 +168,16 @@ export async function POST() {
         topic_id UUID REFERENCES qbank_topics(topic_id) ON DELETE CASCADE,
         PRIMARY KEY(question_id, topic_id)
       );
+
+      -- Admin users table
+      CREATE TABLE IF NOT EXISTS admin_users (
+        username TEXT PRIMARY KEY,
+        role TEXT DEFAULT 'admin' CHECK (role IN ('superadmin', 'admin')),
+        permissions JSONB DEFAULT '["dashboard","qbank","buses","push"]',
+        added_by TEXT,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
     `;
 
     await pool.query(sql);
