@@ -1,7 +1,7 @@
 import axios from "axios";
 import https from "https";
 
-const agent = new https.Agent({ rejectUnauthorized: true });
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 const VitolClient = axios.create({
     baseURL: "https://vitolcc.vit.ac.in/",

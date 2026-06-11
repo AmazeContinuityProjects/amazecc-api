@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import https from "https";
 
-const agent = new https.Agent({ rejectUnauthorized: true });
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 const ChennaiClient: AxiosInstance = axios.create({
   baseURL: "https://vtopcc.vit.ac.in",
