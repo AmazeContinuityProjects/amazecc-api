@@ -5,8 +5,18 @@ import { checkRateLimit } from '@/lib/rateLimit';
 const ALLOWED_ORIGINS = [
   'https://amazecc.com',
   'https://www.amazecc.com',
+  'https://amaze-cc.vercel.app',
   'http://localhost:3000',
+  'https://localhost:3000',
+  'http://localhost:3001',
+  'https://localhost:3001',
 ];
+
+const isAllowedOrigin = (origin: string) => {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  if (origin.endsWith('.vercel.app') && (origin.includes('amaze-cc') || origin.includes('amazecc'))) return true;
+  return false;
+};
 
 export function proxy(request: NextRequest) {
   const ip =
@@ -23,13 +33,13 @@ export function proxy(request: NextRequest) {
   }
 
   const origin = request.headers.get('origin') ?? '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : ALLOWED_ORIGINS[0];
 
   const response = NextResponse.next();
 
   response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version');
   response.headers.set('Access-Control-Allow-Credentials', 'true');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
