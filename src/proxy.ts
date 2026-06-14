@@ -1,25 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const allowedOrigins = [
-  "https://amaze-cc.vercel.app",
-  "https://amazecc.com",
-  "https://www.amazecc.com",
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:3001",
-];
-
-const isAllowedOrigin = (origin: string) => {
-  if (allowedOrigins.includes(origin)) return true;
-  if (origin.endsWith(".vercel.app") && (origin.includes("amaze-cc") || origin.includes("amazecc"))) return true;
-  return false;
-};
-
 export function proxy(request: NextRequest) {
   const origin = request.headers.get("origin") ?? "";
-  const allowedOrigin = isAllowedOrigin(origin) ? origin : allowedOrigins[0];
+
+  // Since this is an open API, we allow all origins.
+  // Because we support credentials (Authorization headers), we must echo the request's origin
+  // dynamically instead of using the wildcard "*".
+  const allowedOrigin = origin || "*";
 
   if (request.method === "OPTIONS") {
     const preflightHeaders = new Headers();
