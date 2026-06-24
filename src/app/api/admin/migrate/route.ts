@@ -187,11 +187,24 @@ export async function POST(req: Request) {
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMPTZ DEFAULT now()
       );
+
+      -- Fresher resources table
+      CREATE TABLE IF NOT EXISTS fresher_resources (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        url TEXT NOT NULL,
+        icon TEXT DEFAULT 'ExternalLink',
+        sort_order INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
     `;
 
     await pool.query(sql);
 
-    return NextResponse.json({ success: true, message: 'All tables created: buses, papers_archive, qbank_questions, qbank_topics, qbank_question_topics' });
+    return NextResponse.json({ success: true, message: 'All tables created: buses, papers_archive, qbank_questions, qbank_topics, qbank_question_topics, fresher_resources' });
   } catch (error: any) {
     console.error('Migration failed:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
