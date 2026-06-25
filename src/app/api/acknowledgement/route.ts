@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseAcknowledgement } from "@/lib/parsers/acknowledgement";
 
 export async function POST(req: Request) {
   try {
@@ -26,8 +26,8 @@ export async function POST(req: Request) {
       }
     );
 
-    const parsed = parseVtopHtml(resp.data);
-    return NextResponse.json({ success: true, ...parsed });
+    const data = parseAcknowledgement(resp.data);
+    return NextResponse.json({ success: true, ...data });
   } catch (err: any) {
     console.error("acknowledgement error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

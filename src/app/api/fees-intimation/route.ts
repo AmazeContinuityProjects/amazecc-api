@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseFeesIntimation } from "@/lib/parsers/fees-intimation";
 
 export async function POST(req: Request) {
   try {
@@ -24,7 +24,8 @@ export async function POST(req: Request) {
         },
       }
     );
-    return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
+    const data = parseFeesIntimation(resp.data);
+    return NextResponse.json({ success: true, ...data });
   } catch (err: any) {
     console.error("fees-intimation error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

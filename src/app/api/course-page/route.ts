@@ -2,52 +2,24 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
 import { parseCoursePage } from "@/lib/parsers/course-page";
-
-/**
- * @openapi
- * /api/course-page:
- *   post:
- *     tags:
- *       - Course Page Info
- *     summary: POST endpoint for /api/course-page
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               cookies:
- *                 type: string
- *               authorizedID:
- *                 type: string
- *               csrf:
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *       400:
- *         description: Bad Request
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal Server Error
- */
+import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 
 export async function POST(req: Request) {
   try {
-    const { cookies, authorizedID, csrf } = await req.json().catch(() => ({}));
+    const { cookies, authorizedID, csrf, formData } = await req.json().catch(() => ({}));
     const cookieHeader = Array.isArray(cookies) ? cookies.join("; ") : cookies;
     if (!csrf || !authorizedID) {
       return NextResponse.json({ error: "Missing csrf or authorizedID" }, { status: 400 });
     }
 
     const client = VTOPClient();
-    const resp = await client.post(
+    const baseHeaders = {
+      Cookie: cookieHeader,
+      "Content-Type": "application/x-www-form-urlencoded",
+      Referer: "https://vtopcc.vit.ac.in/vtop/academics/common/StudentCoursePage",
+    };
+
+    const pageResp = await client.post(
       "/vtop/academics/common/StudentCoursePage",
       new URLSearchParams({
         verifyMenu: "true",
@@ -55,16 +27,86 @@ export async function POST(req: Request) {
         _csrf: csrf,
         nocache: Date.now().toString(),
       }).toString(),
-      {
-        headers: {
-          Cookie: cookieHeader,
-          "Content-Type": "application/x-www-form-urlencoded",
-          Referer: "https://vtopcc.vit.ac.in/vtop/open/page",
-        },
-      }
+      { headers: baseHeaders }
     );
 
-    const data = parseCoursePage(resp.data);
+    if (formData) {
+      const { semesterSubId, courseCode, slotId, faculty } = formData;
+      const ts = Date.now().toString();
+
+      let ajaxUrl: string;
+      let ajaxParams: Record<string, string>;
+
+      if (formData.viewDetail) {
+        ajaxUrl = "/vtop/processViewStudentCourseDetail";
+        ajaxParams = {
+          _csrf: csrf,
+          semSubId: formData.semSubId,
+          erpId: formData.erpId,
+          classId: formData.classId,
+          authorizedID,
+          x: ts,
+        };
+      } else if (semesterSubId && !courseCode) {
+        ajaxUrl = "/vtop/getCourseForCoursePage";
+        ajaxParams = {
+          _csrf: csrf,
+          paramReturnId: "getCourseForCoursePage",
+          semSubId: semesterSubId,
+          authorizedID,
+          x: ts,
+        };
+      } else if (courseCode && !slotId) {
+        ajaxUrl = "/vtop/getSlotIdForCoursePage";
+        ajaxParams = {
+          _csrf: csrf,
+          classId: courseCode,
+          praType: "source",
+          paramReturnId: "getSlotIdForCoursePage",
+          semSubId: semesterSubId,
+          authorizedID,
+          x: ts,
+        };
+      } else if (slotId && !faculty) {
+        ajaxUrl = "/vtop/getFacultyForCoursePage";
+        ajaxParams = {
+          _csrf: csrf,
+          classId: courseCode,
+          slotId,
+          praType: "source",
+          paramReturnId: "getFacultyForCoursePage",
+          semSubId: semesterSubId,
+          authorizedID,
+          x: ts,
+        };
+      } else if (faculty) {
+        ajaxUrl = "/vtop/getCourseDetailsForCoursePage";
+        ajaxParams = {
+          _csrf: csrf,
+          classId: courseCode,
+          slotId,
+          faculty,
+          praType: "source",
+          paramReturnId: "getCourseDetailsForCoursePage",
+          semSubId: semesterSubId,
+          authorizedID,
+          x: ts,
+        };
+      } else {
+        return NextResponse.json({ error: "Invalid formData" }, { status: 400 });
+      }
+
+      const dataResp = await client.post(
+        ajaxUrl,
+        new URLSearchParams(ajaxParams).toString(),
+        { headers: baseHeaders }
+      );
+
+      const parsed = parseVtopHtml(dataResp.data);
+      return NextResponse.json({ success: true, results: parsed });
+    }
+
+    const data = parseCoursePage(pageResp.data);
     return NextResponse.json({
       success: true,
       ...data,

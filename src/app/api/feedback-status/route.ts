@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseFeedbackStatus } from "@/lib/parsers/feedback-status";
 
 export async function POST(req: Request) {
   try {
@@ -28,7 +28,8 @@ export async function POST(req: Request) {
           },
         }
       );
-      return NextResponse.json({ success: true, semesterId, ...parseVtopHtml(resp.data) });
+      const semesterData = parseFeedbackStatus(resp.data);
+      return NextResponse.json({ success: true, semesterId, ...semesterData });
     }
     const resp = await client.post(
       "/vtop/academics/common/FeedBackStatusStudent",
@@ -43,7 +44,8 @@ export async function POST(req: Request) {
         },
       }
     );
-    return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
+    const data = parseFeedbackStatus(resp.data);
+    return NextResponse.json({ success: true, ...data });
   } catch (err: any) {
     console.error("feedback-status error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

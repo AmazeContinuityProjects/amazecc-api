@@ -24,7 +24,13 @@ export async function POST(req: Request) {
         },
       }
     );
-    return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
+    const parsed = parseVtopHtml(resp.data);
+    const hasApaar = parsed?.keyValuePairs && Object.keys(parsed.keyValuePairs).length > 0
+      || parsed?.tables && parsed.tables.some(t => t.rows.length > 0)
+      || Object.values(parsed?.formFields || {}).some(v => v && v.length > 4 && v !== '-' && !v.startsWith('0'))
+      || /\.pdf/i.test(resp.data)
+      || /already uploaded|submitted successfully/i.test(resp.data);
+    return NextResponse.json({ success: true, hasApaar, ...parsed });
   } catch (err: any) {
     console.error("apaarid error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
