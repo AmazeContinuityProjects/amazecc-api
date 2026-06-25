@@ -24,7 +24,7 @@ export function parseCirculars(html: string): CircularsData {
     ul.children("li").each((_i: number, li: any) => {
       const $li = $(li);
       const span = $li.children("span").first();
-      const link = $li.find("a").first();
+      const link = $li.children("a").first();
       const childUl = $li.children("ul");
 
       if (link.length) {

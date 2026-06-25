@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseBonafide } from "@/lib/parsers/bonafide";
 
 export async function POST(req: Request) {
   try {
@@ -24,7 +24,8 @@ export async function POST(req: Request) {
         },
       }
     );
-    return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
+    const data = parseBonafide(resp.data);
+    return NextResponse.json({ success: true, ...data });
   } catch (err: any) {
     console.error("bonafide error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

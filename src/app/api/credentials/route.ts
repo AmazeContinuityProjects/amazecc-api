@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseCredentials } from "@/lib/parsers/credentials";
 
 /**
  * @openapi
@@ -64,10 +64,10 @@ export async function POST(req: Request) {
       }
     );
 
-    const parsed = parseVtopHtml(resp.data);
+    const data = parseCredentials(resp.data);
     return NextResponse.json({
       success: true,
-      ...parsed,
+      ...data,
     });
   } catch (err: any) {
     console.error("credentials error:", err.message);

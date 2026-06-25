@@ -1,13 +1,43 @@
 # VTOP API Route Conversion Tracker
 
 ## Status Legend
-- **PARSED** — Already has a structured parser (dedicated or auto-parse)
+- **PARSED** — Has dedicated parser integrated into route
 - **WRITE** — Write/submission endpoint (needs form POST capability)
 - **FORM** — Form shell with dropdowns; use auto-parse + AJAX data endpoint
 - **TABLE** — Has embedded data tables; needs dedicated parser
 - **STATIC** — Static reference page (no data tables, no dropdowns)
+- **raw** — Not yet converted (uses generic auto-parse)
 
 ---
+
+## ✅ Routes with Dedicated Parsers Integrated (17 routes)
+
+| Route | Parser | Notes |
+|-------|--------|-------|
+| ~achievements | `parseAchievements` | Dedicated parser |
+| ~acknowledgement | `parseAcknowledgement` | Dedicated parser |
+| ~bank-info | `parseBankInfo` | Dedicated parser |
+| ~biometric | `parseBiometric` | Dedicated parser |
+| ~bonafide | `parseBonafide` | Dedicated parser |
+| ~change-password | `parseChangePassword` | Dedicated parser |
+| ~circulars | `parseCirculars` | Dedicated parser |
+| ~class-messages | `parseClassMessages` | Dedicated parser |
+| ~compre-exam | `parseCompreExam` | Dedicated parser |
+| ~contact | `parseContact` | Dedicated parser |
+| ~course-page | `parseCoursePage` | Dedicated parser (AJAX steps use auto-parse) |
+| ~credentials | `parseCredentials` | Dedicated parser |
+| ~curriculum | `parseCurriculum` | Dedicated parser |
+| ~dayboarder | `parseDayboarder` | Dedicated parser |
+| ~extra-curricular | `parseExtraCurricular` | Dedicated parser |
+| ~faculty-info | `parseFacultyInfo` | Dedicated parser (search step uses auto-parse) |
+| ~faq | `parseFaq` | Dedicated parser |
+| ~feedback-status | `parseFeedbackStatus` | Dedicated parser |
+| ~fees-intimation | `parseFeesIntimation` | Dedicated parser |
+| ~login-history | `parseLoginHistory` | Dedicated parser |
+| ~payment-receipts | `parsePaymentReceipts` | Dedicated parser |
+| ~payments | `parsePayments` | Dedicated parser |
+| ~proctor | `parseProctor` | Dedicated parser |
+| ~wallet | `parseWallet` | Dedicated parser |
 
 ## examinations/ (15 routes)
 
@@ -122,7 +152,7 @@
 
 | Route | Type | Status | Notes |
 |-------|------|--------|-------|
-| ~bonafide | FORM | raw | (not analyzed yet) |
+| ~bonafide | FORM | parsed | `parseBonafide` integrated |
 | ~facility-reg | FORM | raw | (not analyzed yet) |
 | ~ir-outbound | FORM | raw | (not analyzed yet) |
 | ~library-keys | FORM | raw | (not analyzed yet) |
@@ -136,6 +166,12 @@
 ---
 
 ## Conversion Priority
+
+### ✅ Completed — Dedicated parser integrated
+1. acknowledgement, bank-info, biometric, bonafide, change-password, credentials, dayboarder
+2. extra-curricular, feedback-status, fees-intimation, payment-receipts
+3. achievements, circulars, class-messages, compre-exam, contact, course-page, curriculum
+4. faculty-info, faq, login-history, payments, proctor, wallet
 
 ### P0 — Has data tables (write dedicated parser)
 1. arrear-schedule — exam schedule table
@@ -179,9 +215,7 @@
 4. online-transfer, fdp-certificate, fdp-registration
 
 ### P4 — Not analyzed yet (need HTML dump)
-1. bonafide, facility-reg, ir-outbound, library-keys, library-scanning
+1. facility-reg, ir-outbound, library-keys, library-scanning
 2. mdp, outgoing-report, pat-reg, student-withdraw, course-completion
 3. ept-schedule, online-exam-attempt, question-preview
-4. hostel-leave, bank-info, biometric, change-password
-5. dayboarder, extra-curricular, feedback-status, fees-intimation
-6. payment-receipts, qbank, regulation, sap-project
+4. hostel-leave, qbank, regulation, sap-project

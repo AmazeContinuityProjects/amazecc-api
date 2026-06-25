@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
 import { parsePaymentReceipts } from "@/lib/parsers/payment-receipts";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 
 export async function POST(req: Request) {
   try {
@@ -28,7 +27,7 @@ export async function POST(req: Request) {
       }
     );
     if (applNo) {
-      const data = parseVtopHtml(resp.data);
+      const data = parsePaymentReceipts(resp.data);
       return NextResponse.json({ success: true, ...data });
     }
     const data = parsePaymentReceipts(resp.data);

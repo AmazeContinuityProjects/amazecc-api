@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseChangePassword } from "@/lib/parsers/change-password";
 
 export async function POST(req: Request) {
   try {
@@ -28,7 +28,8 @@ export async function POST(req: Request) {
         }).toString(),
         { headers }
       );
-      return NextResponse.json({ success: true, ...parseVtopHtml(submitResp.data) });
+      const submitData = parseChangePassword(submitResp.data);
+      return NextResponse.json({ success: true, ...submitData });
     }
 
     const resp = await client.post(
@@ -38,7 +39,8 @@ export async function POST(req: Request) {
       }).toString(),
       { headers }
     );
-    return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
+    const data = parseChangePassword(resp.data);
+    return NextResponse.json({ success: true, ...data });
   } catch (err: any) {
     console.error("change-password error:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
