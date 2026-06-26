@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const pool = getDbPool();
     const { rows } = await pool.query(
-      `SELECT id, title, description, url, icon, sort_order
+      `SELECT id, title, description, url, icon, sort_order, type, content
        FROM fresher_resources
        WHERE is_active = TRUE
        ORDER BY sort_order ASC, id ASC`

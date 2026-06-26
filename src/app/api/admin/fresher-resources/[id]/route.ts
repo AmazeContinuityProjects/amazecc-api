@@ -16,7 +16,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     }
 
     const fields = await req.json();
-    const allowed = ['title', 'description', 'url', 'icon', 'sort_order', 'is_active'];
+    const allowed = ['title', 'description', 'url', 'icon', 'sort_order', 'is_active', 'type', 'content'];
     const setClauses: string[] = [];
     const values: any[] = [];
     let idx = 1;

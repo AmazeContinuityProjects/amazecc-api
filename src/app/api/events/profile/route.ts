@@ -83,17 +83,32 @@ export async function POST(req: Request) {
                         let certificateLink = null;
                         let payNowLink = null;
                         let payLaterLink = null;
+                        let eid = '';
 
                         $(row).find('td').slice(7).find('button, a, input').each((_, el) => {
                             const text = $(el).text().trim().toLowerCase() || $(el).attr('value')?.toLowerCase() || '';
-                            const onclick = $(el).attr('onclick');
-                            const href = $(el).attr('href');
+                            const onclick = $(el).attr('onclick') || '';
+                            const href = $(el).attr('href') || '';
+                            
+                            // Extract eid from onclick/href patterns
+                            const eidMatch = onclick.match(/getRecepit\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
+                            if (eidMatch) {
+                                eid = eidMatch[1];
+                            }
+                            if (!eid) {
+                                const hrefMatch = href.match(/studentRecepit\/([^/]+)/);
+                                if (hrefMatch) eid = hrefMatch[1];
+                            }
+                            if (!eid) {
+                                const payMatch = onclick.match(/paynow\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
+                                if (payMatch) eid = payMatch[1];
+                            }
                             
                             if (text.includes('receipt')) {
                                 if (href && href !== '#') {
                                     receiptLink = href;
-                                } else if (onclick && onclick.includes('getRecepit')) {
-                                    const match = onclick.match(/getRecepit\('([^']+)'\)/);
+                                } else if (onclick.includes('getRecepit')) {
+                                    const match = onclick.match(/getRecepit\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
                                     if (match) receiptLink = `/EventHub/studentRecepit/${match[1]}/`;
                                 }
                             }
@@ -103,10 +118,10 @@ export async function POST(req: Request) {
                                 if (action && action !== '#') certificateLink = action;
                             }
 
-                            if (text.includes('pay now') || (onclick && onclick.toLowerCase().includes('paynow'))) {
+                            if (text.includes('pay now') || onclick.toLowerCase().includes('paynow')) {
                                 const action = href || $(el).attr('formaction') || '';
                                 if (action && action !== '#') payNowLink = action;
-                                else if (onclick) {
+                                else {
                                     const match = onclick.match(/window\.location\.href\s*=\s*['"]([^'"]+)['"]/);
                                     if (match) payNowLink = match[1];
                                 }
@@ -120,6 +135,7 @@ export async function POST(req: Request) {
 
                         registeredEvents.push({
                             name: eventName,
+                            eid,
                             orderId,
                             date: eventDate,
                             time: eventTime,

@@ -20,8 +20,9 @@ export async function GET() {
         const extractedEvents: any[] = [];
 
         $('#events .card').each((i, card) => {
-            const title = $(card).find('.card-title span').first().text().trim();
-            const eid = $(card).find('button[name="eid"]').attr('value') || '';
+            const $card = $(card);
+            const title = $card.find('.card-title span').first().text().trim();
+            const eid = $card.find('button[name="eid"]').attr('value') || '';
 
             if (!title || !eid) return;
 
@@ -30,8 +31,28 @@ export async function GET() {
             let date = '';
             let location = '';
             let price = '';
+            let posterUrl = '';
 
-            $(card).find('div').each((j, div) => {
+            // Extract poster image: search raw card HTML for any image URL pattern
+            const cardInner = $card.html() || '';
+            const cardOuter = $.html($card) || $('<div>').append($card.clone()).html() || cardInner;
+            const searchHtml = cardOuter + cardInner;
+
+            const imgSrcMatch = searchHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (imgSrcMatch) posterUrl = imgSrcMatch[1];
+
+            if (!posterUrl) {
+                const bgMatch = searchHtml.match(/background(?:-image)?\s*:\s*url\(['"]?([^'")]+)['"]?\)/i);
+                if (bgMatch) posterUrl = bgMatch[1];
+            }
+
+            if (posterUrl && !posterUrl.startsWith('http') && !posterUrl.startsWith('data:')) {
+                posterUrl = posterUrl.startsWith('/')
+                    ? `https://eventhubcc.vit.ac.in${posterUrl}`
+                    : `https://eventhubcc.vit.ac.in/EventHub/${posterUrl}`;
+            }
+
+            $card.find('div').each((j, div) => {
                 const divHtml = $(div).html() || '';
                 const text = $(div).text().trim();
 
@@ -55,7 +76,8 @@ export async function GET() {
                 type,
                 date,
                 location,
-                price
+                price,
+                posterUrl
             });
         });
 
