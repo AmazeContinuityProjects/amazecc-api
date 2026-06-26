@@ -193,13 +193,33 @@ export async function POST(req: Request) {
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT DEFAULT '',
-        url TEXT NOT NULL,
+        url TEXT,
         icon TEXT DEFAULT 'ExternalLink',
         sort_order INT DEFAULT 0,
         is_active BOOLEAN DEFAULT TRUE,
+        type TEXT DEFAULT 'link' CHECK (type IN ('link', 'text', 'md')),
+        content TEXT DEFAULT '',
         created_at TIMESTAMPTZ DEFAULT now(),
         updated_at TIMESTAMPTZ DEFAULT now()
       );
+
+      -- Add new columns to existing table if they don't exist
+      DO $$ BEGIN
+        ALTER TABLE fresher_resources ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'link';
+      EXCEPTION WHEN duplicate_column THEN null; END $$;
+
+      DO $$ BEGIN
+        ALTER TABLE fresher_resources ADD COLUMN IF NOT EXISTS content TEXT DEFAULT '';
+      EXCEPTION WHEN duplicate_column THEN null; END $$;
+
+      DO $$ BEGIN
+        ALTER TABLE fresher_resources ALTER COLUMN url DROP NOT NULL;
+      EXCEPTION WHEN others THEN null; END $$;
+
+      DO $$ BEGIN
+        ALTER TABLE fresher_resources DROP CONSTRAINT IF EXISTS fresher_resources_type_check;
+        ALTER TABLE fresher_resources ADD CONSTRAINT fresher_resources_type_check CHECK (type IN ('link', 'text', 'md'));
+      EXCEPTION WHEN others THEN null; END $$;
     `;
 
     await pool.query(sql);
