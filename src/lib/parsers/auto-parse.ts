@@ -52,29 +52,58 @@ export function parseVtopHtml(html: string): ParsedVtopPage {
   $("table").each((ti, table) => {
     const $table = $(table);
     const caption = $table.find("caption").first().text().trim() || undefined;
-    const headers: string[] = [];
+    let headers: string[] = [];
     const rows: Record<string, string>[] = [];
 
-    const $headerRow = $table.find("tr").first();
-    $headerRow.find("th").each((_, cell) => {
-      const text = $(cell).text().trim();
-      if (text) headers.push(text);
+    // Find the header row: Look for the first row with multiple <th> or multiple <td> without massive colspans
+    let $headerRow: any = null;
+    let headerRowIndex = 0;
+    
+    $table.find("tr").each((idx: number, tr: any) => {
+      if ($headerRow) return;
+      const ths = $(tr).find("th");
+      const tds = $(tr).find("td");
+      
+      // If it has actual <th> tags, it's likely the header
+      if (ths.length > 1) {
+        $headerRow = $(tr);
+        headerRowIndex = idx;
+        return;
+      }
+      
+      // Otherwise, if it has multiple <td>s and isn't just a title row (like <td colspan="10">)
+      if (tds.length > 1) {
+        let hasLargeColspan = false;
+        tds.each((_: number, td: any) => {
+          if (parseInt($(td).attr("colspan") || "1", 10) > 3) hasLargeColspan = true;
+        });
+        if (!hasLargeColspan) {
+          $headerRow = $(tr);
+          headerRowIndex = idx;
+          return;
+        }
+      }
     });
 
-    if (headers.length === 0) {
-      $headerRow.find("td").each((_, cell) => {
-        const text = $(cell).text().trim();
-        if (text && $(cell).attr("colspan") !== "13") headers.push(text);
-      });
-    }
+    if (!$headerRow) return; // No valid header row found
 
-    $table.find("tr").slice(1).each((_, row) => {
+    $headerRow.find("th, td").each((_: number, cell: any) => {
+      const text = $(cell).text().trim().replace(/\s+/g, " ");
+      if (text) headers.push(text);
+      else headers.push(`col${headers.length}`);
+    });
+
+    $table.find("tr").slice(headerRowIndex + 1).each((_: number, row: any) => {
       const rowData: Record<string, string> = {};
-      $(row).find("td").each((i, cell) => {
-        const text = $(cell).text().trim();
-        if (text) rowData[headers[i] || `col${i}`] = text;
+      let hasData = false;
+      $(row).find("td").each((i: number, cell: any) => {
+        const text = $(cell).text().trim().replace(/\s+/g, " ");
+        if (text) {
+          rowData[headers[i] || `col${i}`] = text;
+          hasData = true;
+        }
       });
-      if (Object.keys(rowData).length > 0) rows.push(rowData);
+      if (hasData) rows.push(rowData);
     });
 
     if (headers.length > 0 && rows.length > 0) {
