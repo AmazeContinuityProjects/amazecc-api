@@ -38,6 +38,14 @@ export async function POST(req: Request) {
       let ajaxParams: Record<string, string>;
 
       if (formData.viewDetail) {
+        if (formData.semSubId) {
+          // Prime session for past semester sequentially
+          await client.post("/vtop/getCourseForCoursePage", new URLSearchParams({ _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: formData.semSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+          if (formData.slotId && formData.faculty) {
+            await client.post("/vtop/getSlotIdForCoursePage", new URLSearchParams({ _csrf: csrf, classId: formData.classId, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: formData.semSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+            await client.post("/vtop/getFacultyForCoursePage", new URLSearchParams({ _csrf: csrf, classId: formData.classId, slotId: formData.slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: formData.semSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+          }
+        }
         ajaxUrl = "/vtop/processViewStudentCourseDetail";
         ajaxParams = {
           _csrf: csrf,
@@ -80,6 +88,12 @@ export async function POST(req: Request) {
           x: ts,
         };
       } else if (faculty) {
+        if (semesterSubId) {
+          // Prime session sequentially
+          await client.post("/vtop/getCourseForCoursePage", new URLSearchParams({ _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: semesterSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+          await client.post("/vtop/getSlotIdForCoursePage", new URLSearchParams({ _csrf: csrf, classId: courseCode, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: semesterSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+          await client.post("/vtop/getFacultyForCoursePage", new URLSearchParams({ _csrf: csrf, classId: courseCode, slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: semesterSubId, authorizedID, x: ts }).toString(), { headers: baseHeaders });
+        }
         ajaxUrl = "/vtop/getCourseDetailsForCoursePage";
         ajaxParams = {
           _csrf: csrf,
