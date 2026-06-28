@@ -143,27 +143,31 @@ export async function POST(req: Request) {
                     }
                 }
 
-                const detailTable = $$$("table.table-striped")
-                    .filter((_, el) => $$$(el).text().includes("Mark Title"))
-                    .first();
+                const detailTables = $$$("table.table-striped")
+                    .filter((_, el) => $$$(el).text().includes("Mark Title"));
 
                 const breakdown: any[] = [];
 
-                detailTable.find("tr").slice(2, -1).each((_, row) => {
-                    const tds = $$$(row).find("td, output");
-                    if (tds.length < 7) return;
+                detailTables.each((tIndex, tableEl) => {
+                    const type = tIndex === 0 ? "Theory" : tIndex === 1 ? "Lab" : `Component ${tIndex + 1}`;
+                    
+                    $$$(tableEl).find("tr").slice(2, -1).each((_, row) => {
+                        const tds = $$$(row).find("td, output");
+                        if (tds.length < 7) return;
 
-                    const clean = (i: number) =>
-                        $$$(tds[i]).text().replace(/\s+/g, " ").trim();
+                        const clean = (i: number) =>
+                            $$$(tds[i]).text().replace(/\s+/g, " ").trim();
 
-                    breakdown.push({
-                        slNo: clean(0),
-                        component: clean(2),
-                        maxMark: clean(4),
-                        weightagePercent: clean(6),
-                        status: clean(8),
-                        scoredMark: clean(10),
-                        weightageMark: clean(12),
+                        breakdown.push({
+                            slNo: clean(0),
+                            component: clean(2),
+                            maxMark: clean(4),
+                            weightagePercent: clean(6),
+                            status: clean(8),
+                            scoredMark: clean(10),
+                            weightageMark: clean(12),
+                            type: type
+                        });
                     });
                 });
 
