@@ -1,3 +1,47 @@
+/**
+ * @openapi
+ * /api/koha/search:
+ *   get:
+ *     tags:
+ *       - Koha
+ *     summary: Auto-generated GET endpoint for /api/koha/search
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idx:
+ *                 type: string
+ *               q:
+ *                 type: string
+ *               count:
+ *                 type: string
+ *               offset:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 query: "sample_value"
+ *                 offset: "sample_value"
+ *                 count: "sample_value"
+ *                 books: "sample_value"
+ *                 total: "sample_value"
+ *                 success: true
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 import https from "https";

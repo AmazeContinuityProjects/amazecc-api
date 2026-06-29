@@ -1,3 +1,37 @@
+/**
+ * @openapi
+ * /api/koha/availability:
+ *   get:
+ *     tags:
+ *       - Koha
+ *     summary: Auto-generated GET endpoint for /api/koha/availability
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               biblionumbers:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 items: "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import https from "https";
 

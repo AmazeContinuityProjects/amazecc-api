@@ -1,3 +1,39 @@
+/**
+ * @openapi
+ * /api/curriculum/download:
+ *   post:
+ *     tags:
+ *       - Curriculum
+ *     summary: Auto-generated POST endpoint for /api/curriculum/download
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               authorizedID:
+ *                 type: string
+ *               cookies:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

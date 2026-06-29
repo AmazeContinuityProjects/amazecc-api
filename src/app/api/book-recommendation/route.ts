@@ -1,3 +1,44 @@
+/**
+ * @openapi
+ * /api/book-recommendation:
+ *   post:
+ *     tags:
+ *       - Book Recommendation
+ *     summary: Auto-generated POST endpoint for /api/book-recommendation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               formData:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               cookies:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 parseVtopHtml(submitResp.data): "sample_value"
+ *                 success: true
+ *                 parseVtopHtml(resp.data): "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";

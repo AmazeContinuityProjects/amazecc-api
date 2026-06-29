@@ -1,3 +1,37 @@
+/**
+ * @openapi
+ * /api/qbank/admin/queue:
+ *   get:
+ *     tags:
+ *       - Qbank
+ *     summary: Auto-generated GET endpoint for /api/qbank/admin/queue
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 data: "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/auth';

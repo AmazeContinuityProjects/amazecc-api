@@ -1,3 +1,39 @@
+/**
+ * @openapi
+ * /api/events/profile:
+ *   post:
+ *     tags:
+ *       - Events
+ *     summary: Auto-generated POST endpoint for /api/events/profile
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cookies:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 

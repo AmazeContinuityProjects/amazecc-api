@@ -114,12 +114,12 @@ export async function POST(req: Request) {
 
         // 3. Check if user exists in admin_users table
         let role: 'superadmin' | 'admin' = 'admin';
-        let permissions = ['dashboard', 'qbank', 'buses', 'push'];
+        let permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories'];
 
         if (isSuperadmin) {
             // Superadmin from env var - full access
             role = 'superadmin';
-            permissions = ['dashboard', 'qbank', 'buses', 'push', 'users'];
+            permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users'];
             
             // Ensure superadmin exists in database
             try {

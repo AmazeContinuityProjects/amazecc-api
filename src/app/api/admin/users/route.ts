@@ -1,3 +1,41 @@
+/**
+ * @openapi
+ * /api/admin/users:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Auto-generated POST endpoint for /api/admin/users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cookies:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 users: "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/auth';

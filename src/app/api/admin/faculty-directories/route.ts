@@ -1,0 +1,87 @@
+import { NextResponse } from 'next/server';
+import { getDbPool } from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request) {
+  try {
+    const pool = getDbPool();
+    const { rows } = await pool.query(
+      `SELECT id, school_name, url FROM faculty_directory_urls ORDER BY school_name ASC`
+    );
+    return NextResponse.json({ success: true, directories: rows });
+  } catch (error: any) {
+    console.error('admin/faculty-directories GET error:', error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { id, school_name, url } = await req.json();
+    if (!id || !school_name || !url) {
+      return NextResponse.json({ success: false, error: 'id, school_name, and url are required' }, { status: 400 });
+    }
+
+    const pool = getDbPool();
+    await pool.query(
+      `INSERT INTO faculty_directory_urls (id, school_name, url) VALUES ($1, $2, $3)`,
+      [id, school_name, url]
+    );
+    return NextResponse.json({ success: true, message: 'Directory added successfully' });
+  } catch (error: any) {
+    if (error.code === '23505') { // Unique violation
+        return NextResponse.json({ success: false, error: 'A school with this ID already exists' }, { status: 400 });
+    }
+    console.error('admin/faculty-directories POST error:', error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const { id, school_name, url } = await req.json();
+    if (!id || !school_name || !url) {
+      return NextResponse.json({ success: false, error: 'id, school_name, and url are required' }, { status: 400 });
+    }
+
+    const pool = getDbPool();
+    const { rowCount } = await pool.query(
+      `UPDATE faculty_directory_urls SET school_name = $2, url = $3 WHERE id = $1`,
+      [id, school_name, url]
+    );
+
+    if (rowCount === 0) {
+      return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Directory updated successfully' });
+  } catch (error: any) {
+    console.error('admin/faculty-directories PUT error:', error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { id } = await req.json();
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
+    }
+
+    const pool = getDbPool();
+    const { rowCount } = await pool.query(
+      `DELETE FROM faculty_directory_urls WHERE id = $1`,
+      [id]
+    );
+
+    if (rowCount === 0) {
+      return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Directory deleted successfully' });
+  } catch (error: any) {
+    console.error('admin/faculty-directories DELETE error:', error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
