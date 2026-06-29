@@ -1,3 +1,35 @@
+/**
+ * @openapi
+ * /api/events:
+ *   get:
+ *     tags:
+ *       - Events
+ *     summary: Auto-generated GET endpoint for /api/events
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               {}:
+ *                 type: object
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 

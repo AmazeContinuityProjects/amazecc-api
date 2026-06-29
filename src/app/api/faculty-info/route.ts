@@ -1,3 +1,44 @@
+/**
+ * @openapi
+ * /api/faculty-info:
+ *   post:
+ *     tags:
+ *       - Faculty Info
+ *     summary: Auto-generated POST endpoint for /api/faculty-info
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               searchTerm:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               cookies:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 data: "sample_value"
+ *                 results: "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
@@ -37,18 +78,21 @@ export async function POST(req: Request) {
       });
 
       const searchResp = await client.post(
-        "/vtop/hrms/employeeSearchForStudent",
+        "/vtop/hrms/EmployeeSearchForStudent",
         new URLSearchParams({
-          ...hiddenFields,
-          authorizedID,
           _csrf: csrf,
-          searchEmployee: searchTerm,
-          x: Date.now().toString(),
+          authorizedID,
+          x: new Date().toUTCString(),
+          empId: searchTerm.toUpperCase(),
         }).toString(),
         { headers }
       );
 
       const parsed = parseVtopHtml(searchResp.data);
+      
+      // DEBUG: write HTML to file
+      require("fs").writeFileSync("c:/Users/sugee/Documents/Testing/vtop-faculty-search-debug.html", searchResp.data);
+
       return NextResponse.json({ success: true, results: parsed });
     }
 

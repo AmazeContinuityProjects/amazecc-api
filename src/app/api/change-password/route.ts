@@ -1,3 +1,48 @@
+/**
+ * @openapi
+ * /api/change-password:
+ *   post:
+ *     tags:
+ *       - Change Password
+ *     summary: Auto-generated POST endpoint for /api/change-password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               csrf:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               oldPassword:
+ *                 type: string
+ *               cookies:
+ *                 type: string
+ *               confirmNewPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 submitData: "sample_value"
+ *                 success: true
+ *                 data: "sample_value"
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";

@@ -1,3 +1,48 @@
+/**
+ * @openapi
+ * /api/arrear-paper-see:
+ *   post:
+ *     tags:
+ *       - Arrear Paper See
+ *     summary: Auto-generated POST endpoint for /api/arrear-paper-see
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               serviceType:
+ *                 type: string
+ *               csrf:
+ *                 type: string
+ *               authorizedID:
+ *                 type: string
+ *               cookies:
+ *                 type: string
+ *               semesterId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 serviceType: "sample_value"
+ *                 parseVtopHtml(pageResp.data): "sample_value"
+ *                 parseVtopHtml(dataResp.data): "sample_value"
+ *                 semesterId: "sample_value"
+ *                 success: true
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";

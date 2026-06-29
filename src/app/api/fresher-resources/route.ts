@@ -1,3 +1,37 @@
+/**
+ * @openapi
+ * /api/fresher-resources:
+ *   get:
+ *     tags:
+ *       - Fresher Resources
+ *     summary: Auto-generated GET endpoint for /api/fresher-resources
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               {}:
+ *                 type: object
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 resources: "sample_value"
+ *                 success: true
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
+
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 
