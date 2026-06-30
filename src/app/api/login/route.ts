@@ -4,6 +4,8 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import { LoginRequestBody } from "@/types/data/login";
 import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
 
+import { getDbPool } from "@/lib/db";
+import { signClubToken } from "@/lib/clubAuth";
 import { getCaptcha } from "../login/captcha";
 import { solveCaptcha } from "../login/solveCaptcha";
 import * as cheerio from "cheerio";
@@ -116,11 +118,37 @@ export async function POST(req: Request) {
 
         const $ = cheerio.load(dashboardHtml);
         const new_csrf: any = $('input[name="_csrf"]').val();
-        const authorizedID: any =
+        let authorizedID: any =
             $('#authorizedID').val() || $('input[name="authorizedid"]').val();
+
+        if (!authorizedID) {
+            authorizedID = username.toUpperCase();
+        }
 
         // Spawn background sync for VTOP Clubs so we always have the latest active list
         syncClubsBackground(allCookies, new_csrf, authorizedID);
+
+        // Check if user is a club representative
+        let clubToken = undefined;
+        let clubRoles = [];
+        try {
+            const pool = getDbPool();
+            const { rows } = await pool.query(
+                'SELECT club_id, role FROM club_representatives WHERE vtop_id = $1',
+                [authorizedID]
+            );
+            
+            if (rows.length > 0) {
+                // If they represent multiple clubs, for now we will just issue a token for the first one, or better yet, maybe we should issue a token that contains an array of clubs they represent.
+                // For simplicity as a v1, let's just use the first club they represent for the JWT club_id. 
+                // Or we can issue a token containing their vtop_id, and let the frontend select the club context. 
+                // Wait! The user's spec says "appointing a representative". Let's issue the token for the first club, and they can manage that club.
+                clubToken = signClubToken(authorizedID, rows[0].club_id, rows[0].role);
+                clubRoles = rows;
+            }
+        } catch (dbErr) {
+            console.error("Failed to fetch club roles for login:", dbErr);
+        }
 
         return NextResponse.json({
             success: true,
@@ -128,6 +156,8 @@ export async function POST(req: Request) {
             cookies: allCookies,
             csrf: new_csrf,
             authorizedID,
+            clubToken, // Will be undefined if not a rep
+            clubRoles, // Provide the roles they have
         }, { status: 200 });
 
     } catch (err: any) {
