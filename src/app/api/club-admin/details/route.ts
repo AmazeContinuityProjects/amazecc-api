@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     // Check if exists
     const { rowCount } = await pool.query('SELECT club_id FROM club_details WHERE club_id = $1', [club_id]);
     
-    if (rowCount > 0) {
+    if (rowCount && rowCount > 0) {
       await pool.query(
         `UPDATE club_details 
          SET mission = $1, description = $2, hiring_process = $3, website = $4, recruitment_link = $5, instagram = $6, whatsapp = $7, poc = $8, updated_at = CURRENT_TIMESTAMP
