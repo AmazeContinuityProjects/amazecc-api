@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncClubsBackground } from "@/lib/syncClubs";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { LoginRequestBody } from "@/types/data/login";
 import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
@@ -117,6 +118,9 @@ export async function POST(req: Request) {
         const new_csrf: any = $('input[name="_csrf"]').val();
         const authorizedID: any =
             $('#authorizedID').val() || $('input[name="authorizedid"]').val();
+
+        // Spawn background sync for VTOP Clubs so we always have the latest active list
+        syncClubsBackground(allCookies, new_csrf, authorizedID);
 
         return NextResponse.json({
             success: true,
