@@ -86,9 +86,10 @@ export async function PATCH(req: Request, context: RouteContext) {
       );
     }
 
+    const body = await req.json();
+
     // Prevent removing last superadmin
     if (existing[0].role === 'superadmin') {
-      const body = await req.json();
       if (body.role && body.role !== 'superadmin') {
         const { rows: superadminCount } = await pool.query(
           'SELECT COUNT(*) as count FROM admin_users WHERE role = $1',
@@ -103,7 +104,6 @@ export async function PATCH(req: Request, context: RouteContext) {
       }
     }
 
-    const body = await req.json();
     const updates: string[] = [];
     const values: any[] = [];
     let paramIndex = 1;
@@ -159,8 +159,9 @@ export async function PATCH(req: Request, context: RouteContext) {
     return NextResponse.json({ success: true, user: updated[0] });
   } catch (error: any) {
     console.error('Failed to update user:', error);
+    console.error('Failed to update user:', error);
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      { success: false, error: error.message || "Internal server error" },
       { status: 500 }
     );
   }
