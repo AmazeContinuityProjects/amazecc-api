@@ -51,7 +51,7 @@ export async function PUT(req: Request) {
       [id, school_name, url]
     );
 
-    if (rowCount === 0) {
+    if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
     }
 
@@ -75,7 +75,7 @@ export async function DELETE(req: Request) {
       [id]
     );
 
-    if (rowCount === 0) {
+    if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
     }
 
