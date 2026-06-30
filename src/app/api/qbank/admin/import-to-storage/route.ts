@@ -1,18 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { createClient } from '@supabase/supabase-js';
 import { requireAdminAuth } from '@/lib/auth';
-import { v4 as uuidv4 } from 'uuid';
+import { s3 } from '@/lib/clients/s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import axios from 'axios';
 
 export const dynamic = 'force-dynamic';
-
-function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key);
-}
 
 function getDirectDownloadUrl(url: string): string {
   if (url.includes('drive.google.com')) {
@@ -73,33 +66,26 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(response.data);
     const contentType = String(response.headers['content-type'] || 'application/pdf');
 
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Supabase storage is not configured on the server.' 
-      }, { status: 500 });
+    // Upload to Cloudflare R2
+    const key = `papers/${paperId}.pdf`;
+    try {
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: process.env.B2_BUCKET_NAME!,
+          Key: key,
+          Body: buffer,
+          ContentType: contentType,
+        })
+      );
+    } catch (uploadError: any) {
+      console.error('R2 storage upload error:', uploadError);
+      return NextResponse.json({ success: false, error: `Storage upload failed: ${uploadError.message}` }, { status: 500 });
     }
 
-    const fileExt = contentType.includes('pdf') ? 'pdf' : 'png';
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `papers/${fileName}`;
-
-    const { data, error: uploadError } = await supabase.storage
-      .from('qbank')
-      .upload(filePath, buffer, {
-        contentType,
-        upsert: true,
-      });
-
-    if (uploadError) {
-      console.error('Supabase storage upload error:', uploadError);
-      return NextResponse.json({ success: false, error: uploadError.message }, { status: 500 });
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('qbank')
-      .getPublicUrl(filePath);
+    // Construct the public download URL pointing back to our API
+    const proto = req.headers.get('x-forwarded-proto') || 'https';
+    const host = req.headers.get('host') || 'api.amazecc.com';
+    const publicUrl = `${proto}://${host}/api/qbank/papers/download/${paperId}`;
 
     await pool.query(
       `UPDATE papers_archive 

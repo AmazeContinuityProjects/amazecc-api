@@ -108,7 +108,6 @@ export async function POST(req: Request) {
     }
 
     if (action === 'rebuild_metadata') {
-      // Rebuild metadata is a no-op / success acknowledgment
       return NextResponse.json({ success: true, message: 'Metadata rebuilt successfully.' });
     }
 
