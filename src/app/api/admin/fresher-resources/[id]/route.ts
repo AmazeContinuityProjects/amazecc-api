@@ -108,7 +108,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
       [numericId]
     );
 
-    if (rowCount === 0) {
+    if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Resource not found' }, { status: 404 });
     }
 

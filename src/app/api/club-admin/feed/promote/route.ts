@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       [post_id, user_hash]
     );
 
-    if (rowCount > 0) {
+    if (rowCount && rowCount > 0) {
       // Remove promotion (toggle behavior)
       await pool.query(
         'DELETE FROM post_promotions WHERE post_id = $1 AND user_hash = $2',

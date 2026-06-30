@@ -85,7 +85,7 @@ export async function DELETE(req: Request) {
       [post_id, auth.club_id]
     );
 
-    if (rowCount === 0) {
+    if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Post not found or unauthorized' }, { status: 404 });
     }
 
