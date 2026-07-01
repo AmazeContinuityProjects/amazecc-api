@@ -7,8 +7,14 @@ if (!process.env.ADMIN_SECRET) {
 }
 const SECRET = process.env.ADMIN_SECRET;
 
+export interface ClubRole {
+    club_id: string;
+    role: string;
+}
+
 export interface ClubTokenPayload {
     vtop_id: string;
+    clubs: ClubRole[];
     club_id: string;
     role: string;
     exp: number;
@@ -28,11 +34,12 @@ function generateSignature(payload: string): string {
  * Signs a club representative token.
  * Format: base64(payload).signature
  */
-export function signClubToken(vtop_id: string, club_id: string, role: string = 'representative'): string {
+export function signClubToken(vtop_id: string, clubs: ClubRole[]): string {
     const payloadObj = {
         vtop_id,
-        club_id,
-        role,
+        clubs,
+        club_id: clubs[0]?.club_id || '',
+        role: clubs[0]?.role || 'representative',
         exp: Date.now() + 1000 * 60 * 60 * 24 * 7 // 7 days expiration
     };
     
@@ -95,5 +102,21 @@ export async function requireClubAuth(req: Promise<Request> | Request): Promise<
     if (!payload) {
         return NextResponse.json({ success: false, error: 'Unauthorized Club Access' }, { status: 401 });
     }
+
+    const xClubId = request.headers.get('x-club-id') || request.headers.get('X-Club-Id');
+    if (xClubId && payload.clubs) {
+        const clubContext = payload.clubs.find(c => c.club_id === xClubId);
+        
+        if (clubContext) {
+            payload.club_id = clubContext.club_id;
+            payload.role = clubContext.role;
+        } else if (payload.clubs.some(c => c.role === 'super-club-rep')) {
+            payload.club_id = xClubId;
+            payload.role = 'super-club-rep';
+        } else {
+            return NextResponse.json({ success: false, error: 'Unauthorized for this club' }, { status: 403 });
+        }
+    }
+
     return payload;
 }
