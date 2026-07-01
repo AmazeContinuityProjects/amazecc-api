@@ -36,11 +36,25 @@ export async function POST(req: Request) {
 
   try {
     const data = await req.json();
-    const club_id = auth.club_id;
+    let club_id = auth.club_id;
+    
+    const pool = getDbPool();
+
+    if (data.club_id && data.club_id !== auth.club_id) {
+      if (auth.role !== 'super-club-rep') {
+        // verify the user actually represents this club
+        const { rowCount } = await pool.query(
+          'SELECT 1 FROM club_representatives WHERE vtop_id = $1 AND club_id = $2',
+          [auth.vtop_id, data.club_id]
+        );
+        if (!rowCount) {
+          return NextResponse.json({ success: false, error: 'Unauthorized for this club' }, { status: 403 });
+        }
+      }
+      club_id = data.club_id;
+    }
     
     const { mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone } = data;
-
-    const pool = getDbPool();
     
     // Check if exists
     const { rowCount } = await pool.query('SELECT club_id FROM club_details WHERE club_id = $1', [club_id]);
