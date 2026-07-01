@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     const data = await req.json();
     const club_id = auth.club_id;
     
-    const { mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc } = data;
+    const { mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone } = data;
 
     const pool = getDbPool();
     
@@ -48,15 +48,15 @@ export async function POST(req: Request) {
     if (rowCount && rowCount > 0) {
       await pool.query(
         `UPDATE club_details 
-         SET mission = $1, description = $2, hiring_process = $3, website = $4, recruitment_link = $5, instagram = $6, whatsapp = $7, poc = $8, updated_at = CURRENT_TIMESTAMP
-         WHERE club_id = $9`,
-        [mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, club_id]
+         SET mission = $1, description = $2, hiring_process = $3, website = $4, recruitment_link = $5, instagram = $6, whatsapp = $7, poc = $8, email = $9, poc_phone = $10, updated_at = CURRENT_TIMESTAMP
+         WHERE club_id = $11`,
+        [mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone, club_id]
       );
     } else {
       await pool.query(
-        `INSERT INTO club_details (club_id, club_name, mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc)
-         VALUES ($1, $1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [club_id, mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc]
+        `INSERT INTO club_details (club_id, club_name, mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone)
+         VALUES ($1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [club_id, mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone]
       );
     }
 
