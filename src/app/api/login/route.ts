@@ -139,11 +139,9 @@ export async function POST(req: Request) {
             );
             
             if (rows.length > 0) {
-                // If they represent multiple clubs, for now we will just issue a token for the first one, or better yet, maybe we should issue a token that contains an array of clubs they represent.
-                // For simplicity as a v1, let's just use the first club they represent for the JWT club_id. 
-                // Or we can issue a token containing their vtop_id, and let the frontend select the club context. 
-                // Wait! The user's spec says "appointing a representative". Let's issue the token for the first club, and they can manage that club.
-                clubToken = signClubToken(authorizedID, rows[0].club_id, rows[0].role);
+                // Issue a token containing all the clubs they represent. 
+                // The frontend can pass 'x-club-id' header to select the club context dynamically.
+                clubToken = signClubToken(authorizedID, rows);
                 clubRoles = rows;
             }
         } catch (dbErr) {
