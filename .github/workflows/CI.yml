@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     branches:
@@ -7,4 +10,4 @@ on:
 
 jobs:
   frontend:
-    uses: AmazeContinuityProjects/.github/.github/workflows/frontendCI.yml@main
+    uses: AmazeContinuityProjects/.github/.github/workflows/FrontendCI.yml@main
