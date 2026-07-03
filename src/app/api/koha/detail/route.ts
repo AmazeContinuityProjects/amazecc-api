@@ -35,6 +35,10 @@ import https from "https";
 
 const KOHA_API = "https://webopaccc.vit.ac.in/api/v1";
 
+function isValidBiblionumber(value: string): boolean {
+  return /^[0-9]+$/.test(value);
+}
+
 function fetchJson(url: string, accept?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const headers: Record<string, string> = { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" };
@@ -79,10 +83,17 @@ export async function GET(req: NextRequest) {
     if (!biblionumber) {
       return NextResponse.json({ success: false, error: "biblionumber is required" }, { status: 400 });
     }
+    if (!isValidBiblionumber(biblionumber)) {
+      return NextResponse.json({ success: false, error: "invalid biblionumber format" }, { status: 400 });
+    }
+
+    const encodedBiblionumber = encodeURIComponent(biblionumber);
+    const marcUrl = new URL(`${KOHA_API}/public/biblios/${encodedBiblionumber}`).toString();
+    const itemsUrl = new URL(`${KOHA_API}/public/biblios/${encodedBiblionumber}/items`).toString();
 
     const [marcData, itemsData] = await Promise.allSettled([
-      fetchJson(`${KOHA_API}/public/biblios/${biblionumber}`, "application/marc-in-json"),
-      fetchJson(`${KOHA_API}/public/biblios/${biblionumber}/items`),
+      fetchJson(marcUrl, "application/marc-in-json"),
+      fetchJson(itemsUrl),
     ]);
 
     const fields = marcData.status === "fulfilled" ? (marcData.value?.fields || []) : [];
