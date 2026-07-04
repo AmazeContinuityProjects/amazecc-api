@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/auth';
-import type { BusStopInput } from '@/types/transport';
+import type { BusStop } from '@/types/transport';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return NextResponse.json({ success: false, error: 'Route not found' }, { status: 404 });
     }
 
-    const stops: BusStopInput[] = await req.json();
+    const stops: BusStop[] = await req.json();
     if (!Array.isArray(stops)) {
       return NextResponse.json({ success: false, error: 'Expected an array of stops' }, { status: 400 });
     }
