@@ -36,49 +36,24 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { getEventHubCookie } from "@/lib/eventHubAuth";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { username, password } = body;
+        const { username, password, jsessionid } = body;
 
-        if (!username || !password) {
-            return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
-        }
+        const cookie = await getEventHubCookie({ username, password, jsessionid });
 
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-        // Step 1: Login to Event Hub
-        const loginParams = new URLSearchParams({ username, password, validateVitian: "1" });
-        const loginRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/mainDashboard', {
-            method: 'POST',
-            body: loginParams,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0'
-            },
-            redirect: 'manual'
-        });
-
-        // Extract JSESSIONID
-        const setCookieHeader = loginRes.headers.get('set-cookie');
-        let jsessionid = '';
-        if (setCookieHeader) {
-            const match = setCookieHeader.match(/JSESSIONID=([^;]+)/);
-            if (match) {
-                jsessionid = `JSESSIONID=${match[1]}`;
-            }
-        }
-
-        if (!jsessionid) {
+        if (!cookie) {
             return NextResponse.json({ error: "Failed to authenticate with Event Hub. Please check your credentials." }, { status: 401 });
         }
 
-        // Step 2: Fetch Profile page
+        // Fetch Profile page
         const profileRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
             method: 'GET',
             headers: {
-                'Cookie': jsessionid,
+                'Cookie': cookie,
                 'User-Agent': 'Mozilla/5.0'
             }
         });
