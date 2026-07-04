@@ -138,7 +138,7 @@ export async function POST(req: Request) {
     }
 
     // Validate permissions
-    const validPermissions = ['dashboard', 'qbank', 'buses', 'push', 'users'];
+    const validPermissions = ['dashboard', 'qbank', 'buses', 'push', 'users', 'transport'];
     const invalidPerms = permissions.filter((p: string) => !validPermissions.includes(p));
     if (invalidPerms.length > 0) {
       return NextResponse.json(
