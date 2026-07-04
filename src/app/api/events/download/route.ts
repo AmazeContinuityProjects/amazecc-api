@@ -35,46 +35,29 @@
  */
 
 import { NextResponse } from "next/server";
+import { getEventHubCookie } from "@/lib/eventHubAuth";
 
 export async function POST(req: Request) {
     try {
-        const { username, password, url } = await req.json().catch(() => ({}));
+        const { username, password, jsessionid, url } = await req.json().catch(() => ({}));
 
-        if (!username || !password || !url) {
-            return NextResponse.json({ error: "Missing username, password, or url" }, { status: 400 });
+        if (!username && !jsessionid) {
+            return NextResponse.json({ error: "Missing username or jsessionid" }, { status: 400 });
+        }
+        if (!url) {
+            return NextResponse.json({ error: "Missing url" }, { status: 400 });
         }
 
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        const cookie = await getEventHubCookie({ username, password, jsessionid });
 
-        // Step 1: Login
-        const loginParams = new URLSearchParams({
-            username: username,
-            password: password,
-            validateVitian: "1"
-        });
-
-        const loginRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/mainDashboard', {
-            method: 'POST',
-            body: loginParams,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Mozilla/5.0' },
-            redirect: 'manual'
-        });
-
-        const setCookieHeader = loginRes.headers.get('set-cookie');
-        let jsessionid = '';
-        if (setCookieHeader) {
-            const match = setCookieHeader.match(/JSESSIONID=([^;]+)/);
-            if (match) jsessionid = `JSESSIONID=${match[1]}`;
-        }
-
-        if (!jsessionid) {
+        if (!cookie) {
             return NextResponse.json({ error: "Failed to authenticate with Event Hub." }, { status: 401 });
         }
 
-        // Step 2: Fetch the file
+        // Fetch the file
         const fileUrl = url.startsWith('http') ? url : `https://eventhubcc.vit.ac.in${url.startsWith('/') ? url : '/' + url}`;
         const fileRes = await fetch(fileUrl, {
-            headers: { 'Cookie': jsessionid, 'User-Agent': 'Mozilla/5.0' },
+            headers: { 'Cookie': cookie, 'User-Agent': 'Mozilla/5.0' },
             redirect: 'follow'
         });
         

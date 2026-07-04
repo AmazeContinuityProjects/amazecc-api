@@ -120,7 +120,7 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     if (body.permissions !== undefined) {
-      const validPermissions = ['dashboard', 'qbank', 'buses', 'push', 'users'];
+      const validPermissions = ['dashboard', 'qbank', 'buses', 'push', 'users', 'transport'];
       const invalidPerms = body.permissions.filter((p: string) => !validPermissions.includes(p));
       if (invalidPerms.length > 0) {
         return NextResponse.json(

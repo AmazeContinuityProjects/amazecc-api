@@ -5,12 +5,25 @@ export async function GET(req: Request) {
     try {
         const pool = getDbPool();
         const { rows } = await pool.query(`
-            SELECT t.*, u.name, u.reg_number, h.hub_name 
+            SELECT t.*, u.name, u.reg_number, u.phone_number, h.hub_name 
             FROM cabshare_trips t
             JOIN cabshare_users u ON t.user_id = u.user_id
             JOIN cabshare_hubs h ON t.hub_id = h.hub_id
             ORDER BY t.created_at DESC
         `);
+
+        // Fetch match requests for each trip
+        for (const trip of rows) {
+            const reqs = await pool.query(`
+                SELECT m.id as match_id, m.status, u.name, u.reg_number, u.phone_number
+                FROM cabshare_match_events m
+                JOIN cabshare_users u ON m.requester_id = u.user_id
+                WHERE m.trip_id = $1
+                ORDER BY m.created_at DESC
+            `, [trip.trip_id]);
+            trip.requests = reqs.rows;
+        }
+
         return NextResponse.json({ success: true, trips: rows });
     } catch (err: any) {
         return NextResponse.json({ success: false, error: err.message }, { status: 500 });

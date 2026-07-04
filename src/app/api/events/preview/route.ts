@@ -36,59 +36,30 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { getEventHubCookie } from "@/lib/eventHubAuth";
 
 export async function POST(req: Request) {
     try {
-        const { username, password, eid } = await req.json().catch(() => ({}));
+        const { username, password, jsessionid, eid } = await req.json().catch(() => ({}));
 
-        if (!username || !password || !eid) {
-            return NextResponse.json({ error: "Missing username, password, or eid" }, { status: 400 });
+        if (!eid) {
+            return NextResponse.json({ error: "Missing eid" }, { status: 400 });
         }
 
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        const cookie = await getEventHubCookie({ username, password, jsessionid });
 
-        // Step 1: Login to Event Hub
-        const loginParams = new URLSearchParams({
-            username: username,
-            password: password,
-            validateVitian: "1"
-        });
-
-        const loginRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/mainDashboard', {
-            method: 'POST',
-            body: loginParams,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0'
-            },
-            redirect: 'manual' // We need to grab the cookie from the 302 response
-        });
-
-        const setCookieHeader = loginRes.headers.get('set-cookie');
-        let jsessionid = '';
-        
-        if (setCookieHeader) {
-            // e.g., "JSESSIONID=xxxxx; Path=/EventHub; HttpOnly"
-            const match = setCookieHeader.match(/JSESSIONID=([^;]+)/);
-            if (match) {
-                jsessionid = `JSESSIONID=${match[1]}`;
-            }
-        }
-
-        if (!jsessionid) {
-            // Sometimes it returns 200 OK directly if login fails, or the cookie is in a different format
-            // We'll proceed with whatever cookie we found or fail gracefully.
+        if (!cookie) {
             return NextResponse.json({ error: "Failed to authenticate with Event Hub. Invalid credentials?" }, { status: 401 });
         }
 
-        // Step 2: Fetch Event Preview
+        // Fetch Event Preview
         const previewParams = new URLSearchParams({ eid: String(eid) });
         const previewRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
             method: 'POST',
             body: previewParams,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Cookie': jsessionid,
+                'Cookie': cookie,
                 'User-Agent': 'Mozilla/5.0'
             }
         });
