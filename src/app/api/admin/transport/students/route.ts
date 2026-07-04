@@ -21,15 +21,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Expected a non-empty array of students' }, { status: 400 });
     }
 
-    const routeId = students[0].routeId;
-    if (!routeId) {
-      return NextResponse.json({ success: false, error: 'routeId is required for each student' }, { status: 400 });
+    const routeNumber = students[0].routeNumber;
+    if (!routeNumber) {
+      return NextResponse.json({ success: false, error: 'routeNumber is required for each student' }, { status: 400 });
     }
 
-    const { rows: route } = await pool.query('SELECT id FROM bus_routes WHERE id = $1', [routeId]);
+    const { rows: route } = await pool.query('SELECT id FROM buses_v2 WHERE route_number = $1', [routeNumber]);
     if (route.length === 0) {
       return NextResponse.json({ success: false, error: 'Route not found' }, { status: 404 });
     }
+    const routeId = route[0].id;
 
     const client = await pool.connect();
     try {
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
       client.release();
     }
 
-    return NextResponse.json({ success: true, message: `Inserted ${students.length} students for route ${routeId}` });
+    return NextResponse.json({ success: true, message: `Inserted ${students.length} students for route ${routeNumber}` });
   } catch (error: any) {
     console.error('Failed to update students:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
