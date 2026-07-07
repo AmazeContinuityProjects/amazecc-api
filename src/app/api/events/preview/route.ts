@@ -114,7 +114,7 @@ export async function POST(req: Request) {
                 const imgRes = await fetch(imageUrl, {
                     method: 'GET',
                     headers: {
-                        'Cookie': jsessionid,
+                        'Cookie': cookie,
                         'User-Agent': 'Mozilla/5.0'
                     }
                 });
