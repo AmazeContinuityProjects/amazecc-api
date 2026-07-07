@@ -64,7 +64,7 @@ export function EndpointTester({
 
   // Initialize request body template if JSON schema is present
   useEffect(() => {
-    const bodySchema = (details as any)?.requestBody?.content?.["application/json"]?.schema;
+    const bodySchema = (details as any)?.requestBody?.content?.["application/json"]?.schema as any;
     if (bodySchema && !requestBody) {
         if (bodySchema.example) {
             setRequestBody(JSON.stringify(bodySchema.example, null, 2));
@@ -272,11 +272,11 @@ export function EndpointTester({
                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-mono font-bold text-gray-800 dark:text-gray-200">{String(param.name)}</span>
-                        {param.required && <Badge variant="danger" className="text-[9px]">Required</Badge>}
+                        {Boolean(param.required) && <Badge variant="danger" className="text-[9px]">Required</Badge>}
                       </div>
                       <span className="text-xs text-gray-500 font-mono bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded">{String(param.in)}</span>
                    </div>
-                   {param.description && (
+                   {Boolean(param.description) && (
                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{String(param.description)}</p>
                    )}
                    <Input 
