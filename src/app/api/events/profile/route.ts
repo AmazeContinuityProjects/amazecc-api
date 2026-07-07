@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         // Usually, the registered events table is the one with headers "S.No", "Event Name", "Order Id" etc.
         $('table').each((_, table) => {
             const headers = $(table).find('tr').first().text().trim().toLowerCase();
-            if (headers.includes('event name') && headers.includes('payment status')) {
+            if (headers.includes('event') && (headers.includes('order') || headers.includes('payment') || headers.includes('receipt'))) {
                 $(table).find('tr').each((i, row) => {
                     if (i === 0) return; // Skip header row
 
