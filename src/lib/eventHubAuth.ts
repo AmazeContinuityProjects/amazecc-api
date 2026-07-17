@@ -28,8 +28,14 @@ export async function getEventHubCookie(
   const setCookieHeader = loginRes.headers.get("set-cookie");
   if (!setCookieHeader) return null;
 
-  const match = setCookieHeader.match(/JSESSIONID=([^;]+)/);
-  if (!match) return null;
+  const jmatch = setCookieHeader.match(/JSESSIONID=([^;,\s]+)/);
+  if (!jmatch) return null;
 
-  return `JSESSIONID=${match[1]}`;
+  const cmatch = setCookieHeader.match(/cookiesession1=([^;,\s]+)/);
+  let combinedCookie = `JSESSIONID=${jmatch[1]}`;
+  if (cmatch) {
+    combinedCookie += `; cookiesession1=${cmatch[1]}`;
+  }
+
+  return combinedCookie;
 }

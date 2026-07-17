@@ -24,9 +24,13 @@ export async function POST(req: Request) {
     const setCookieHeader = loginRes.headers.get("set-cookie");
     let jsessionid = "";
     if (setCookieHeader) {
-      const match = setCookieHeader.match(/JSESSIONID=([^;]+)/);
-      if (match) {
-        jsessionid = match[1];
+      const jmatch = setCookieHeader.match(/JSESSIONID=([^;,\s]+)/);
+      const cmatch = setCookieHeader.match(/cookiesession1=([^;,\s]+)/);
+      if (jmatch) {
+        jsessionid = jmatch[1];
+        if (cmatch) {
+          jsessionid += `; cookiesession1=${cmatch[1]}`;
+        }
       }
     }
 

@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 Eventhub_scrapper_modals/
+git-filter-repo.py
