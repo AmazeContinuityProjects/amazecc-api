@@ -48,25 +48,6 @@ export async function POST(req: Request) {
 
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-    // Visit curriculum page first to establish proper session state
-    const curricRes = await fetch(
-      "https://vtopcc.vit.ac.in/vtop/academics/common/Curriculum",
-      {
-        method: "POST",
-        headers: {
-          Cookie: cookieHeader,
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        },
-        body: new URLSearchParams({
-          verifyMenu: "true",
-          authorizedID,
-          _csrf: csrf,
-          nocache: Date.now().toString(),
-        }),
-        redirect: "manual",
-      }
-    );
 
     // Now submit the syllabus download form
     const body = new URLSearchParams();

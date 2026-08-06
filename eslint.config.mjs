@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "Eventhub_scrapper_modals/**",
+    "test-course-plan.ts",
+    "git-filter-repo.py",
   ]),
 ]);
 

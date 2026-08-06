@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     const { rows } = await pool.query(queryText, params);
     return NextResponse.json({ success: true, data: rows });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
@@ -112,7 +112,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: rows[0] });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }

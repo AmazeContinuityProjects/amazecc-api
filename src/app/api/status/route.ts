@@ -27,7 +27,7 @@ import { NextResponse } from "next/server";
  *         description: Internal Server Error
  */
 
-export async function GET(req: Request) {
+export async function GET() {
   return NextResponse.json({ text: "API is working" }, { status: 200 });
 }
 

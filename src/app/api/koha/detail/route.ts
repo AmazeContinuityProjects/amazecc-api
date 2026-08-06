@@ -109,9 +109,6 @@ export async function GET(req: NextRequest) {
     const ddc = getSubfields(fields, "082", "a").join(" ");
     const subjects = getSubfields(fields, "650", "a");
     const summary = getSubfields(fields, "520", "a").join(" ");
-    const isbnClean = isbn.replace(/[^0-9X]/gi, "").slice(0, 13);
-    const coverUrl = isbnClean ? `https://covers.openlibrary.org/b/isbn/${isbnClean}-L.jpg` : "";
-
     const holdings: any[] = [];
     if (itemsData.status === "fulfilled" && Array.isArray(itemsData.value)) {
       for (const it of itemsData.value) {

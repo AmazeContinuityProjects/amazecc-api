@@ -39,18 +39,4 @@ export type attendanceRes = {
   error?: string,
 }
 
-type ODEntry = {
-  title: string;
-  type: "LAB" | "TH";
-  hours: number;
-};
 
-type ODListItem = {
-  date: string;
-  courses: ODEntry[];
-  total: number;
-};
-
-type ODListRaw = {
-  [date: string]: ODEntry[];
-};

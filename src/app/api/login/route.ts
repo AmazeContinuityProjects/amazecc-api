@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { syncClubsBackground } from "@/lib/syncClubs";
 import VTOPClient from "@/lib/clients/VTOPClient";
-import { LoginRequestBody } from "@/types/data/login";
 import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
 
 import { getDbPool } from "@/lib/db";

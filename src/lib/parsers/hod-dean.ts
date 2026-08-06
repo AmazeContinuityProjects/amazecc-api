@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { extractKeyValueTable, extractBase64Photo } from "./common";
+import "./common";
 
 export interface HodDeanPerson {
   role: string;
@@ -31,7 +31,7 @@ export function parseHodDean(html: string): HodDeanData {
     $table.find("tr").each((_, row) => {
       const cells = $(row).find("td");
       if (cells.length >= 2) {
-        let label = $(cells[0]).text().trim().replace(/\s+/g, " ");
+        const label = $(cells[0]).text().trim().replace(/\s+/g, " ");
         const value = $(cells[1]).text().trim();
         if (label && value && !label.includes("<") && !value.includes("<")) {
           if (label.toLowerCase().includes("name of the faculty") || label.toLowerCase().includes("name of the dean")) {

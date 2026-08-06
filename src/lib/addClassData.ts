@@ -54,7 +54,7 @@ export default async function AddClassData(classID: string, userId: string, mark
         }
 
         const existingClassData = res.rows[0];
-        let includesUsers = existingClassData.includes_users || [];
+        const includesUsers = existingClassData.includes_users || [];
         
         // Prevent duplicate users from mutating class statistics.
         if (includesUsers.includes(userId)) {

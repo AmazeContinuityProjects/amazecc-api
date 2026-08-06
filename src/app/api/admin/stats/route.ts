@@ -74,7 +74,7 @@ export async function GET(req: Request) {
         vitolSubscribers: Number(subsResult.rows[0]?.count || 0),
       },
     });
-  } catch (err: any) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }

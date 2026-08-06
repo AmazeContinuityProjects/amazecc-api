@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
-import { RequestBody } from "@/types/custom";
 import { ExamItem, Schedule } from "@/types/data/schedule";
 
 

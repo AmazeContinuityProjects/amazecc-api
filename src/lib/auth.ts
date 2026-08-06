@@ -71,7 +71,7 @@ export function verifyAdminToken(token: string): AdminTokenPayload | null {
         }
         
         return payloadObj as AdminTokenPayload;
-    } catch (err) {
+    } catch {
         return null;
     }
 }

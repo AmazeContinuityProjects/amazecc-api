@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       [paperId]
     );
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }

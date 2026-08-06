@@ -111,26 +111,7 @@ async function ScrapeLMS(username: string, password: string): Promise<Assingment
             throw new Error("Cannot find sesskey");
         }
 
-        const now = new Date();
 
-        let currentMonth = now.getMonth() + 1;
-        let currentYear = now.getFullYear();
-
-        let prevMonth = currentMonth - 1;
-        let prevYear = currentYear;
-
-        if (prevMonth < 1) {
-            prevMonth = 12;
-            prevYear--;
-        }
-
-        let nextMonth = currentMonth + 1;
-        let nextYear = currentYear;
-
-        if (nextMonth > 12) {
-            nextMonth = 1;
-            nextYear++;
-        }
 
         const calendarEventsCurrent = extractCalendarEvents(redirectRes.data);
 
@@ -256,33 +237,6 @@ function extractCalendarEvents(html: string) {
     return events;
 }
 
-async function fetchCalendarMonthHTML(sesskey: string, year: number, month: number, cookies: string): Promise<string> {
-    const body = [
-        {
-            index: 0,
-            methodname: "core_calendar_get_calendar_monthly_view",
-            args: {
-                year: String(year),
-                month: String(month),
-                courseid: 1,
-                day: 1,
-                view: "monthblock"
-            }
-        }
-    ];
-
-    const res = await LMSClient.post(
-        `/lib/ajax/service.php?sesskey=${encodeURIComponent(sesskey)}&info=core_calendar_get_calendar_monthly_view`,
-        JSON.stringify(body),
-        {
-            headers: {
-                "Content-Type": "application/json",
-                Cookie: cookies
-            }
-        }
-    );
-    return res.data[0]?.data?.html || "";
-}
 
 function extractTeacherForModule(courseHTML: string, moduleId: string): string[] {
     const $ = cheerio.load(courseHTML);

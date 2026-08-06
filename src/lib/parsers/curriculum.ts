@@ -151,7 +151,6 @@ function parseTable($: cheerio.CheerioAPI, $table: cheerio.Cheerio<any>, title: 
 
   // First, build a map of dtr-data values per row from DataTables responsive details
   // Each <li class="dtr-details"> contains <li> with dtr-title & dtr-data spans
-  const rowDataMap: number[] = []; // dtr column index → array index in our headers
   const dtrRows: Record<number, Record<string, string>> = {};
 
   // Detect DataTables responsive row details

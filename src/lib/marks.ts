@@ -2,71 +2,7 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
 import { CourseItem, CGPA } from "@/types/data/marks";
-import AddClassData from "@/lib/addClassData";
-import { maskUserID } from "@/lib/mask";
 
-type ACEComponentType = "theory" | "lab";
-
-type ValidatedCourseComponent = {
-    totalWeightage: number;
-    totalWeightageMark: number;
-};
-
-function parseFiniteNumber(value: string): number | null {
-    const parsed = Number.parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : null;
-}
-
-function getACEComponentType(courseType: string): ACEComponentType | null {
-    if (courseType === "Embedded Theory") return "theory";
-    if (courseType === "Embedded Lab") return "lab";
-    return null;
-}
-
-function validateCourseComponent(course: CourseItem): ValidatedCourseComponent | null {
-    if (course.assessments.length === 0) return null;
-
-    let totalWeightage = 0;
-    let totalWeightageMark = 0;
-
-    for (const assessment of course.assessments) {
-        const weightagePercent = parseFiniteNumber(assessment.weightagePercent);
-        const weightageMark = parseFiniteNumber(assessment.weightageMark);
-
-        if (weightagePercent === null || weightageMark === null) {
-            return null;
-        }
-
-        totalWeightage += weightagePercent;
-        totalWeightageMark += weightageMark;
-    }
-
-    const finalAssessment = course.assessments[course.assessments.length - 1];
-    const finalAssessmentScore = parseFiniteNumber(finalAssessment?.scoredMark ?? "");
-    const finalAssessmentMax = parseFiniteNumber(finalAssessment?.maxMark ?? "");
-
-    // Keep the original FAT gating, but make the comparisons safe for floating-point input.
-    // Use 40% of the final assessment's max marks as the gate instead of an absolute 40 points.
-    const finalAssessmentPercent =
-        finalAssessmentScore === null || finalAssessmentMax === null || finalAssessmentMax <= 0
-            ? null
-            : (finalAssessmentScore / finalAssessmentMax) * 100;
-
-    if (
-        !finalAssessment ||
-        finalAssessment.title !== "Final Assessment Test" ||
-        finalAssessmentPercent === null ||
-        finalAssessmentPercent <= 1 ||
-        Math.abs(totalWeightage - 100) > 0.01
-    ) {
-        return null;
-    }
-
-    return {
-        totalWeightage,
-        totalWeightageMark,
-    };
-}
 
 export async function getMarks(cookies: string[] | string, authorizedID: string, csrf: string, semesterId: string, client: ReturnType<typeof VTOPClient>, courseCreditMap: Record<string, number>): Promise<{ courses: CourseItem[]; cgpa: CGPA } | string> {
     try {
