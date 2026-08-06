@@ -3,7 +3,6 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
 import {
-    AddHolidayFn,
     CalendarDay,
     CalendarEvent,
     CalendarRequestBody
@@ -55,7 +54,9 @@ import {
 
 export async function POST(req: Request) {
     try {
-        let { cookies, authorizedID, csrf, type, semesterId }: CalendarRequestBody = (await req.json().catch(()=>({})));
+        const body: CalendarRequestBody = (await req.json().catch(()=>({})));
+        const { cookies, authorizedID, csrf, semesterId } = body;
+        let { type } = body;
 
         if (semesterId?.toString().endsWith("05")) {
             if (type !== "ALL" && type !== "ALL02" && type !== "ALL05") {
@@ -155,37 +156,6 @@ export async function POST(req: Request) {
     }
 }
 
-
-function addHolidayToCalendar(calendar: any, dayNum: number, eventObj: any): AddHolidayFn | undefined {
-    if (!calendar || !Array.isArray(calendar.days)) return;
-
-    const day = calendar.days.find((d: any) => Number(d.date) === Number(dayNum));
-
-    if (day) {
-        if (Array.isArray(day.events)) {
-            day.events = day.events.filter(
-                (e: any) => (e.text || "").toLowerCase() !== "instructional day"
-            );
-        } else {
-            day.events = [];
-        }
-
-        const exists = day.events.some(
-            (e: any) =>
-                (e.text || "").toLowerCase() ===
-                (eventObj.text || "").toLowerCase()
-        );
-
-        if (!exists) {
-            day.events.push(eventObj);
-        }
-    } else {
-        calendar.days.push({
-            date: Number(dayNum),
-            events: [eventObj],
-        });
-    }
-}
 
 
 async function parseCalendar(html: string) {

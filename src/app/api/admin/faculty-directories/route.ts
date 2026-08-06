@@ -3,7 +3,7 @@ import { getDbPool } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const pool = getDbPool();
     const { rows } = await pool.query(

@@ -4,8 +4,7 @@ import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { Play, Loader2, Code, List, Clock, Zap, BookOpen, Terminal } from "lucide-react";
 import {
-  Card, CardContent, CardHeader, CardTitle,
-  Badge, Button, Input, Textarea, Tabs, TabsList, TabsTrigger, TabsContent,
+  Badge, Input, Textarea, Tabs, TabsList, TabsTrigger, TabsContent,
   Alert
 } from "@amazecontinuityprojects/amazeui";
 
@@ -99,14 +98,14 @@ export function EndpointTester({
       try {
         const parsed = body ? JSON.parse(body) : {};
         body = JSON.stringify({ ...parsed, cookies: "<injected_cookies>", csrf: "<injected_csrf>", authorizedID: "<injected_id>" }, null, 2);
-      } catch(e) {}
+      } catch {}
     }
 
     if (isMoodle && moodleAuth && ["post", "put", "patch"].includes(method.toLowerCase())) {
       try {
         const parsed = body ? JSON.parse(body) : {};
         body = JSON.stringify({ ...parsed, username: moodleAuth.username, pass: "********" }, null, 2);
-      } catch(e) {}
+      } catch {}
     }
 
     if (isAdmin && adminToken) {
@@ -150,7 +149,7 @@ export function EndpointTester({
         try {
           const parsedBody = finalBody ? JSON.parse(finalBody) : {};
           finalBody = JSON.stringify({ ...parsedBody, ...vtopAuth });
-        } catch(e) {}
+        } catch {}
       }
 
       // Auto-inject Moodle credentials if needed
@@ -158,7 +157,7 @@ export function EndpointTester({
         try {
           const parsedBody = finalBody ? JSON.parse(finalBody) : {};
           finalBody = JSON.stringify({ ...parsedBody, ...moodleAuth });
-        } catch(e) {}
+        } catch {}
       }
 
       if (["post", "put", "patch"].includes(method.toLowerCase()) && finalBody) {

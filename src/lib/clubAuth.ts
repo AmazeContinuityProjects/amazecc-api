@@ -75,7 +75,7 @@ export function verifyClubToken(token: string): ClubTokenPayload | null {
         }
         
         return payloadObj as ClubTokenPayload;
-    } catch (err) {
+    } catch {
         return null;
     }
 }

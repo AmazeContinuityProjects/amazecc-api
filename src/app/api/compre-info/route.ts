@@ -39,7 +39,6 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
-import * as cheerio from "cheerio";
 import { parseCompreInfo } from "@/lib/parsers/compre-info";
 
 export async function POST(req: Request) {

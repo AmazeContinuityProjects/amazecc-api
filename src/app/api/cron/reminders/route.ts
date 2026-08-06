@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
 
@@ -26,7 +26,7 @@ import webpush from 'web-push';
  *         description: Internal Server Error
  */
 
-export async function POST(req: NextRequest) {
+export async function POST() {
     try {
         const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
         const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;

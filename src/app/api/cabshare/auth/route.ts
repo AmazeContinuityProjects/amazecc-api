@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
         const $dash = cheerio.load(dashboardRes.data);
         const new_csrf = $dash('input[name="_csrf"]').val() as string;
-        let authorizedID = $dash('#authorizedID').val() || $dash('input[name="authorizedid"]').val() || username.toUpperCase();
+        const authorizedID = $dash('#authorizedID').val() || $dash('input[name="authorizedid"]').val() || username.toUpperCase();
 
         // 2. Fetch Profile to get Name
         const profileRes = await client.post(

@@ -38,7 +38,7 @@ export async function GET(req: Request) {
         `, [user_id]);
 
         // For myTrips, let's also fetch requests on those trips
-        for (let trip of myTrips) {
+        for (const trip of myTrips) {
             const reqs = await pool.query(`
                 SELECT m.id as match_id, m.status, u.name, u.reg_number, u.phone_number 
                 FROM cabshare_match_events m

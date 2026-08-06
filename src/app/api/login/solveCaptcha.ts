@@ -5,7 +5,7 @@ import { createCanvas, loadImage } from "canvas";
 type Matrix = number[][];
 type Vector = number[];
 
-function getImageBlocks(pixelData: Uint8ClampedArray, width: number, height: number): Matrix[] {
+function getImageBlocks(pixelData: Uint8ClampedArray): Matrix[] {
     const saturate: Vector = new Array(pixelData.length / 4);
     for (let i = 0; i < pixelData.length; i += 4) {
         const r = pixelData[i]!, g = pixelData[i + 1]!, b = pixelData[i + 2]!;
@@ -84,14 +84,14 @@ export async function solveCaptcha(base64: string): Promise<string> {
     ctx.drawImage(img, 0, 0);
 
     const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const charBlocks = getImageBlocks(data, canvas.width, canvas.height);
+    const charBlocks = getImageBlocks(data);
 
     let result = "";
     for (const block of charBlocks) {
         let inputVector: Matrix = binarizeImage(block);
         inputVector = [flatten(inputVector)];
 
-        let output: Matrix = matMul(inputVector, bitmaps.weights);
+        const output: Matrix = matMul(inputVector, bitmaps.weights);
         const logits: Vector = matAdd(output[0] ?? [], bitmaps.biases);
 
         const probabilities = softmax(logits);

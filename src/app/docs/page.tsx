@@ -2,15 +2,15 @@
 
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
-import { Search, BookOpen, Server, Loader2, XCircle, Moon, Sun, Play, Menu, Settings2, Key, CheckCircle2, AlertCircle, Shield } from "lucide-react";
+import { Search, BookOpen, Server, Loader2, Menu, Settings2, CheckCircle2, AlertCircle, Shield } from "lucide-react";
 import {
   Sidebar, SidebarHeader, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarItem,
-  Card, ThemeSwitcher, ColorPalettePicker, LoadingSpinner, Badge, Input, ErrorDisplay, Button,
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  ThemeSwitcher, ColorPalettePicker, LoadingSpinner, Badge, Input, ErrorDisplay, Button,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
   Tabs, TabsList, TabsTrigger, TabsContent, Textarea
 } from "@amazecontinuityprojects/amazeui";
 import { EndpointTester, MethodBadge } from "./EndpointTester";
-import { useTheme } from "next-themes";
+
 import Image from "next/image";
 
 type OpenApiSpec = {
@@ -134,7 +134,7 @@ export default function ApiDocs() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEndpointKey, setSelectedEndpointKey] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);

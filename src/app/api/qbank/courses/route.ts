@@ -34,7 +34,7 @@ export async function GET() {
       `SELECT DISTINCT course_code as code, title FROM papers_archive WHERE approval_status = 'APPROVED'`
     );
     return NextResponse.json({ success: true, data: rows });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }

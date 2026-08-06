@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import LMSClient from "@/lib/clients/LMSClient";
 import getVitolClient from "@/lib/clients/VitolClient";
-import axios from "axios";
 
 
 
@@ -118,16 +116,9 @@ async function ScrapeVitolData(username: string, password: string, vitolSite: st
 
         const now = new Date();
 
-        let currentMonth = now.getMonth() + 1;
-        let currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear();
 
-        let prevMonth = currentMonth - 1;
-        let prevYear = currentYear;
-
-        if (prevMonth < 1) {
-            prevMonth = 12;
-            prevYear--;
-        }
 
         let nextMonth = currentMonth + 1;
         let nextYear = currentYear;
@@ -176,22 +167,6 @@ async function ScrapeVitolData(username: string, password: string, vitolSite: st
                     });
 
                     const $ = cheerio.load(eventRes.data);
-
-                    const courseLink = $("ol.breadcrumb li.breadcrumb-item a")
-                        .first()
-                        .attr("href");
-
-                    if (courseLink) {
-                        const courseId = new URL(courseLink).searchParams.get("id");
-                        const moduleId = new URL(ev.link).searchParams.get("id");
-
-                        if (courseId && moduleId) {
-                            const courseRes = await VitolClient.get(
-                                `/course/view.php?id=${courseId}`,
-                                { headers: { Cookie: loginCookies } }
-                            );
-                        }
-                    }
 
                     const courseCodeFull = $("ol.breadcrumb li.breadcrumb-item a")
                         .first()

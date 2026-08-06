@@ -24,7 +24,7 @@ export function parseProctor(html: string): ProctorData {
     const labelCell = cells.first();
     const valueCell = cells.eq(1);
     if (cells.length >= 2 && labelCell.length && valueCell.length) {
-      let label = labelCell.text().trim().replace(/\s+/g, " ");
+      const label = labelCell.text().trim().replace(/\s+/g, " ");
       const value = valueCell.text().trim();
       if (label && value) {
         if (label.toLowerCase().includes("faculty name")) {

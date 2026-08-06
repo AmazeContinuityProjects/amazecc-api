@@ -173,13 +173,10 @@ export async function GET(req: Request) {
     uniqueUsersHourly.forEach((row: any) => {
         const hour = row.hour;
         const usersInHour = userHourlyGroups.get(hour) || new Set();
-        let newCount = 0;
         let returningCount = 0;
 
         for (const u of usersInHour) {
-            if (firstSeenHourPerUser.get(u) === hour) {
-                newCount++;
-            } else {
+            if (firstSeenHourPerUser.get(u) !== hour) {
                 returningCount++;
             }
         }

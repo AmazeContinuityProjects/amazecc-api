@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
-import { RequestBody } from "@/types/custom";
 import { hostel, leaveItem } from "@/types/data/hostel";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
@@ -134,7 +133,7 @@ export async function POST(req: Request) {
         const leaveRows = $$$("#LeaveHistoryTable tbody tr");
         const appliedLeaveRows = $$$_("#LeaveAppliedTable tbody tr");
 
-        let hostelInfo: hostel = {};
+        const hostelInfo: hostel = {};
 
         $$("table tr").each((_, row) => {
             const cols = $$(row).find("td");

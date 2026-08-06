@@ -45,6 +45,7 @@ import { URLSearchParams } from "url";
 import { parseFacultyInfo } from "@/lib/parsers/faculty-info";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 import * as cheerio from "cheerio";
+import { writeFileSync } from "fs";
 
 export async function POST(req: Request) {
   try {
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
       const parsed = parseVtopHtml(searchResp.data);
       
       // DEBUG: write HTML to file
-      require("fs").writeFileSync("c:/Users/sugee/Documents/Testing/vtop-faculty-search-debug.html", searchResp.data);
+      writeFileSync("c:/Users/sugee/Documents/Testing/vtop-faculty-search-debug.html", searchResp.data);
 
       return NextResponse.json({ success: true, results: parsed });
     }

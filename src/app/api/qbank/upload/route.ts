@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { createClient } from '@supabase/supabase-js';
 
 
 
@@ -34,19 +33,12 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-// We use the Supabase Storage REST API for uploads, server-side
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key);
-}
 
 // POST /api/qbank/upload
 export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
-    const { courseCode, title, paperType, examYear, examSemester, uploaderRegNo, fileUrl, isAdmin } = json;
+    const { courseCode, title, paperType, examYear, examSemester, uploaderRegNo, fileUrl } = json;
 
     if (!courseCode || !title || !fileUrl) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });

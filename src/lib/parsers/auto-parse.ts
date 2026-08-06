@@ -52,7 +52,7 @@ export function parseVtopHtml(html: string): ParsedVtopPage {
   $("table").each((ti, table) => {
     const $table = $(table);
     const caption = $table.find("caption").first().text().trim() || undefined;
-    let headers: string[] = [];
+    const headers: string[] = [];
     const rows: Record<string, string>[] = [];
 
     // Find the header row: Look for the first row with multiple <th> or multiple <td> without massive colspans

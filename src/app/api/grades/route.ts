@@ -3,7 +3,6 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
 import { CGPA, CurriculumItem, EffectiveGrade, FeedbackStatus } from "@/types/data/grades";
-import { RequestBody } from "@/types/custom";
 
 
 

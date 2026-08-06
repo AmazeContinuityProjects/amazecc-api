@@ -3,7 +3,6 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
 import fetchTimetable from "@/lib/fetchTimeTable";
-import { RequestBody } from "@/types/custom";
 import { attendanceItem, courseItem } from "@/types/data/attendance";
 
 import { getMarks } from "@/lib/marks";
