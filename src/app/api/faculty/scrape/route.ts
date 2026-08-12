@@ -22,7 +22,7 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
       reject(new Error('Too many redirects'));
       return;
     }
-    const req = https.get(url, { rejectUnauthorized: false, timeout: 10000 }, (res) => {
+    const req = https.get(url, { rejectUnauthorized: false, timeout: 8000 }, (res) => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
         const next = new URL(res.headers.location, url).toString();
@@ -30,9 +30,9 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
         return;
       }
       const ctype = res.headers['content-type'] || '';
-      if (!ctype.includes('html')) {
+      if (!ctype.includes('html') && !ctype.includes('text')) {
         res.resume();
-        reject(new Error(`URL is not an HTML page (${ctype})`));
+        reject(new Error(`URL is not HTML (${ctype})`));
         return;
       }
       let data = '';
@@ -67,35 +67,67 @@ export async function POST(req: Request) {
 
     const faculties: RosterFaculty[] = [];
 
-    $('article.exad-post-grid-three').each((i, el) => {
-      const titleEl = $(el).find('a.exad-post-grid-title').first();
-      const name = titleEl.text().trim();
+    // 1. Primary Parser: New VIT Person Grid layout (article.vit-person-card)
+    $('article.vit-person-card').each((i, el) => {
+      const imgLink = $(el).find('a.vit-person-image').first();
+      const nameFromAttr = imgLink.attr('aria-label') || '';
+      const nameFromText = $(el).find('.vit-person-name').first().text().trim();
+      const name = (nameFromAttr || nameFromText).trim();
       if (!name) return;
 
-      const chennaiProfileUrl = titleEl.attr('href') || '';
-      const designation = $(el).find('.exad-post-grid-category a').first().text().trim() || 'Faculty';
-      const img = $(el).find('figure.exad-post-grid-thumbnail img').attr('src') || '';
+      const chennaiProfileUrl = imgLink.attr('href') || $(el).find('a.vit-view-profile').first().attr('href') || '';
+      const designation = $(el).find('.vit-designation').first().text().trim() || 'Faculty';
+      const img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
 
-      const idMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
-      const employeeId = idMatch ? idMatch[1] : '';
-      const profileUrl = employeeId
-        ? `https://directorycc.vit.ac.in/faculty/${employeeId}`
-        : chennaiProfileUrl;
+      // Try extracting employee ID from image URL or profile URL if numeric
+      const imgIdMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
+      const urlIdMatch = chennaiProfileUrl.match(/\/(\d{3,})\/?$/);
+      let employeeId = imgIdMatch ? imgIdMatch[1] : (urlIdMatch ? urlIdMatch[1] : '');
 
       faculties.push({
-        id: employeeId || `temp-${i}`,
+        id: employeeId || `card-${i}`,
         name,
         designation,
         imageUrl: img,
-        profileUrl,
+        profileUrl: employeeId ? `https://directorycc.vit.ac.in/faculty/${employeeId}` : chennaiProfileUrl,
         email: '',
         employeeId,
         intercom: ''
       });
     });
 
+    // 2. Fallback Parser: Elementor Grid (article.exad-post-grid-three)
     if (faculties.length === 0) {
-      // Fallback to the legacy VIT page layout
+      $('article.exad-post-grid-three').each((i, el) => {
+        const titleEl = $(el).find('a.exad-post-grid-title').first();
+        const name = titleEl.text().trim();
+        if (!name) return;
+
+        const chennaiProfileUrl = titleEl.attr('href') || '';
+        const designation = $(el).find('.exad-post-grid-category a').first().text().trim() || 'Faculty';
+        const img = $(el).find('figure.exad-post-grid-thumbnail img').attr('src') || '';
+
+        const idMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
+        const employeeId = idMatch ? idMatch[1] : '';
+        const profileUrl = employeeId
+          ? `https://directorycc.vit.ac.in/faculty/${employeeId}`
+          : chennaiProfileUrl;
+
+        faculties.push({
+          id: employeeId || `exad-${i}`,
+          name,
+          designation,
+          imageUrl: img,
+          profileUrl,
+          email: '',
+          employeeId,
+          intercom: ''
+        });
+      });
+    }
+
+    // 3. Fallback Parser: Legacy VIT page layout
+    if (faculties.length === 0) {
       $('.member-item, .staff-member, .vc_col-sm-3, .vc_col-sm-4').each((i, el) => {
         const nameEl = $(el).find('h3, h4').first();
         const name = nameEl.text().trim();
@@ -113,7 +145,7 @@ export async function POST(req: Request) {
         const employeeId = empIdMatch ? empIdMatch[1] : '';
 
         faculties.push({
-          id: employeeId || `temp-${i}`,
+          id: employeeId || `legacy-${i}`,
           name,
           designation,
           imageUrl: img,
