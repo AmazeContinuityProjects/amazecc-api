@@ -22,7 +22,7 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
       reject(new Error('Too many redirects'));
       return;
     }
-    const req = https.get(url, { rejectUnauthorized: false, timeout: 10000 }, (res) => {
+    const req = https.get(url, { rejectUnauthorized: false, timeout: 8000 }, (res) => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
         const next = new URL(res.headers.location, url).toString();
@@ -30,9 +30,9 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
         return;
       }
       const ctype = res.headers['content-type'] || '';
-      if (!ctype.includes('html')) {
+      if (!ctype.includes('html') && !ctype.includes('text')) {
         res.resume();
-        reject(new Error(`URL is not an HTML page (${ctype})`));
+        reject(new Error(`URL is not HTML (${ctype})`));
         return;
       }
       let data = '';
@@ -42,6 +42,147 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
     req.on('error', err => reject(err));
     req.on('timeout', () => { req.destroy(); reject(new Error('fetchHtml timeout')); });
   });
+}
+
+/**
+ * Runs all three roster parsers against a page's HTML:
+ * 1. New VIT Person Grid layout (article.vit-person-card)
+ * 2. Elementor Grid (article.exad-post-grid-three)
+ * 3. Legacy VIT page layout (.member-item, .staff-member, ...)
+ */
+function extractFaculties(html: string): RosterFaculty[] {
+  const $ = cheerio.load(html);
+  const faculties: RosterFaculty[] = [];
+
+  // 1. Primary Parser: New VIT Person Grid layout (article.vit-person-card)
+  $('article.vit-person-card').each((i, el) => {
+    const imgLink = $(el).find('a.vit-person-image').first();
+    const nameFromAttr = imgLink.attr('aria-label') || '';
+    const nameFromText = $(el).find('.vit-person-name').first().text().trim();
+    const name = (nameFromAttr || nameFromText).trim();
+    if (!name) return;
+
+    const chennaiProfileUrl = imgLink.attr('href') || $(el).find('a.vit-view-profile').first().attr('href') || '';
+    const designation = $(el).find('.vit-designation').first().text().trim() || 'Faculty';
+    const img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
+
+    // Try extracting employee ID from image URL or profile URL if numeric
+    const imgIdMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
+    const urlIdMatch = chennaiProfileUrl.match(/\/(\d{3,})\/?$/);
+    const employeeId = imgIdMatch ? imgIdMatch[1] : (urlIdMatch ? urlIdMatch[1] : '');
+
+    faculties.push({
+      id: employeeId || `card-${i}`,
+      name,
+      designation,
+      imageUrl: img,
+      profileUrl: employeeId ? `https://directorycc.vit.ac.in/faculty/${employeeId}` : chennaiProfileUrl,
+      email: '',
+      employeeId,
+      intercom: ''
+    });
+  });
+
+  // 2. Fallback Parser: Elementor Grid (article.exad-post-grid-three)
+  if (faculties.length === 0) {
+    $('article.exad-post-grid-three').each((i, el) => {
+      const titleEl = $(el).find('a.exad-post-grid-title').first();
+      const name = titleEl.text().trim();
+      if (!name) return;
+
+      const chennaiProfileUrl = titleEl.attr('href') || '';
+      const designation = $(el).find('.exad-post-grid-category a').first().text().trim() || 'Faculty';
+      const img = $(el).find('figure.exad-post-grid-thumbnail img').attr('src') || '';
+
+      const idMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
+      const employeeId = idMatch ? idMatch[1] : '';
+      const profileUrl = employeeId
+        ? `https://directorycc.vit.ac.in/faculty/${employeeId}`
+        : chennaiProfileUrl;
+
+      faculties.push({
+        id: employeeId || `exad-${i}`,
+        name,
+        designation,
+        imageUrl: img,
+        profileUrl,
+        email: '',
+        employeeId,
+        intercom: ''
+      });
+    });
+  }
+
+  // 3. Fallback Parser: Legacy VIT page layout
+  if (faculties.length === 0) {
+    $('.member-item, .staff-member, .vc_col-sm-3, .vc_col-sm-4').each((i, el) => {
+      const nameEl = $(el).find('h3, h4').first();
+      const name = nameEl.text().trim();
+      if (!name) return;
+
+      const designationEl = nameEl.next('h4, p, h5');
+      const designation = designationEl.text().trim() || 'Faculty';
+      const img = $(el).find('img').attr('src') || '';
+      const profileUrl = $(el).find('a').first().attr('href') || '';
+      const textContent = $(el).text();
+
+      const emailMatch = textContent.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/);
+      const empIdMatch = textContent.match(/Employee ID\s*(\d+)/i);
+      const intercomMatch = textContent.match(/Intercom\s*([\d\s]+)/i);
+      const employeeId = empIdMatch ? empIdMatch[1] : '';
+
+      faculties.push({
+        id: employeeId || `legacy-${i}`,
+        name,
+        designation,
+        imageUrl: img,
+        profileUrl,
+        email: emailMatch ? emailMatch[0] : '',
+        employeeId,
+        intercom: intercomMatch ? intercomMatch[1].trim() : ''
+      });
+    });
+  }
+
+  return faculties;
+}
+
+/**
+ * Discovers a dedicated faculty listing subpage from a school page's own links
+ * (e.g. ".../scope-faculty/" from ".../school-of-computer-science-and-engineering-scope/").
+ * Same-origin links whose path ends in "faculty" are considered, preferring ones
+ * under the current page's directory.
+ */
+function findFacultySubpage(pageUrl: string, html: string): string | null {
+  const base = new URL(pageUrl);
+  const self = base.pathname.replace(/\/+$/, '');
+  const parent = base.origin + self + '/';
+  const candidates = new Set<string>();
+
+  const $ = cheerio.load(html);
+  $('a[href]').each((_i, el) => {
+    const href = $(el).attr('href') || '';
+    if (!href.toLowerCase().includes('faculty')) return;
+    try {
+      const u = new URL(href, base);
+      if (u.origin !== base.origin) return;
+      const path = u.pathname.replace(/\/+$/, '');
+      const last = path.split('/').filter(Boolean).pop() || '';
+      const isBareFaculty = path === '/faculty';
+      if ((last.endsWith('-faculty') || last === 'faculty') && !isBareFaculty) {
+        candidates.add(u.toString());
+      }
+    } catch {
+      /* ignore malformed hrefs */
+    }
+  });
+
+  const ranked = [...candidates].sort((a, b) => {
+    const aIn = a.startsWith(parent) ? 0 : 1;
+    const bIn = b.startsWith(parent) ? 0 : 1;
+    return aIn - bIn;
+  });
+  return ranked[0] ?? null;
 }
 
 export async function POST(req: Request) {
@@ -63,66 +204,33 @@ export async function POST(req: Request) {
 
     const url = rows[0].url;
     const html = await fetchHtml(url);
-    const $ = cheerio.load(html);
+    let faculties = extractFaculties(html);
 
-    const faculties: RosterFaculty[] = [];
-
-    $('article.exad-post-grid-three').each((i, el) => {
-      const titleEl = $(el).find('a.exad-post-grid-title').first();
-      const name = titleEl.text().trim();
-      if (!name) return;
-
-      const chennaiProfileUrl = titleEl.attr('href') || '';
-      const designation = $(el).find('.exad-post-grid-category a').first().text().trim() || 'Faculty';
-      const img = $(el).find('figure.exad-post-grid-thumbnail img').attr('src') || '';
-
-      const idMatch = img.match(/(?:uploads\/\d{4}\/\d{2}\/)(\d{3,})/);
-      const employeeId = idMatch ? idMatch[1] : '';
-      const profileUrl = employeeId
-        ? `https://directorycc.vit.ac.in/faculty/${employeeId}`
-        : chennaiProfileUrl;
-
-      faculties.push({
-        id: employeeId || `temp-${i}`,
-        name,
-        designation,
-        imageUrl: img,
-        profileUrl,
-        email: '',
-        employeeId,
-        intercom: ''
-      });
-    });
-
+    // Self-heal: stored URLs often point at school homepages whose faculty grids
+    // are client-rendered. If no cards were found, look for the school's dedicated
+    // "*-faculty" subpage (statically rendered) and parse that instead.
     if (faculties.length === 0) {
-      // Fallback to the legacy VIT page layout
-      $('.member-item, .staff-member, .vc_col-sm-3, .vc_col-sm-4').each((i, el) => {
-        const nameEl = $(el).find('h3, h4').first();
-        const name = nameEl.text().trim();
-        if (!name) return;
-
-        const designationEl = nameEl.next('h4, p, h5');
-        const designation = designationEl.text().trim() || 'Faculty';
-        const img = $(el).find('img').attr('src') || '';
-        const profileUrl = $(el).find('a').first().attr('href') || '';
-        const textContent = $(el).text();
-
-        const emailMatch = textContent.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/);
-        const empIdMatch = textContent.match(/Employee ID\s*(\d+)/i);
-        const intercomMatch = textContent.match(/Intercom\s*([\d\s]+)/i);
-        const employeeId = empIdMatch ? empIdMatch[1] : '';
-
-        faculties.push({
-          id: employeeId || `temp-${i}`,
-          name,
-          designation,
-          imageUrl: img,
-          profileUrl,
-          email: emailMatch ? emailMatch[0] : '',
-          employeeId,
-          intercom: intercomMatch ? intercomMatch[1].trim() : ''
-        });
-      });
+      const subpage = findFacultySubpage(url, html);
+      if (subpage && subpage !== url) {
+        try {
+          const subHtml = await fetchHtml(subpage);
+          faculties = extractFaculties(subHtml);
+          if (faculties.length > 0) {
+            try {
+              await pool.query(
+                `UPDATE faculty_directory_urls SET url = $1 WHERE id = $2 AND url <> $1`,
+                [subpage, schoolId]
+              );
+            } catch (e) {
+              const err = e instanceof Error ? e.message : String(e);
+              console.error('faculty/scrape self-heal update failed:', err);
+            }
+          }
+        } catch (e) {
+          const err = e instanceof Error ? e.message : String(e);
+          console.error(`faculty/scrape subpage fetch failed (${subpage}):`, err);
+        }
+      }
     }
 
     return NextResponse.json({ success: true, faculties });
