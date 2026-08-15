@@ -1,0 +1,171 @@
+import type { GoroboOrderLine } from "@/lib/gorobo/schema";
+import { computeQuote, type Quote } from "@/lib/gorobo/quote";
+
+export interface GoroboOrderRow {
+  id: string;
+  user_name: string;
+  phone_number: string;
+  items: GoroboOrderLine[];
+  total: number;
+  status: string;
+  subtotal: number;
+  discount_pct: number;
+  discount_amount: number;
+  gst_pct: number;
+  gst_amount: number;
+  shipment_cost: number;
+  notes: string;
+  created_at: string;
+}
+
+export interface GoroboOrderJson extends Quote {
+  id: string;
+  userName: string;
+  phoneNumber: string;
+  items: GoroboOrderLine[];
+  total: number;
+  status: string;
+  discountPct: number;
+  gstPct: number;
+  shipmentCost: number;
+  notes: string;
+  createdAt: string;
+}
+
+export function mapOrderRow(r: GoroboOrderRow): GoroboOrderJson {
+  const subtotal = Number(r.subtotal);
+  const discountPct = Number(r.discount_pct);
+  const discountAmount = Number(r.discount_amount);
+  const gstPct = Number(r.gst_pct);
+  const gstAmount = Number(r.gst_amount);
+  const shipmentCost = Number(r.shipment_cost);
+  const taxable = Math.round((subtotal - discountAmount) * 100) / 100;
+  const total = Number(r.total);
+  return {
+    id: r.id,
+    userName: r.user_name,
+    phoneNumber: r.phone_number,
+    items: Array.isArray(r.items) ? r.items : [],
+    status: r.status,
+    subtotal,
+    discountPct,
+    discountAmount,
+    taxable,
+    gstPct,
+    gstAmount,
+    shipmentCost,
+    total,
+    notes: r.notes || "",
+    createdAt: r.created_at,
+  };
+}
+
+export const ORDER_SELECT = `
+  SELECT id, user_name, phone_number, items, total, status, subtotal, discount_pct,
+         discount_amount, gst_pct, gst_amount, shipment_cost, notes, created_at
+  FROM gorobo_orders
+`;
+
+export interface ParsedQuoteBody {
+  lines: GoroboOrderLine[];
+  discountPct: number;
+  gstPct: number;
+  shipmentCost: number;
+  notes: string;
+}
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Validates a quote-editing payload: line items (inventory + custom), discount
+ * (0-10 hard cap), GST %, shipment cost and notes. Resolves inventory lines
+ * against the live catalog to snapshot basePrice/margin.
+ */
+export async function parseQuoteBody(body: any, pool: any): Promise<ParsedQuoteBody> {
+  const rawLines = Array.isArray(body?.items) ? body.items : null;
+  if (!rawLines || rawLines.length === 0 || rawLines.length > 100) {
+    throw new QuoteValidationError("items must be a non-empty array of up to 100 lines");
+  }
+
+  const inventoryIds = rawLines
+    .filter((l: any) => !l?.custom)
+    .map((l: any) => l?.itemId)
+    .filter(Boolean);
+
+  const catalog = new Map<string, { price: number; base_price: number; margin: number; in_stock: boolean }>();
+  if (inventoryIds.length > 0) {
+    const { rows } = await pool.query(
+      `SELECT id, price, base_price, margin, in_stock FROM gorobo_items WHERE id = ANY($1)`,
+      [inventoryIds]
+    );
+    for (const r of rows) catalog.set(r.id, r);
+  }
+
+  const lines: GoroboOrderLine[] = [];
+  for (const raw of rawLines) {
+    const quantity = Number(raw?.quantity);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+      throw new QuoteValidationError("each line needs an integer quantity between 1 and 99");
+    }
+
+    if (raw?.custom) {
+      const name = typeof raw?.name === "string" ? raw.name.trim() : "";
+      if (!name || name.length > 100) {
+        throw new QuoteValidationError("custom lines need a name of at most 100 characters");
+      }
+      const unitPrice = Number(raw?.unitPrice);
+      if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+        throw new QuoteValidationError(`unitPrice for custom line "${name}" must be >= 0`);
+      }
+      lines.push({ custom: true, name, quantity, unitPrice: round2(unitPrice), basePrice: 0, margin: 0 });
+      continue;
+    }
+
+    const itemId = typeof raw?.itemId === "string" ? raw.itemId.trim() : "";
+    if (!itemId || itemId.length > 64) {
+      throw new QuoteValidationError("each inventory line needs a valid itemId");
+    }
+    const item = catalog.get(itemId);
+    if (!item) {
+      throw new QuoteValidationError(`Unknown item id: ${itemId}`);
+    }
+    if (!item.in_stock) {
+      throw new QuoteValidationError(`Item "${itemId}" is out of stock`);
+    }
+    const unitPrice = raw?.unitPrice !== undefined ? Number(raw.unitPrice) : Number(item.price);
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      throw new QuoteValidationError(`unitPrice for "${itemId}" must be >= 0`);
+    }
+    lines.push({
+      itemId,
+      quantity,
+      unitPrice: round2(unitPrice),
+      basePrice: Number(item.base_price),
+      margin: Number(item.margin),
+    });
+  }
+
+  const discountPct = body?.discountPct !== undefined ? Number(body.discountPct) : 0;
+  if (!Number.isFinite(discountPct) || discountPct < 0 || discountPct > 10) {
+    throw new QuoteValidationError("discountPct must be between 0 and 10 (hard cap 10%)");
+  }
+  const gstPct = body?.gstPct !== undefined ? Number(body.gstPct) : 18;
+  if (!Number.isFinite(gstPct) || gstPct < 0 || gstPct > 100) {
+    throw new QuoteValidationError("gstPct must be between 0 and 100");
+  }
+  const shipmentCost = body?.shipmentCost !== undefined ? Number(body.shipmentCost) : 0;
+  if (!Number.isFinite(shipmentCost) || shipmentCost < 0) {
+    throw new QuoteValidationError("shipmentCost must be >= 0");
+  }
+  const notes = typeof body?.notes === "string" ? body.notes.trim().slice(0, 500) : "";
+
+  return {
+    lines,
+    discountPct: round2(discountPct),
+    gstPct: round2(gstPct),
+    shipmentCost: round2(shipmentCost),
+    notes,
+  };
+}
+
+export class QuoteValidationError extends Error {}
