@@ -27,7 +27,7 @@ function generateSignature(payload: string): string {
  * Signs a username to create a secure admin token.
  * Format: base64(payload).signature
  */
-export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users', 'transport']): string {
+export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users', 'transport', 'gorobo']): string {
     const payloadObj = {
         username,
         role,
