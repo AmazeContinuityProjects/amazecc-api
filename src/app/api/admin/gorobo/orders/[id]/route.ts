@@ -158,7 +158,7 @@ export async function PUT(req: Request, context: RouteContext) {
            total = $9
        WHERE id = $10
        RETURNING id, user_name, phone_number, items, total, status, subtotal, discount_pct,
-                 discount_amount, gst_pct, gst_amount, shipment_cost, notes, created_at`,
+                 discount_amount, gst_pct, gst_amount, shipment_cost, notes, delivery_mode, maps_url, created_at`,
       [
         JSON.stringify(parsed.lines),
         quote.subtotal,

@@ -147,6 +147,10 @@ export async function POST(req: Request) {
     quantity,
   }));
 
+  const deliveryMode =
+    body?.deliveryMode === "buzz" || body?.deliveryMode === "bolt" ? "buzz" : "normal";
+  const mapsUrl = typeof body?.mapsUrl === "string" ? body.mapsUrl.trim() : "";
+
   try {
     await ensureGoroboSchema();
 
@@ -192,12 +196,14 @@ export async function POST(req: Request) {
       phone_number: string;
       items: GoroboOrderLine[];
       total: number;
+      delivery_mode: string;
+      maps_url: string;
       created_at: string;
     }>(
-      `INSERT INTO gorobo_orders (user_name, phone_number, items, total)
-       VALUES ($1, $2, $3::jsonb, $4)
-       RETURNING id, user_name, phone_number, items, total, created_at`,
-      [name, phone, JSON.stringify(orderLines), total]
+      `INSERT INTO gorobo_orders (user_name, phone_number, items, total, delivery_mode, maps_url)
+       VALUES ($1, $2, $3::jsonb, $4, $5, $6)
+       RETURNING id, user_name, phone_number, items, total, delivery_mode, maps_url, created_at`,
+      [name, phone, JSON.stringify(orderLines), total, deliveryMode, mapsUrl]
     );
 
     const order = orderRows[0];
@@ -210,6 +216,8 @@ export async function POST(req: Request) {
           phone_number: order.phone_number,
           items: order.items,
           total: Number(order.total),
+          delivery_mode: order.delivery_mode,
+          maps_url: order.maps_url,
           created_at: order.created_at,
         },
       },
