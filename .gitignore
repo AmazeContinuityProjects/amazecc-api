@@ -42,3 +42,4 @@ next-env.d.ts
 
 Eventhub_scrapper_modals/
 git-filter-repo.py
+dev-server.log

@@ -15,6 +15,8 @@ export interface GoroboOrderRow {
   gst_amount: number;
   shipment_cost: number;
   notes: string;
+  delivery_mode?: string;
+  maps_url?: string;
   created_at: string;
 }
 
@@ -29,6 +31,8 @@ export interface GoroboOrderJson extends Quote {
   gstPct: number;
   shipmentCost: number;
   notes: string;
+  deliveryMode: string;
+  mapsUrl?: string;
   createdAt: string;
 }
 
@@ -56,13 +60,15 @@ export function mapOrderRow(r: GoroboOrderRow): GoroboOrderJson {
     shipmentCost,
     total,
     notes: r.notes || "",
+    deliveryMode: r.delivery_mode || "normal",
+    mapsUrl: r.maps_url || "",
     createdAt: r.created_at,
   };
 }
 
 export const ORDER_SELECT = `
   SELECT id, user_name, phone_number, items, total, status, subtotal, discount_pct,
-         discount_amount, gst_pct, gst_amount, shipment_cost, notes, created_at
+         discount_amount, gst_pct, gst_amount, shipment_cost, notes, delivery_mode, maps_url, created_at
   FROM gorobo_orders
 `;
 
