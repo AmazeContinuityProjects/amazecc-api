@@ -1,11 +1,13 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
-// We can reuse ADMIN_SECRET or use a CLUB_SECRET if available. For now, use ADMIN_SECRET since it's already set.
-if (!process.env.ADMIN_SECRET) {
-  throw new Error('ADMIN_SECRET environment variable is required');
+function getSecret(): string {
+    const secret = process.env.ADMIN_SECRET;
+    if (!secret) {
+        throw new Error('ADMIN_SECRET environment variable is required');
+    }
+    return secret;
 }
-const SECRET = process.env.ADMIN_SECRET;
 
 export interface ClubRole {
     club_id: string;
@@ -25,7 +27,7 @@ export interface ClubTokenPayload {
  */
 function generateSignature(payload: string): string {
     return crypto
-        .createHmac('sha256', SECRET)
+        .createHmac('sha256', getSecret())
         .update(payload)
         .digest('hex');
 }
