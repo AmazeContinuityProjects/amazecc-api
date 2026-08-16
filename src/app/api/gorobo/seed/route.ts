@@ -77,6 +77,10 @@ export async function POST(req: Request) {
     data = body.items;
   }
 
+  // Replace semantics by default: rows whose ids are not in the payload are
+  // pruned so stale ids (e.g. the old slug-based catalog) don't linger.
+  const replace = body?.replace !== false;
+
   try {
     await ensureGoroboSchema();
 
@@ -120,6 +124,12 @@ export async function POST(req: Request) {
         );
       }
 
+      if (replace) {
+        await client.query(`DELETE FROM gorobo_items WHERE NOT (id = ANY($1))`, [
+          data.map((item) => item.id),
+        ]);
+      }
+
       await client.query("COMMIT");
     } catch (error: any) {
       await client.query("ROLLBACK");
@@ -131,7 +141,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "GoRoBo items seeded successfully",
-      stats: { items: data.length },
+      stats: { items: data.length, replaced: replace },
     });
   } catch (error: any) {
     console.error("gorobo seed POST error:", error.message);

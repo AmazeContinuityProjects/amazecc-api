@@ -1,10 +1,13 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
-if (!process.env.ADMIN_SECRET) {
-  throw new Error('ADMIN_SECRET environment variable is required');
+function getSecret(): string {
+    const secret = process.env.ADMIN_SECRET;
+    if (!secret) {
+        throw new Error('ADMIN_SECRET environment variable is required');
+    }
+    return secret;
 }
-const SECRET = process.env.ADMIN_SECRET;
 
 export interface AdminTokenPayload {
     username: string;
@@ -18,7 +21,7 @@ export interface AdminTokenPayload {
  */
 function generateSignature(payload: string): string {
     return crypto
-        .createHmac('sha256', SECRET)
+        .createHmac('sha256', getSecret())
         .update(payload)
         .digest('hex');
 }
