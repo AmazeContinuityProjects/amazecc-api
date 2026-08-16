@@ -1,6 +1,6 @@
 [
   {
-    "id": "60w-soldering-iron-with-temperature-control",
+    "id": "1",
     "name": "60W soldering iron with temperature control",
     "description": "Soldering iron for assembling and repairing electronics.",
     "price": 315,
@@ -11,7 +11,7 @@
     "margin": 35
   },
   {
-    "id": "6x6x5-tactile-push-button-switch-non-latching",
+    "id": "2",
     "name": "6x6x5 Tactile push button switch (non latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -22,7 +22,7 @@
     "margin": 1
   },
   {
-    "id": "6x6x6-tactile-push-button-switch-non-latching",
+    "id": "3",
     "name": "6x6x6 Tactile push button switch (non latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -33,7 +33,7 @@
     "margin": 1
   },
   {
-    "id": "6x6x7-tactile-push-button-switch-non-latching",
+    "id": "4",
     "name": "6x6x7 Tactile push button switch (non latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -44,7 +44,7 @@
     "margin": 1
   },
   {
-    "id": "6x6x8-tactile-push-button-switch-non-latching",
+    "id": "5",
     "name": "6x6x8 Tactile push button switch (non latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -55,7 +55,7 @@
     "margin": 1
   },
   {
-    "id": "6x6x9-tactile-push-button-switch-non-latching",
+    "id": "6",
     "name": "6x6x9 Tactile push button switch (non latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -66,7 +66,7 @@
     "margin": 1
   },
   {
-    "id": "7x7x14-tactile-push-switch-latching",
+    "id": "7",
     "name": "7x7x14 Tactile push switch (latching)",
     "description": "Small tactile switch for buttons and inputs on your projects.",
     "price": 6,
@@ -77,7 +77,7 @@
     "margin": 1
   },
   {
-    "id": "800-point-solderless-breadboard-full-size-prototyping-board",
+    "id": "8",
     "name": "800 Point Solderless Breadboard – Full Size Prototyping Board",
     "description": "Solderless prototyping board for Arduino and electronics projects.",
     "price": 89,
@@ -88,7 +88,7 @@
     "margin": 15
   },
   {
-    "id": "9v-hw-battery-cap",
+    "id": "9",
     "name": "9v HW Battery Cap",
     "description": "9V battery snap cap for powering circuits.",
     "price": 8,
@@ -99,7 +99,7 @@
     "margin": 1
   },
   {
-    "id": "arduino-9v-battery-connector-with-dc-jack",
+    "id": "10",
     "name": "Arduino 9V Battery Connector with DC Jack",
     "description": "Connector to power projects from a 9V battery.",
     "price": 22,
@@ -110,7 +110,7 @@
     "margin": 3
   },
   {
-    "id": "arduino-nano-usb-cable-high-quality-usb-to-mini-b-cable",
+    "id": "11",
     "name": "Arduino Nano USB Cable High Quality USB to Mini-B Cable",
     "description": "USB cable for power and data connections.",
     "price": 46,
@@ -121,7 +121,7 @@
     "margin": 7
   },
   {
-    "id": "arduino-uno-usb-cable-high-speed-usb-type-a-to-b-cable",
+    "id": "12",
     "name": "Arduino Uno USB Cable – High-Speed USB Type-A to B Cable",
     "description": "USB cable for power and data connections.",
     "price": 46,
@@ -132,7 +132,7 @@
     "margin": 7
   },
   {
-    "id": "breadboard-400-points-solderless-prototyping-board-for-arduino-electronics-projects",
+    "id": "13",
     "name": "Breadboard 400 Points – Solderless Prototyping Board for Arduino & Electronics Projects",
     "description": "Solderless prototyping board for Arduino and electronics projects.",
     "price": 114,
@@ -143,7 +143,7 @@
     "margin": 15
   },
   {
-    "id": "buzzer-large-9v-12v",
+    "id": "14",
     "name": "Buzzer Large 9v -12v",
     "description": "Buzzer for audio alerts and feedback.",
     "price": 32,
@@ -154,7 +154,7 @@
     "margin": 7
   },
   {
-    "id": "dc-jack-male-with-wire",
+    "id": "15",
     "name": "DC jack Male with wire",
     "description": "DC power jack for barrel-style power adapters.",
     "price": 8,
@@ -165,7 +165,7 @@
     "margin": 1
   },
   {
-    "id": "digital-multimeter-ac-dc-voltage-current-resistance-tester-for-electronics-projects",
+    "id": "16",
     "name": "Digital Multimeter – AC/DC Voltage, Current, Resistance Tester for Electronics Projects",
     "description": "Digital multimeter for measuring voltage, current, and resistance.",
     "price": 229,
@@ -176,7 +176,7 @@
     "margin": 20
   },
   {
-    "id": "female-dc-jack-wire",
+    "id": "17",
     "name": "Female Dc jack wire",
     "description": "DC power jack for barrel-style power adapters.",
     "price": 28,
@@ -187,7 +187,7 @@
     "margin": 3
   },
   {
-    "id": "female-headers-pack-of-5-pieces",
+    "id": "18",
     "name": "Female Headers – Pack of 5 Pieces",
     "description": "Pin headers for board-to-board and module connections.",
     "price": 72,
@@ -198,7 +198,7 @@
     "margin": 15
   },
   {
-    "id": "female-power-connector-for-arduino-9v-12v",
+    "id": "19",
     "name": "Female Power Connector for Arduino – 9v/12V",
     "description": "Connector for reliable power and data links.",
     "price": 17,
@@ -209,7 +209,7 @@
     "margin": 3
   },
   {
-    "id": "female-to-female-connecting-wires-20cm",
+    "id": "20",
     "name": "Female to Female Connecting Wires – 20CM",
     "description": "Accessory or cable for electronics and robotics builds.",
     "price": 90,
@@ -220,7 +220,7 @@
     "margin": 15
   },
   {
-    "id": "female-to-female-jumper-wires-40-pcs",
+    "id": "21",
     "name": "Female to Female Jumper Wires – 40 PCS",
     "description": "Flexible jumper wires for quick, solder-free breadboard connections.",
     "price": 67,
@@ -231,7 +231,7 @@
     "margin": 7
   },
   {
-    "id": "glue-gun-60watts",
+    "id": "22",
     "name": "Glue Gun 60Watts",
     "description": "Hot glue tools and sticks for bonding and holding builds together.",
     "price": 285,
@@ -242,7 +242,7 @@
     "margin": 35
   },
   {
-    "id": "glue-stick-large-5-nos",
+    "id": "23",
     "name": "Glue Stick Large 5 Nos",
     "description": "Hot glue tools and sticks for bonding and holding builds together.",
     "price": 90,
@@ -253,7 +253,7 @@
     "margin": 15
   },
   {
-    "id": "male-headers-2-54mm",
+    "id": "24",
     "name": "Male Headers 2.54mm",
     "description": "Pin headers for board-to-board and module connections.",
     "price": 17,
@@ -264,7 +264,7 @@
     "margin": 3
   },
   {
-    "id": "male-power-connector-for-arduino-9v-12v",
+    "id": "25",
     "name": "Male Power Connector for Arduino – 9v/12V",
     "description": "Connector for reliable power and data links.",
     "price": 17,
@@ -275,7 +275,7 @@
     "margin": 3
   },
   {
-    "id": "male-to-female-connecting-wires-20cm",
+    "id": "26",
     "name": "Male to Female Connecting Wires – 20CM",
     "description": "Accessory or cable for electronics and robotics builds.",
     "price": 90,
@@ -286,7 +286,7 @@
     "margin": 15
   },
   {
-    "id": "male-to-female-jumper-wires-40-pcs",
+    "id": "27",
     "name": "Male to Female Jumper Wires – 40 PCS",
     "description": "Flexible jumper wires for quick, solder-free breadboard connections.",
     "price": 67,
@@ -297,7 +297,7 @@
     "margin": 7
   },
   {
-    "id": "male-to-male-connecting-wires-20cm",
+    "id": "28",
     "name": "Male to Male Connecting Wires – 20CM",
     "description": "Accessory or cable for electronics and robotics builds.",
     "price": 90,
@@ -308,7 +308,7 @@
     "margin": 15
   },
   {
-    "id": "male-to-male-jumper-wires-40-pcs",
+    "id": "29",
     "name": "Male to Male Jumper Wires – 40 PCS",
     "description": "Flexible jumper wires for quick, solder-free breadboard connections.",
     "price": 67,
@@ -319,7 +319,7 @@
     "margin": 7
   },
   {
-    "id": "micro-usb-type-b-cable-for-esp32",
+    "id": "30",
     "name": "Micro usb type B cable for esp32",
     "description": "Micro USB cable for powering and programming development boards.",
     "price": 95,
@@ -330,7 +330,7 @@
     "margin": 15
   },
   {
-    "id": "mini-breadboard-70-points-solderless-prototyping-board-for-arduino-diy-projects",
+    "id": "31",
     "name": "Mini Breadboard 70 Points – Solderless Prototyping Board for Arduino & DIY Projects",
     "description": "Solderless prototyping board for Arduino and electronics projects.",
     "price": 46,
@@ -341,7 +341,7 @@
     "margin": 7
   },
   {
-    "id": "perfboard-for-prototyping-for-diy-electronics",
+    "id": "32",
     "name": "Perfboard for Prototyping for DIY Electronics",
     "description": "Perfboard for soldering permanent custom circuits.",
     "price": 104,
@@ -352,7 +352,7 @@
     "margin": 15
   },
   {
-    "id": "rc522-rfid-cards-13-56mhz-mifare-classic-1k",
+    "id": "33",
     "name": "RC522 RFID Cards 13.56MHz MIFARE Classic 1K",
     "description": "RFID cards for access-control and identification projects.",
     "price": 18,
@@ -363,7 +363,7 @@
     "margin": 3
   },
   {
-    "id": "servo-tester-5v-module",
+    "id": "34",
     "name": "Servo Tester 5v Module",
     "description": "Module to test and drive servo motors without a microcontroller.",
     "price": 114,
@@ -374,7 +374,7 @@
     "margin": 15
   },
   {
-    "id": "slide-switch",
+    "id": "35",
     "name": "Slide Switch",
     "description": "Simple slide switch for on/off control of a circuit.",
     "price": 285,
@@ -385,7 +385,7 @@
     "margin": 35
   },
   {
-    "id": "soldering-iron-25-watts",
+    "id": "36",
     "name": "Soldering Iron 25 Watts",
     "description": "Soldering iron for assembling and repairing electronics.",
     "price": 285,
@@ -396,7 +396,7 @@
     "margin": 35
   },
   {
-    "id": "soldering-stand",
+    "id": "37",
     "name": "Soldering Stand",
     "description": "Stand that holds a hot soldering iron safely between uses.",
     "price": 95,
@@ -407,7 +407,7 @@
     "margin": 15
   },
   {
-    "id": "wire-22-awg-1-mtr",
+    "id": "38",
     "name": "Wire 22 AWG ( 1 Mtr )",
     "description": "22 AWG hook-up wire for general-purpose circuit wiring.",
     "price": 37,
@@ -418,7 +418,7 @@
     "margin": 7
   },
   {
-    "id": "wire-stripper",
+    "id": "39",
     "name": "Wire Stripper",
     "description": "Tool for stripping insulation off wires quickly and cleanly.",
     "price": 110,
@@ -429,7 +429,7 @@
     "margin": 15
   },
   {
-    "id": "arduino-mega-ch340",
+    "id": "40",
     "name": "Arduino Mega CH340",
     "description": "Arduino development board for embedded and robotics projects.",
     "price": 1269,
@@ -440,7 +440,7 @@
     "margin": 70
   },
   {
-    "id": "arduino-nano-r3-ch340-soldered",
+    "id": "41",
     "name": "Arduino Nano R3 CH340 Soldered",
     "description": "Arduino development board for embedded and robotics projects.",
     "price": 304,
@@ -451,7 +451,7 @@
     "margin": 35
   },
   {
-    "id": "arduino-nano-r3-ch340-un-soldered",
+    "id": "42",
     "name": "Arduino Nano R3 CH340 Un-Soldered",
     "description": "Arduino development board for embedded and robotics projects.",
     "price": 294,
@@ -462,7 +462,7 @@
     "margin": 35
   },
   {
-    "id": "arduino-uno-r3-atmega328p-compaitable-dip-version",
+    "id": "43",
     "name": "Arduino Uno R3 ATmega328p Compaitable DIP Version",
     "description": "Arduino development board for embedded and robotics projects.",
     "price": 549,
@@ -473,7 +473,7 @@
     "margin": 50
   },
   {
-    "id": "arduino-uno-smd-r3-compaitable",
+    "id": "44",
     "name": "Arduino Uno SMD R3 Compaitable",
     "description": "Arduino development board for embedded and robotics projects.",
     "price": 304,
@@ -484,7 +484,7 @@
     "margin": 35
   },
   {
-    "id": "combo-1-cell-18650-rechargeable-li-ion-battery-with-1-cell-battery-holder",
+    "id": "45",
     "name": "Combo – 1 Cell 18650 Rechargeable Li-ion Battery with 1 Cell Battery Holder",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 144,
@@ -495,7 +495,7 @@
     "margin": 15
   },
   {
-    "id": "combo-100-rpm-bo-motor-for-robotic-car-2-pieces",
+    "id": "46",
     "name": "Combo – 100 RPM BO Motor for Robotic Car (2 Pieces)",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 144,
@@ -506,7 +506,7 @@
     "margin": 15
   },
   {
-    "id": "combo-100-rpm-bo-motor-for-robotic-car-4-pieces",
+    "id": "47",
     "name": "Combo – 100 RPM BO Motor for Robotic Car (4 Pieces)",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 284,
@@ -517,7 +517,7 @@
     "margin": 35
   },
   {
-    "id": "combo-100-rpm-bo-motor-for-robotic-car-4-pieces-2",
+    "id": "48",
     "name": "Combo – 100 RPM BO Motor for Robotic Car (4 Pieces)",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 284,
@@ -528,7 +528,7 @@
     "margin": 35
   },
   {
-    "id": "combo-100k-potentiometer-5-pieces-variable-resistors",
+    "id": "49",
     "name": "Combo – 100K Potentiometer (5 Pieces) – Variable Resistors",
     "description": "Potentiometer for adjustable analog input.",
     "price": 56,
@@ -539,7 +539,7 @@
     "margin": 7
   },
   {
-    "id": "combo-10k-potentiometer-5-pieces-variable-resistors",
+    "id": "50",
     "name": "Combo – 10K Potentiometer (5 Pieces) – Variable Resistors",
     "description": "Potentiometer for adjustable analog input.",
     "price": 56,
@@ -550,7 +550,7 @@
     "margin": 7
   },
   {
-    "id": "combo-2-cell-18650-rechargeable-li-ion-battery-with-2-cell-battery-holder",
+    "id": "51",
     "name": "Combo – 2 Cell 18650 Rechargeable Li-ion Battery with 2 Cell Battery Holder",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 284,
@@ -561,7 +561,7 @@
     "margin": 35
   },
   {
-    "id": "combo-3-cell-18650-rechargeable-li-ion-battery-with-3-cell-battery-holder",
+    "id": "52",
     "name": "Combo – 3 Cell 18650 Rechargeable Li-ion Battery with 3 Cell Battery Holder",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 434,
@@ -572,7 +572,7 @@
     "margin": 50
   },
   {
-    "id": "combo-arduino-uno-r3-atmega328p-compaitable-dip-version-with-cable",
+    "id": "53",
     "name": "Combo – Arduino Uno R3 ATmega328p Compaitable Dip Version with Cable",
     "description": "Combo pack of matching parts at a bundled price.",
     "price": 599,
@@ -583,7 +583,7 @@
     "margin": 50
   },
   {
-    "id": "combo-bo-wheel-for-robotic-car-2-pieces",
+    "id": "54",
     "name": "Combo – BO Wheel for Robotic Car (2 Pieces)",
     "description": "Wheel for robot and drone builds.",
     "price": 76,
@@ -594,7 +594,7 @@
     "margin": 15
   },
   {
-    "id": "combo-bo-wheel-for-robotic-car-4-pieces",
+    "id": "55",
     "name": "Combo – BO Wheel for Robotic Car (4 Pieces)",
     "description": "Wheel for robot and drone builds.",
     "price": 124,
@@ -605,7 +605,7 @@
     "margin": 15
   },
   {
-    "id": "combo-bo-wheel-with-100-rpm-bo-motors-2-pieces",
+    "id": "56",
     "name": "Combo – BO Wheel with 100 RPM BO Motors (2 Pieces)",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 209,
@@ -616,7 +616,7 @@
     "margin": 20
   },
   {
-    "id": "combo-jumper-wires-all-types-male-to-male-male-to-female-female-to-female-each-type-40-pieces",
+    "id": "57",
     "name": "Combo – Jumper Wires All Types (Male to Male, Male to Female, Female to Female) each type 40 Pieces",
     "description": "Flexible jumper wires for quick, solder-free breadboard connections.",
     "price": 219,
@@ -627,7 +627,7 @@
     "margin": 20
   },
   {
-    "id": "combo-jumper-wires-each-type-20-pieces-with-800-points-breadboard",
+    "id": "58",
     "name": "Combo – Jumper Wires each type 20 Pieces with 800 points Breadboard",
     "description": "Flexible jumper wires for quick, solder-free breadboard connections.",
     "price": 219,
@@ -638,7 +638,7 @@
     "margin": 20
   },
   {
-    "id": "combo-l293d-motor-driver-shield-for-arduino-uno-2-pieces",
+    "id": "59",
     "name": "Combo – L293D Motor Driver Shield for Arduino Uno (2 Pieces)",
     "description": "Motor driver module to control motors from a microcontroller.",
     "price": 304,
@@ -649,7 +649,7 @@
     "margin": 35
   },
   {
-    "id": "combo-l29n-motor-driver-shield-for-arduino-raspberry-pi-2-pieces",
+    "id": "60",
     "name": "Combo – L29N Motor Driver Shield for Arduino/Raspberry PI (2 Pieces)",
     "description": "Motor driver module to control motors from a microcontroller.",
     "price": 294,
@@ -660,7 +660,7 @@
     "margin": 35
   },
   {
-    "id": "combo-relay-1-channel-5v-for-arduino-raspberry-pi-2-pieces",
+    "id": "61",
     "name": "Combo – Relay 1 Channel 5V for Arduino/Raspberry Pi (2 Pieces)",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 124,
@@ -671,7 +671,7 @@
     "margin": 15
   },
   {
-    "id": "combo-relay-2-channel-5v-for-arduino-raspberry-pi-2-pieces",
+    "id": "62",
     "name": "Combo – Relay 2 Channel 5V for Arduino/Raspberry PI (2 Pieces)",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 219,
@@ -682,7 +682,7 @@
     "margin": 20
   },
   {
-    "id": "combo-relay-4-channel-5v-for-arduino-raspberry-pi-2-pieces",
+    "id": "63",
     "name": "Combo – Relay 4 Channel 5V for Arduino/Raspberry Pi (2 Pieces)",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 364,
@@ -693,7 +693,7 @@
     "margin": 35
   },
   {
-    "id": "combo-sg-90-tower-pro-servo-motor-2-pieces",
+    "id": "64",
     "name": "Combo – SG 90 Tower Pro Servo Motor (2 Pieces)",
     "description": "Servo motor for precise angular motion.",
     "price": 284,
@@ -704,7 +704,7 @@
     "margin": 35
   },
   {
-    "id": "combo-sg-90-tower-pro-servo-motor-4-pieces",
+    "id": "65",
     "name": "Combo – SG 90 Tower Pro Servo Motor (4 Pieces)",
     "description": "Servo motor for precise angular motion.",
     "price": 549,
@@ -715,7 +715,7 @@
     "margin": 50
   },
   {
-    "id": "0-96-inch-oled-display-module-spi-i2c-4-pin-blue-for-arduino-esp32-raspberry-pi",
+    "id": "66",
     "name": "0.96 Inch OLED Display Module (SPI/I2C, 4-Pin, Blue) for Arduino, ESP32 & Raspberry Pi",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 219,
@@ -726,7 +726,7 @@
     "margin": 20
   },
   {
-    "id": "2-4-inch-spi-interface-tft-lcd-touch-display",
+    "id": "67",
     "name": "2.4 inch SPI interface TFT LCD touch display",
     "description": "LCD module for character and text displays.",
     "price": 940,
@@ -737,7 +737,7 @@
     "margin": 50
   },
   {
-    "id": "5mm-blue-diffused-led",
+    "id": "68",
     "name": "5mm Blue Diffused LED",
     "description": "LED for indicators, lighting, and displays.",
     "price": 4,
@@ -748,7 +748,7 @@
     "margin": 1
   },
   {
-    "id": "5mm-blue-diffused-led-2",
+    "id": "69",
     "name": "5mm Blue Diffused LED",
     "description": "LED for indicators, lighting, and displays.",
     "price": 4,
@@ -759,7 +759,7 @@
     "margin": 1
   },
   {
-    "id": "5mm-ldr-sensor-light-dependent-resistor",
+    "id": "70",
     "name": "5mm LDR Sensor | Light Dependent Resistor",
     "description": "Light-dependent resistor for light sensing.",
     "price": 13,
@@ -770,7 +770,7 @@
     "margin": 3
   },
   {
-    "id": "5mm-red-led-diode",
+    "id": "71",
     "name": "5mm Red LED Diode",
     "description": "LED for indicators, lighting, and displays.",
     "price": 4,
@@ -781,7 +781,7 @@
     "margin": 1
   },
   {
-    "id": "5mm-yellow-diffused-led",
+    "id": "72",
     "name": "5mm Yellow Diffused LED",
     "description": "LED for indicators, lighting, and displays.",
     "price": 4,
@@ -792,7 +792,7 @@
     "margin": 1
   },
   {
-    "id": "7-segment-display",
+    "id": "73",
     "name": "7 segment display",
     "description": "Seven-segment display for numeric output.",
     "price": 18,
@@ -803,7 +803,7 @@
     "margin": 3
   },
   {
-    "id": "green-led-5mm",
+    "id": "74",
     "name": "Green LED – 5mm",
     "description": "LED for indicators, lighting, and displays.",
     "price": 4,
@@ -814,7 +814,7 @@
     "margin": 1
   },
   {
-    "id": "i2c-module-for-16x2-lcd-display",
+    "id": "75",
     "name": "I2C Module for 16x2 LCD Display",
     "description": "LCD module for character and text displays.",
     "price": 76,
@@ -825,7 +825,7 @@
     "margin": 15
   },
   {
-    "id": "laser-red-650nm",
+    "id": "76",
     "name": "laser Red 650nm",
     "description": "Display or LED module for output and feedback in projects.",
     "price": 28,
@@ -836,7 +836,7 @@
     "margin": 3
   },
   {
-    "id": "lcd-16x2-blue-backlight-display",
+    "id": "77",
     "name": "LCD 16x2 Blue Backlight Display",
     "description": "LCD module for character and text displays.",
     "price": 200,
@@ -847,7 +847,7 @@
     "margin": 20
   },
   {
-    "id": "lcd-16x2-with-i2c-soldered-display",
+    "id": "78",
     "name": "LCD 16x2 with I2C Soldered Display",
     "description": "LCD module for character and text displays.",
     "price": 315,
@@ -858,7 +858,7 @@
     "margin": 35
   },
   {
-    "id": "lcd-20x4-display-large-character-lcd-module-for-arduino-raspberry-pi",
+    "id": "79",
     "name": "LCD 20x4 Display | Large Character LCD Module for Arduino & Raspberry Pi",
     "description": "LCD module for character and text displays.",
     "price": 549,
@@ -869,7 +869,7 @@
     "margin": 50
   },
   {
-    "id": "lcd-20x4-green-backlight-display",
+    "id": "80",
     "name": "LCD 20x4 Green Backlight Display",
     "description": "LCD module for character and text displays.",
     "price": 600,
@@ -880,7 +880,7 @@
     "margin": 50
   },
   {
-    "id": "oled-1-3-inch-white-pixel",
+    "id": "81",
     "name": "OLED 1.3 Inch White Pixel",
     "description": "LED for indicators, lighting, and displays.",
     "price": 385,
@@ -891,7 +891,7 @@
     "margin": 35
   },
   {
-    "id": "original-jhd-16x2-character-lcd-display-with-green-backlight",
+    "id": "82",
     "name": "Original JHD 16x2 Character LCD Display with Green Backlight",
     "description": "LCD module for character and text displays.",
     "price": 154,
@@ -902,7 +902,7 @@
     "margin": 20
   },
   {
-    "id": "rgb-led-5mm",
+    "id": "83",
     "name": "RGB LED- 5mm",
     "description": "RGB LED for full-colour lighting effects.",
     "price": 18,
@@ -913,7 +913,7 @@
     "margin": 3
   },
   {
-    "id": "rgb-led-7mm",
+    "id": "84",
     "name": "RGB LED- 7mm",
     "description": "RGB LED for full-colour lighting effects.",
     "price": 28,
@@ -924,7 +924,7 @@
     "margin": 3
   },
   {
-    "id": "rtc-timer-relay-module-real-time-clock-24h-programmable-timer-controller-copy",
+    "id": "85",
     "name": "RTC Timer Relay Module – Real Time Clock 24H Programmable Timer Controller (Copy)",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 4,
@@ -935,7 +935,7 @@
     "margin": 1
   },
   {
-    "id": "soil-npk-sensor-rs485",
+    "id": "86",
     "name": "SOIL NPK Sensor RS485",
     "description": "Display or LED module for output and feedback in projects.",
     "price": 3069,
@@ -946,7 +946,7 @@
     "margin": 150
   },
   {
-    "id": "tsop-ir-receiver-vs1838b",
+    "id": "87",
     "name": "TSOP IR Receiver VS1838B",
     "description": "Display or LED module for output and feedback in projects.",
     "price": 23,
@@ -957,7 +957,7 @@
     "margin": 3
   },
   {
-    "id": "esp-01-wifi-module-esp8266-wireless-transceiver",
+    "id": "88",
     "name": "ESP-01 WiFi Module ESP8266 Wireless Transceiver",
     "description": "ESP8266 WiFi development board for IoT and home automation.",
     "price": 164,
@@ -968,7 +968,7 @@
     "margin": 20
   },
   {
-    "id": "esp32-c3-super-mini",
+    "id": "89",
     "name": "ESP32 C3- Super Mini",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 600,
@@ -979,7 +979,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-cam-wifi-module-programmer-board",
+    "id": "90",
     "name": "ESP32 CAM WiFi Module Programmer board",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 164,
@@ -990,7 +990,7 @@
     "margin": 20
   },
   {
-    "id": "esp32-development-board-type-c-usb-ch340c-wifi-bluetooth-dual-core-mcu",
+    "id": "91",
     "name": "ESP32 Development Board Type-C USB CH340C WiFi & Bluetooth Dual-Core MCU",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 499,
@@ -1001,7 +1001,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-expansion-board-30-pins",
+    "id": "92",
     "name": "ESP32 Expansion Board 30 pins",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 220,
@@ -1012,7 +1012,7 @@
     "margin": 20
   },
   {
-    "id": "esp32-expansion-board-38-pins",
+    "id": "93",
     "name": "ESP32 Expansion Board 38 pins",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 245,
@@ -1023,7 +1023,7 @@
     "margin": 35
   },
   {
-    "id": "esp32-s3-fh4r2-super-mini",
+    "id": "94",
     "name": "ESP32 S3-FH4R2 Super Mini",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 500,
@@ -1034,7 +1034,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-wroom-devikit-v1-30-pins",
+    "id": "95",
     "name": "ESP32 WROOM DEVIKIT V1 30 Pins",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 400,
@@ -1045,7 +1045,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-wroom-nodemcu-38-pin",
+    "id": "96",
     "name": "ESP32 WROOM Nodemcu 38 Pin",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 650,
@@ -1056,7 +1056,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-cam-wifi-bluetooth-module-with-ov2640-2mp-camera-ideal-for-face-recognition-iot-projects",
+    "id": "97",
     "name": "ESP32-CAM WiFi Bluetooth Module with OV2640 2MP Camera Ideal for Face Recognition & IoT Projects",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 749,
@@ -1067,7 +1067,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-s3-wroom-1-n16-r8-development-board",
+    "id": "98",
     "name": "ESP32-S3-WROOM-1-N16-R8 Development Board",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 570,
@@ -1078,7 +1078,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-s3-wroom-1u-n16-official-espressif-system-on-module-chip",
+    "id": "99",
     "name": "ESP32-S3-WROOM-1U-N16 official Espressif System-on-Module Chip",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 420,
@@ -1089,7 +1089,7 @@
     "margin": 50
   },
   {
-    "id": "esp32-s3-wroom-1u-n16r8-official-espressif-system-on-module-chip",
+    "id": "100",
     "name": "ESP32-S3-WROOM-1U-N16R8 official Espressif System-on-Module Chip",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 500,
@@ -1100,7 +1100,7 @@
     "margin": 50
   },
   {
-    "id": "esp8266-nodemcu-cp2102-wifi-module-iot-development-board-for-arduino-smart-projects",
+    "id": "101",
     "name": "ESP8266 NodeMCU CP2102 WiFi Module IoT Development Board for Arduino & Smart Projects",
     "description": "ESP8266 WiFi development board for IoT and home automation.",
     "price": 324,
@@ -1111,7 +1111,7 @@
     "margin": 35
   },
   {
-    "id": "mini360-adj-mp1584-buck-converter",
+    "id": "102",
     "name": "Mini360 ADJ MP1584 Buck Converter",
     "description": "Buck converter for stepping down voltage.",
     "price": 76,
@@ -1122,7 +1122,7 @@
     "margin": 15
   },
   {
-    "id": "nodemcu-esp8266-v3-lua-wifi-development-board-ch340-ideal-for-iot-projects",
+    "id": "103",
     "name": "NodeMCU ESP8266 V3 Lua WiFi Development Board (CH340) – Ideal for IoT Projects",
     "description": "ESP8266 WiFi development board for IoT and home automation.",
     "price": 229,
@@ -1133,7 +1133,7 @@
     "margin": 20
   },
   {
-    "id": "a4988-stepper-motor-driver",
+    "id": "104",
     "name": "A4988 Stepper Motor Driver",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 154,
@@ -1144,7 +1144,7 @@
     "margin": 20
   },
   {
-    "id": "drv8825-stepper-motor-module",
+    "id": "105",
     "name": "Drv8825 Stepper Motor module",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 155,
@@ -1155,7 +1155,7 @@
     "margin": 20
   },
   {
-    "id": "l293d-motor-driver-shield-for-arduino-dual-h-bridge-motor-control-board",
+    "id": "106",
     "name": "L293D Motor Driver Shield for Arduino – Dual H-Bridge Motor Control Board",
     "description": "Motor driver module to control motors from a microcontroller.",
     "price": 154,
@@ -1166,7 +1166,7 @@
     "margin": 20
   },
   {
-    "id": "l298n-dual-h-bridge-motor-driver-module-dc-stepper-motor-controller-for-arduino-raspberry-pi",
+    "id": "107",
     "name": "L298N Dual H-Bridge Motor Driver Module | DC & Stepper Motor Controller for Arduino & Raspberry Pi",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 155,
@@ -1177,7 +1177,7 @@
     "margin": 20
   },
   {
-    "id": "motor-speed-controller-pwm-5a-3-35v",
+    "id": "108",
     "name": "Motor Speed Controller PWM 5A 3-35V",
     "description": "Motor driver or shield for controlling motors from a microcontroller.",
     "price": 95,
@@ -1188,7 +1188,7 @@
     "margin": 15
   },
   {
-    "id": "mx1508-mini-motor-driver",
+    "id": "109",
     "name": "MX1508 Mini Motor driver",
     "description": "Motor driver module to control motors from a microcontroller.",
     "price": 170,
@@ -1199,7 +1199,7 @@
     "margin": 20
   },
   {
-    "id": "n20-gear-motor-wheels",
+    "id": "110",
     "name": "N20 gear motor wheels",
     "description": "Wheel for robot and drone builds.",
     "price": 155,
@@ -1210,7 +1210,7 @@
     "margin": 20
   },
   {
-    "id": "pca9685-16-channel-servo-motor-driver-i2c-pwm-module-for-arduino-raspberry-pi",
+    "id": "111",
     "name": "PCA9685 16-Channel Servo Motor Driver – I2C PWM Module for Arduino & Raspberry Pi",
     "description": "Servo motor for precise angular motion.",
     "price": 384,
@@ -1221,7 +1221,7 @@
     "margin": 35
   },
   {
-    "id": "tb6612fng-ultra-small-dual-dc-motor-driver-module",
+    "id": "112",
     "name": "TB6612FNG Ultra Small Dual DC Motor Driver Module",
     "description": "Motor driver module to control motors from a microcontroller.",
     "price": 180,
@@ -1232,7 +1232,7 @@
     "margin": 20
   },
   {
-    "id": "12v-solenoid-valve-1-4-8243-npt-2-way-normally-closed-brass-electric-valve-for-arduino-raspberry-pi",
+    "id": "113",
     "name": "12V Solenoid Valve 1/4&#8243; NPT – 2-Way Normally Closed Brass Electric Valve for Arduino & Raspberry Pi",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 394,
@@ -1243,7 +1243,7 @@
     "margin": 35
   },
   {
-    "id": "bo-motor-100-rpm-dc-gear-motor-for-arduino-robots-diy-projects",
+    "id": "114",
     "name": "BO Motor 100 RPM DC Gear Motor for Arduino, Robots & DIY Projects",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 76,
@@ -1254,7 +1254,7 @@
     "margin": 15
   },
   {
-    "id": "bo-motor-300-rpm",
+    "id": "115",
     "name": "BO Motor 300 RPM",
     "description": "BO gear motor for robot chassis and wheel drives.",
     "price": 85,
@@ -1265,7 +1265,7 @@
     "margin": 15
   },
   {
-    "id": "bo-wheels-for-robots",
+    "id": "116",
     "name": "BO Wheels for Robots",
     "description": "Wheel for robot and drone builds.",
     "price": 42,
@@ -1276,7 +1276,7 @@
     "margin": 7
   },
   {
-    "id": "mecanum-wheel-compatible-6-7mm-coupling",
+    "id": "117",
     "name": "Mecanum Wheel Compatible 6.7mm Coupling",
     "description": "Wheel for robot and drone builds.",
     "price": 57,
@@ -1287,7 +1287,7 @@
     "margin": 7
   },
   {
-    "id": "mecanum-wheels-60mm-4nos",
+    "id": "118",
     "name": "Mecanum Wheels 60mm (4nos)",
     "description": "Wheel for robot and drone builds.",
     "price": 850,
@@ -1298,7 +1298,7 @@
     "margin": 50
   },
   {
-    "id": "mecanum-wheels-80mm-4nos",
+    "id": "119",
     "name": "Mecanum Wheels 80mm (4nos)",
     "description": "Wheel for robot and drone builds.",
     "price": 840,
@@ -1309,7 +1309,7 @@
     "margin": 50
   },
   {
-    "id": "mini-water-pump-3-to-6v-submersible-for-diy-projects",
+    "id": "120",
     "name": "Mini Water Pump 3 to 6V Submersible for DIY Projects",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 89,
@@ -1320,7 +1320,7 @@
     "margin": 15
   },
   {
-    "id": "n20-gear-motor-300rpm",
+    "id": "121",
     "name": "N20 Gear Motor 300RPM",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 220,
@@ -1331,7 +1331,7 @@
     "margin": 20
   },
   {
-    "id": "nvidia-jetson-agx-orin-developer-kit-32gb",
+    "id": "122",
     "name": "Nvidia Jetson Agx Orin Developer Kit – 32GB",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 230150,
@@ -1342,7 +1342,7 @@
     "margin": 150
   },
   {
-    "id": "nvidia-jetson-orin-super-nano-deployment-kit",
+    "id": "123",
     "name": "NVIDIA Jetson Orin Super Nano Deployment Kit",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 56150,
@@ -1353,7 +1353,7 @@
     "margin": 150
   },
   {
-    "id": "towerpro-mg995-metal-gear-servo-motor-180-degree-rotation",
+    "id": "124",
     "name": "TowerPro MG995 Metal Gear Servo Motor 180 Degree Rotation",
     "description": "Servo motor for precise angular motion.",
     "price": 415,
@@ -1364,7 +1364,7 @@
     "margin": 50
   },
   {
-    "id": "towerpro-sg90-180-servo-motor-ideal-for-arduino-robots-diy-projects",
+    "id": "125",
     "name": "TowerPro SG90 180 Servo Motor Ideal for Arduino, Robots & DIY Projects",
     "description": "Servo motor for precise angular motion.",
     "price": 154,
@@ -1375,7 +1375,7 @@
     "margin": 20
   },
   {
-    "id": "towerpro-sg92r-mini-servo-motor-180-degree",
+    "id": "126",
     "name": "TowerPro SG92R Mini Servo Motor 180 Degree",
     "description": "Servo motor for precise angular motion.",
     "price": 145,
@@ -1386,7 +1386,7 @@
     "margin": 15
   },
   {
-    "id": "toy-motor-5-pack-3v-6v-dc-hobby-motor-for-diy-stem-projects",
+    "id": "127",
     "name": "Toy Motor (5-Pack) 3V-6V DC Hobby Motor for DIY & STEM Projects",
     "description": "Motor or actuator for motion in robotics projects.",
     "price": 114,
@@ -1397,7 +1397,7 @@
     "margin": 15
   },
   {
-    "id": "vibration-motor",
+    "id": "128",
     "name": "Vibration Motor",
     "description": "Vibration motor for haptic feedback.",
     "price": 42,
@@ -1408,7 +1408,7 @@
     "margin": 7
   },
   {
-    "id": "11-1v-2200mah-3s-lipo-rechargeable-battery",
+    "id": "129",
     "name": "11.1V 2200mAh 3S LiPo Rechargeable Battery",
     "description": "Battery or holder for portable power.",
     "price": 1569,
@@ -1419,7 +1419,7 @@
     "margin": 70
   },
   {
-    "id": "12v-1-amps-adaptor",
+    "id": "130",
     "name": "12v 1 Amps Adaptor",
     "description": "Power supply or converter for reliable project power.",
     "price": 200,
@@ -1430,7 +1430,7 @@
     "margin": 20
   },
   {
-    "id": "12v-1a-power-adapter-reliable-dc-adaptor-for-arduino-diy-electronics",
+    "id": "131",
     "name": "12V 1A Power Adapter Reliable DC Adaptor for Arduino & DIY Electronics",
     "description": "Power supply or converter for reliable project power.",
     "price": 164,
@@ -1441,7 +1441,7 @@
     "margin": 20
   },
   {
-    "id": "18650-battery-holder-1-cell-case",
+    "id": "132",
     "name": "18650 Battery Holder 1 Cell Case",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 32,
@@ -1452,7 +1452,7 @@
     "margin": 7
   },
   {
-    "id": "18650-battery-holder-2-cell-case",
+    "id": "133",
     "name": "18650 Battery Holder 2 Cell Case",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 46,
@@ -1463,7 +1463,7 @@
     "margin": 7
   },
   {
-    "id": "18650-battery-holder-3-cell-slot-with-wire-leads-for-lithium-ion-batteries",
+    "id": "134",
     "name": "18650 Battery Holder 3 Cell Slot with Wire Leads for Lithium-ion Batteries",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 76,
@@ -1474,7 +1474,7 @@
     "margin": 15
   },
   {
-    "id": "18650-lithium-ion-battery-2200mah-3-7v-rechargable",
+    "id": "135",
     "name": "18650 Lithium Ion Battery 2200mah 3.7V – Rechargable",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 104,
@@ -1485,7 +1485,7 @@
     "margin": 15
   },
   {
-    "id": "18650-lithium-ion-battery-2400mah-3-7v-rechargeable-battery",
+    "id": "136",
     "name": "18650 Lithium-Ion Battery 2400mAh 3.7V Rechargeable Battery",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 114,
@@ -1496,7 +1496,7 @@
     "margin": 15
   },
   {
-    "id": "2s-bms-20a-li-ion",
+    "id": "137",
     "name": "2S BMS 20A Li-ion",
     "description": "Power supply or converter for reliable project power.",
     "price": 135,
@@ -1507,7 +1507,7 @@
     "margin": 15
   },
   {
-    "id": "3s-10a-lithium-battery-bms-protection-board",
+    "id": "138",
     "name": "3S 10A Lithium Battery BMS Protection Board",
     "description": "Battery or holder for portable power.",
     "price": 135,
@@ -1518,7 +1518,7 @@
     "margin": 15
   },
   {
-    "id": "3s-type-c-bms",
+    "id": "139",
     "name": "3S type C BMS",
     "description": "Power supply or converter for reliable project power.",
     "price": 170,
@@ -1529,7 +1529,7 @@
     "margin": 20
   },
   {
-    "id": "5v-1a-power-adapter-reliable-dc-adapter-for-electronics-iot-devices",
+    "id": "140",
     "name": "5V 1A Power Adapter – Reliable DC Adapter for Electronics & IoT Devices",
     "description": "Power supply or converter for reliable project power.",
     "price": 164,
@@ -1540,7 +1540,7 @@
     "margin": 20
   },
   {
-    "id": "9v-1a-power-adapter-stable-dc-adapter-for-arduino-electronics-projects",
+    "id": "141",
     "name": "9V 1A Power Adapter Stable DC Adapter for Arduino & Electronics Projects",
     "description": "Power supply or converter for reliable project power.",
     "price": 164,
@@ -1551,7 +1551,7 @@
     "margin": 20
   },
   {
-    "id": "9v-hw-battery",
+    "id": "142",
     "name": "9V HW Battery",
     "description": "Battery or holder for portable power.",
     "price": 32,
@@ -1562,7 +1562,7 @@
     "margin": 7
   },
   {
-    "id": "aa-battery-holder-4-cell-series",
+    "id": "143",
     "name": "AA battery holder 4 cell series",
     "description": "Battery or holder for portable power.",
     "price": 52,
@@ -1573,7 +1573,7 @@
     "margin": 7
   },
   {
-    "id": "cr2032-3v-lithium-coin-cell-cmos-timer-battery",
+    "id": "144",
     "name": "CR2032 3V Lithium Coin Cell – CMOS & Timer Battery",
     "description": "Battery or holder for portable power.",
     "price": 28,
@@ -1584,7 +1584,7 @@
     "margin": 3
   },
   {
-    "id": "lm2596-buck-converter-module-dc-dc-step-down-power-supply",
+    "id": "145",
     "name": "LM2596 Buck Converter Module DC-DC Step Down Power Supply",
     "description": "Buck converter module for step-down voltage regulation.",
     "price": 76,
@@ -1595,7 +1595,7 @@
     "margin": 15
   },
   {
-    "id": "mini-560-pro-5v-buck-converter",
+    "id": "146",
     "name": "Mini 560 Pro 5V Buck converter",
     "description": "Buck converter for stepping down voltage.",
     "price": 135,
@@ -1606,7 +1606,7 @@
     "margin": 15
   },
   {
-    "id": "mini560-12v-5a-dc-dc-buck-converter",
+    "id": "147",
     "name": "Mini560 12V 5A DC-DC Buck Converter",
     "description": "Buck converter for stepping down voltage.",
     "price": 135,
@@ -1617,7 +1617,7 @@
     "margin": 15
   },
   {
-    "id": "mt3608-boost-converter",
+    "id": "148",
     "name": "MT3608 Boost Converter",
     "description": "Boost converter for stepping up voltage.",
     "price": 135,
@@ -1628,7 +1628,7 @@
     "margin": 15
   },
   {
-    "id": "mt3608-boost-convertor-step-up-module-with-micro-b-pin",
+    "id": "149",
     "name": "MT3608 Boost Convertor Step up Module with micro B pin",
     "description": "Boost converter for stepping up voltage.",
     "price": 72,
@@ -1639,7 +1639,7 @@
     "margin": 15
   },
   {
-    "id": "p-dean-connector-male-female-pair",
+    "id": "150",
     "name": "P-DEAN Connector (Male & Female Pair)",
     "description": "Connector for reliable power and data links.",
     "price": 42,
@@ -1650,7 +1650,7 @@
     "margin": 7
   },
   {
-    "id": "solar-panel-small-3-3v",
+    "id": "151",
     "name": "Solar Panel Small 3.3V",
     "description": "Power supply or converter for reliable project power.",
     "price": 72,
@@ -1661,7 +1661,7 @@
     "margin": 15
   },
   {
-    "id": "tp4056-micro-usb-lithium-battery-charging-module-with-protection",
+    "id": "152",
     "name": "TP4056 Micro USB Lithium Battery Charging Module with Protection",
     "description": "Micro USB cable for powering and programming development boards.",
     "price": 42,
@@ -1672,7 +1672,7 @@
     "margin": 7
   },
   {
-    "id": "tp4056-type-c-18650-1-cell-lithium-ion-charger",
+    "id": "153",
     "name": "tp4056 type – C 18650 1 Cell Lithium Ion Charger",
     "description": "Rechargeable 18650 Li-ion cell and holder for portable power.",
     "price": 219,
@@ -1683,7 +1683,7 @@
     "margin": 20
   },
   {
-    "id": "tp4056-type-c-1-cell-lithium-ion-battery-bms",
+    "id": "154",
     "name": "Tp4056 type C 1 cell Lithium Ion Battery BMS",
     "description": "Battery or holder for portable power.",
     "price": 52,
@@ -1694,7 +1694,7 @@
     "margin": 7
   },
   {
-    "id": "xl4015-buck-converter-3a-5a-and-mt3608-boost-convertor-6019",
+    "id": "155",
     "name": "XL4015 Buck Converter 3A–5A and MT3608 boost convertor@6019",
     "description": "Buck converter for stepping down voltage.",
     "price": 170,
@@ -1705,7 +1705,7 @@
     "margin": 20
   },
   {
-    "id": "xl6009-dc-dc-step-up-boost-converter-module",
+    "id": "156",
     "name": "XL6009 DC-DC Step Up Boost Converter Module",
     "description": "Boost converter for stepping up voltage.",
     "price": 135,
@@ -1716,7 +1716,7 @@
     "margin": 15
   },
   {
-    "id": "xt60-connector-set-male-female",
+    "id": "157",
     "name": "XT60 Connector Set (Male & Female)",
     "description": "Connector for reliable power and data links.",
     "price": 52,
@@ -1727,7 +1727,7 @@
     "margin": 7
   },
   {
-    "id": "10x4-5-quadcopter-propeller-set-durable-drone-blades-for-diy-multi-rotors",
+    "id": "158",
     "name": "10x4.5 Quadcopter Propeller Set Durable Drone Blades for DIY Multi rotors",
     "description": "Quadcopter part for drone builds.",
     "price": 114,
@@ -1738,7 +1738,7 @@
     "margin": 15
   },
   {
-    "id": "1000kv-bldc-brushless-motor-high-torque-motor-for-drones-rc-projects",
+    "id": "159",
     "name": "1000KV BLDC Brushless Motor High Torque Motor for Drones & RC Projects",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 509,
@@ -1749,7 +1749,7 @@
     "margin": 50
   },
   {
-    "id": "30a-simonk-esc-brushless-motor-speed-controller-for-quadcopters-diy-drones",
+    "id": "160",
     "name": "30A Simonk ESC Brushless Motor Speed Controller for Quadcopters & DIY Drones",
     "description": "Quadcopter part for drone builds.",
     "price": 404,
@@ -1760,7 +1760,7 @@
     "margin": 50
   },
   {
-    "id": "920kv-2212-bldc-motor",
+    "id": "161",
     "name": "920KV 2212 BLDC Motor",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 940,
@@ -1771,7 +1771,7 @@
     "margin": 50
   },
   {
-    "id": "apm-2-8-flight-controller",
+    "id": "162",
     "name": "APM 2.8 Flight Controller",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 5149,
@@ -1782,7 +1782,7 @@
     "margin": 150
   },
   {
-    "id": "b3-imax-lipo-li-ion-battery-charger-2s-3s-balance-charger-for-rc-drones-diy-projects",
+    "id": "163",
     "name": "B3 IMAX LiPo/Li-ion Battery Charger 2S/3S Balance Charger for RC, Drones & DIY Projects",
     "description": "Battery or holder for portable power.",
     "price": 374,
@@ -1793,7 +1793,7 @@
     "margin": 35
   },
   {
-    "id": "f550-drone-frame-with-landing-gears",
+    "id": "164",
     "name": "F550 Drone Frame with landing gears",
     "description": "Quadcopter part for drone builds.",
     "price": 3150,
@@ -1804,7 +1804,7 @@
     "margin": 150
   },
   {
-    "id": "gps-pixhawk",
+    "id": "165",
     "name": "gps pixhawk",
     "description": "GPS module for location tracking.",
     "price": 1669,
@@ -1815,7 +1815,7 @@
     "margin": 70
   },
   {
-    "id": "pixhawk-2-4-8-flight-controller",
+    "id": "166",
     "name": "Pixhawk 2.4.8 Flight Controller",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 6149,
@@ -1826,7 +1826,7 @@
     "margin": 150
   },
   {
-    "id": "pixhawk-6c",
+    "id": "167",
     "name": "Pixhawk 6c",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 36149,
@@ -1837,7 +1837,7 @@
     "margin": 150
   },
   {
-    "id": "xyq-2-wooden-diy-drone-kit",
+    "id": "168",
     "name": "XYQ-2 Wooden DIY Drone Kit",
     "description": "Quadcopter or drone part for aerial robotics builds.",
     "price": 2869,
@@ -1848,7 +1848,7 @@
     "margin": 70
   },
   {
-    "id": "1-channel-5v-relay-module-for-arduino-raspberry-pi-microcontrollers",
+    "id": "169",
     "name": "1 Channel 5V Relay Module for Arduino, Raspberry Pi & Microcontrollers",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 66,
@@ -1859,7 +1859,7 @@
     "margin": 7
   },
   {
-    "id": "2-channel-5v-relay-module-for-arduino-raspberry-pi-microcontrollers",
+    "id": "170",
     "name": "2 Channel 5V Relay Module for Arduino, Raspberry Pi & Microcontrollers",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 104,
@@ -1870,7 +1870,7 @@
     "margin": 15
   },
   {
-    "id": "4-channel-5v-relay-module-for-arduino-raspberry-pi-microcontrollers",
+    "id": "171",
     "name": "4 Channel 5V Relay Module for Arduino, Raspberry Pi & Microcontrollers",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 189,
@@ -1881,7 +1881,7 @@
     "margin": 20
   },
   {
-    "id": "relay-1-channel-12v",
+    "id": "172",
     "name": "Relay 1 Channel 12v",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 125,
@@ -1892,7 +1892,7 @@
     "margin": 15
   },
   {
-    "id": "relay-2-channel-12v",
+    "id": "173",
     "name": "Relay 2 Channel 12v",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 170,
@@ -1903,7 +1903,7 @@
     "margin": 20
   },
   {
-    "id": "rtc-timer-relay-module-real-time-clock-24h-programmable-timer-controller",
+    "id": "174",
     "name": "RTC Timer Relay Module – Real Time Clock 24H Programmable Timer Controller",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 940,
@@ -1914,7 +1914,7 @@
     "margin": 50
   },
   {
-    "id": "timer-relay-module",
+    "id": "175",
     "name": "Timer Relay Module",
     "description": "Relay module to switch high-power loads with low-voltage signals.",
     "price": 499,
@@ -1925,7 +1925,7 @@
     "margin": 50
   },
   {
-    "id": "0-1uf-50v-disc-capacitor",
+    "id": "176",
     "name": "0.1uf 50v Disc Capacitor",
     "description": "Capacitor for filtering and energy storage.",
     "price": 2,
@@ -1936,7 +1936,7 @@
     "margin": 1
   },
   {
-    "id": "100-ohm-0-25w-metal-film-resistor",
+    "id": "177",
     "name": "100 Ohm 0.25W Metal Film Resistor",
     "description": "Resistor for current limiting and voltage division.",
     "price": 2.5,
@@ -1947,7 +1947,7 @@
     "margin": 1
   },
   {
-    "id": "100k-ohm-0-25w-5-axial-leaded",
+    "id": "178",
     "name": "100k ohm 0.25W ± 5 Axial leaded",
     "description": "Resistor or capacitor for circuit prototyping.",
     "price": 2.5,
@@ -1958,7 +1958,7 @@
     "margin": 1
   },
   {
-    "id": "100k-potentiometer-pack-of-5-pieces",
+    "id": "179",
     "name": "100k Potentiometer – Pack of 5 Pieces",
     "description": "Potentiometer for adjustable analog input.",
     "price": 10,
@@ -1969,7 +1969,7 @@
     "margin": 3
   },
   {
-    "id": "10k-ohm-0-5w-metal-film-resistor",
+    "id": "180",
     "name": "10k Ohm 0.5W Metal Film Resistor",
     "description": "Resistor for current limiting and voltage division.",
     "price": 2.5,
@@ -1980,7 +1980,7 @@
     "margin": 1
   },
   {
-    "id": "10k-potentiometer-pack-of-5-pieces",
+    "id": "181",
     "name": "10k Potentiometer – Pack of 5 Pieces",
     "description": "Potentiometer for adjustable analog input.",
     "price": 10,
@@ -1991,7 +1991,7 @@
     "margin": 3
   },
   {
-    "id": "10uf-50v-1-82-100khz-20-120ma-100khz-plugin-d5xl11mm-aluminum-electrolytic-capacitors",
+    "id": "182",
     "name": "10uF 50V 1.82Ω@100kHz ±20% 120mA@100kHz Plugin,D5xL11mm Aluminum Electrolytic Capacitors",
     "description": "Capacitor for filtering and energy storage.",
     "price": 10,
@@ -2002,7 +2002,7 @@
     "margin": 3
   },
   {
-    "id": "1k-ohm-0-25w-metal-film-resistor",
+    "id": "183",
     "name": "1k Ohm 0.25W Metal Film Resistor",
     "description": "Resistor for current limiting and voltage division.",
     "price": 3,
@@ -2013,7 +2013,7 @@
     "margin": 1
   },
   {
-    "id": "220-ohms-resistor",
+    "id": "184",
     "name": "220 ohms resistor",
     "description": "Resistor for current limiting and voltage division.",
     "price": 2.5,
@@ -2024,7 +2024,7 @@
     "margin": 1
   },
   {
-    "id": "330-ohm-0-25w-metal-film-resistor",
+    "id": "185",
     "name": "330 Ohm 0.25W Metal Film Resistor",
     "description": "Resistor for current limiting and voltage division.",
     "price": 2,
@@ -2035,7 +2035,7 @@
     "margin": 1
   },
   {
-    "id": "2wd-robot-chassis-kit-for-arduino-raspberry-pi-smart-car",
+    "id": "186",
     "name": "2WD Robot Chassis Kit for Arduino & Raspberry Pi Smart Car",
     "description": "Complete robotics kit with parts to build and program a robot.",
     "price": 295,
@@ -2046,7 +2046,7 @@
     "margin": 35
   },
   {
-    "id": "4-wheel-suspension-kit-advanced",
+    "id": "187",
     "name": "4 Wheel suspension Kit – Advanced",
     "description": "Wheel for robot and drone builds.",
     "price": 1370,
@@ -2057,7 +2057,7 @@
     "margin": 70
   },
   {
-    "id": "4wd-robot-chassis-kit-for-arduino-raspberry-pi-smart-rover",
+    "id": "188",
     "name": "4WD Robot Chassis Kit for Arduino & Raspberry Pi Smart Rover",
     "description": "Complete robotics kit with parts to build and program a robot.",
     "price": 550,
@@ -2068,7 +2068,7 @@
     "margin": 50
   },
   {
-    "id": "6-wheel-suspension-kit-advanced",
+    "id": "189",
     "name": "6 Wheel suspension Kit – Advanced",
     "description": "Wheel for robot and drone builds.",
     "price": 2070,
@@ -2079,7 +2079,7 @@
     "margin": 70
   },
   {
-    "id": "10-kg-load-cell",
+    "id": "190",
     "name": "10 KG Load Cell",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 219,
@@ -2090,7 +2090,7 @@
     "margin": 20
   },
   {
-    "id": "12v-electric-solenoid-lock-for-arduino-raspberry-pi-smart-access-control-projects",
+    "id": "191",
     "name": "12V Electric Solenoid Lock for Arduino, Raspberry Pi & Smart Access Control Projects",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 434,
@@ -2101,7 +2101,7 @@
     "margin": 50
   },
   {
-    "id": "2-4ghz-nrf24l01-pa-lna-sma-wireless-transceiver-antenna",
+    "id": "192",
     "name": "2.4GHz NRF24L01+PA+LNA SMA Wireless Transceiver Antenna",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -2112,7 +2112,7 @@
     "margin": 20
   },
   {
-    "id": "27mm-piezoelectric-disc-piezo-ceramic-transducer-sound-sensor",
+    "id": "193",
     "name": "27mm Piezoelectric Disc – Piezo Ceramic Transducer & Sound Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 37,
@@ -2123,7 +2123,7 @@
     "margin": 7
   },
   {
-    "id": "37-in-one-sensor-kit-for-arduino-raspberry-pi-esp32",
+    "id": "194",
     "name": "37 IN ONE SENSOR KIT FOR ARDUINO RASPBERRY PI ESP32",
     "description": "ESP32 development board with WiFi and Bluetooth for IoT projects.",
     "price": 1270,
@@ -2134,7 +2134,7 @@
     "margin": 70
   },
   {
-    "id": "3mm-ldr-sensor-light-dependent-resistor",
+    "id": "195",
     "name": "3mm LDR Sensor Light Dependent Resistor",
     "description": "Light-dependent resistor for light sensing.",
     "price": 13,
@@ -2145,7 +2145,7 @@
     "margin": 3
   },
   {
-    "id": "4-channel-27mhz-toy-module",
+    "id": "196",
     "name": "4 Channel 27MHZ Toy Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 180,
@@ -2156,7 +2156,7 @@
     "margin": 20
   },
   {
-    "id": "4x4-matrix-keypad-module-for-arduino-raspberry-pi-16-button-input-keyboard",
+    "id": "197",
     "name": "4x4 Matrix Keypad Module for Arduino & Raspberry Pi | 16-Button Input Keyboard",
     "description": "Matrix keypad for numeric input.",
     "price": 76,
@@ -2167,7 +2167,7 @@
     "margin": 15
   },
   {
-    "id": "5-kg-load-cell",
+    "id": "198",
     "name": "5 KG Load Cell",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 219,
@@ -2178,7 +2178,7 @@
     "margin": 20
   },
   {
-    "id": "5v-powerbank-charging-module-li-ion-battery-boost-converter-for-diy-projects",
+    "id": "199",
     "name": "5V Powerbank Charging Module | Li-ion Battery Boost Converter for DIY Projects",
     "description": "Boost converter for stepping up voltage.",
     "price": 76,
@@ -2189,7 +2189,7 @@
     "margin": 15
   },
   {
-    "id": "8-ohms-speaker",
+    "id": "200",
     "name": "8 ohms speaker",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 95,
@@ -2200,7 +2200,7 @@
     "margin": 15
   },
   {
-    "id": "ad620-instrumentation-amplifier-module-precision-microvolt-millivolt-amplifier",
+    "id": "201",
     "name": "AD620 Instrumentation Amplifier Module – Precision Microvolt/Millivolt Amplifier",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 394,
@@ -2211,7 +2211,7 @@
     "margin": 35
   },
   {
-    "id": "ads1115-16-bit-4-channel-adc-module-with-programmable-gain-amplifier-pga",
+    "id": "202",
     "name": "ADS1115 16-Bit 4-Channel ADC Module with Programmable Gain Amplifier (PGA)",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -2222,7 +2222,7 @@
     "margin": 20
   },
   {
-    "id": "adxl345-triple-axis-digital-accelerometer-module",
+    "id": "203",
     "name": "ADXL345 Triple Axis Digital Accelerometer Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 164,
@@ -2233,7 +2233,7 @@
     "margin": 20
   },
   {
-    "id": "analog-joystick-module",
+    "id": "204",
     "name": "Analog Joystick Module",
     "description": "Analog joystick module for two-axis control input.",
     "price": 115,
@@ -2244,7 +2244,7 @@
     "margin": 15
   },
   {
-    "id": "bh1750-ambient-light-sensor-module-digital-lux-meter-with-i-c-interface",
+    "id": "205",
     "name": "BH1750 Ambient Light Sensor Module Digital Lux Meter with I²C Interface",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -2255,7 +2255,7 @@
     "margin": 20
   },
   {
-    "id": "bme280-temperature-humidity-and-pressure-sensor-module",
+    "id": "206",
     "name": "BME280 Temperature, Humidity, and Pressure Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 500,
@@ -2266,7 +2266,7 @@
     "margin": 50
   },
   {
-    "id": "bmp180-digital-barometric-pressure-sensor-module",
+    "id": "207",
     "name": "BMP180 Digital Barometric Pressure Sensor Module",
     "description": "Barometric pressure sensor for altitude and weather.",
     "price": 56,
@@ -2277,7 +2277,7 @@
     "margin": 7
   },
   {
-    "id": "bmp280-temperature-and-pressure-sensor-digital-barometric-sensor-module",
+    "id": "208",
     "name": "BMP280 Temperature and Pressure Sensor – Digital Barometric Sensor Module",
     "description": "Barometric pressure sensor for altitude and weather.",
     "price": 115,
@@ -2288,7 +2288,7 @@
     "margin": 15
   },
   {
-    "id": "breadboard-power-supply",
+    "id": "209",
     "name": "Breadboard power supply",
     "description": "Solderless prototyping board for Arduino and electronics projects.",
     "price": 95,
@@ -2299,7 +2299,7 @@
     "margin": 15
   },
   {
-    "id": "buzzer-small-5v-piezo-beeper",
+    "id": "210",
     "name": "Buzzer Small – 5V Piezo Beeper",
     "description": "Buzzer for audio alerts and feedback.",
     "price": 17,
@@ -2310,7 +2310,7 @@
     "margin": 3
   },
   {
-    "id": "can-module-mcp2515",
+    "id": "211",
     "name": "Can Module MCp2515",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1210,
@@ -2321,7 +2321,7 @@
     "margin": 70
   },
   {
-    "id": "capacitive-soil-moisture-v2-0",
+    "id": "212",
     "name": "capacitive soil moisture V2.0",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 135,
@@ -2332,7 +2332,7 @@
     "margin": 15
   },
   {
-    "id": "ch340g-to-ttl-serial-converter",
+    "id": "213",
     "name": "CH340G to TTL Serial Converter",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2343,7 +2343,7 @@
     "margin": 20
   },
   {
-    "id": "current-sensor-module-for-arduino-raspberry-pi-acs712",
+    "id": "214",
     "name": "Current Sensor Module for Arduino & Raspberry Pi | ACS712",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 134,
@@ -2354,7 +2354,7 @@
     "margin": 15
   },
   {
-    "id": "df-mini-player-mp3-module",
+    "id": "215",
     "name": "DF Mini Player Mp3 Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2365,7 +2365,7 @@
     "margin": 20
   },
   {
-    "id": "dht-22-temperature-and-humidity-sensor",
+    "id": "216",
     "name": "DHT 22 Temperature and Humidity Sensor",
     "description": "Temperature and humidity sensor module.",
     "price": 245,
@@ -2376,7 +2376,7 @@
     "margin": 35
   },
   {
-    "id": "dht11-temperature-and-humidity-sensor-module",
+    "id": "217",
     "name": "DHT11 Temperature and Humidity Sensor Module",
     "description": "Temperature and humidity sensor module.",
     "price": 89,
@@ -2387,7 +2387,7 @@
     "margin": 15
   },
   {
-    "id": "diy-mini-tesla-coil-kit-wireless-electric-power-transmission",
+    "id": "218",
     "name": "DIY Mini Tesla Coil Kit (Wireless Electric Power Transmission)",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 550,
@@ -2398,7 +2398,7 @@
     "margin": 50
   },
   {
-    "id": "ds18b20-water-proof-digital-temperature-probe-black-1m",
+    "id": "219",
     "name": "DS18B20 Water Proof Digital Temperature Probe – Black (1m)",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 95,
@@ -2409,7 +2409,7 @@
     "margin": 15
   },
   {
-    "id": "ds3231-rtc-timer-module-for-arduino-raspberry-pi-high-precision-real-time-clock",
+    "id": "220",
     "name": "DS3231 RTC Timer Module for Arduino & Raspberry Pi | High-Precision Real Time Clock",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 189,
@@ -2420,7 +2420,7 @@
     "margin": 20
   },
   {
-    "id": "emg-sensor-kit",
+    "id": "221",
     "name": "EMG Sensor Kit",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1210,
@@ -2431,7 +2431,7 @@
     "margin": 70
   },
   {
-    "id": "eye-blink-sensor",
+    "id": "222",
     "name": "Eye Blink Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 304,
@@ -2442,7 +2442,7 @@
     "margin": 35
   },
   {
-    "id": "flame-sensor-module-for-fire-detection-safety-systems",
+    "id": "223",
     "name": "Flame Sensor Module for Fire Detection & Safety Systems",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 46,
@@ -2453,7 +2453,7 @@
     "margin": 7
   },
   {
-    "id": "flex-sensor-2-2inches",
+    "id": "224",
     "name": "Flex Sensor 2.2Inches",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -2464,7 +2464,7 @@
     "margin": 35
   },
   {
-    "id": "flex-sensor-4-5inches",
+    "id": "225",
     "name": "Flex Sensor 4.5Inches",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -2475,7 +2475,7 @@
     "margin": 20
   },
   {
-    "id": "float-sensor",
+    "id": "226",
     "name": "Float Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2486,7 +2486,7 @@
     "margin": 20
   },
   {
-    "id": "force-sensor-circle-shape",
+    "id": "227",
     "name": "Force Sensor Circle Shape",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -2497,7 +2497,7 @@
     "margin": 35
   },
   {
-    "id": "force-sensor-square-shape",
+    "id": "228",
     "name": "Force Sensor Square Shape",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -2508,7 +2508,7 @@
     "margin": 20
   },
   {
-    "id": "ft232rl-to-uart-ttl-converter",
+    "id": "229",
     "name": "FT232RL to UART TTL Converter",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2519,7 +2519,7 @@
     "margin": 20
   },
   {
-    "id": "gp2y1010au0f-optical-dust-sensor",
+    "id": "230",
     "name": "GP2Y1010AU0F Optical Dust Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -2530,7 +2530,7 @@
     "margin": 35
   },
   {
-    "id": "gps-neo-6m-with-patch-antenna",
+    "id": "231",
     "name": "GPS NEO 6M with Patch Antenna",
     "description": "GPS module for location tracking.",
     "price": 304,
@@ -2541,7 +2541,7 @@
     "margin": 35
   },
   {
-    "id": "gsm-sim-800l-module",
+    "id": "232",
     "name": "GSM Sim 800L Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 748,
@@ -2552,7 +2552,7 @@
     "margin": 50
   },
   {
-    "id": "hall-effect-sensor-module",
+    "id": "233",
     "name": "Hall effect sensor module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 115,
@@ -2563,7 +2563,7 @@
     "margin": 15
   },
   {
-    "id": "hc-05-bluetooth-module-for-wireless-communication-projects",
+    "id": "234",
     "name": "HC-05 Bluetooth Module for Wireless Communication Projects",
     "description": "Bluetooth module for wireless communication.",
     "price": 334,
@@ -2574,7 +2574,7 @@
     "margin": 35
   },
   {
-    "id": "hc-12-wireless-serial-module-433mhz-long-range-transceiver",
+    "id": "235",
     "name": "HC-12 Wireless Serial Module – 433MHz Long Range Transceiver",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 500,
@@ -2585,7 +2585,7 @@
     "margin": 50
   },
   {
-    "id": "hc-sr04-ultrasonic-sensor-for-arduino-raspberry-pi",
+    "id": "236",
     "name": "HC-SR04 Ultrasonic sensor for Arduino/Raspberry Pi",
     "description": "Ultrasonic distance sensor for measuring range.",
     "price": 89,
@@ -2596,7 +2596,7 @@
     "margin": 15
   },
   {
-    "id": "hx710b-air-pressure-sensor",
+    "id": "237",
     "name": "Hx710B Air Pressure Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 540,
@@ -2607,7 +2607,7 @@
     "margin": 50
   },
   {
-    "id": "hx711-dual-channel-24-bit-precision-a-d-weight-pressure-sensor",
+    "id": "238",
     "name": "HX711 Dual-Channel 24 Bit Precision A/D weight Pressure Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 144,
@@ -2618,7 +2618,7 @@
     "margin": 15
   },
   {
-    "id": "inmp441-mems-high-precision-omnidirectional-microphone-i2s",
+    "id": "239",
     "name": "INMP441 MEMS High Precision Omnidirectional Microphone I2S",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 135,
@@ -2629,7 +2629,7 @@
     "margin": 15
   },
   {
-    "id": "ir-infrared-obstacle-avoidance-sensor-module-for-robotics-automation",
+    "id": "240",
     "name": "IR Infrared Obstacle Avoidance Sensor Module for Robotics & Automation",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 46,
@@ -2640,7 +2640,7 @@
     "margin": 7
   },
   {
-    "id": "ir-led-pair",
+    "id": "241",
     "name": "IR Led Pair",
     "description": "LED for indicators, lighting, and displays.",
     "price": 18,
@@ -2651,7 +2651,7 @@
     "margin": 3
   },
   {
-    "id": "ir-remote-control-module-for-arduino-raspberry-pi-microcontrollers-infrared-receiver",
+    "id": "242",
     "name": "IR Remote Control Module for Arduino, Raspberry Pi & Microcontrollers | Infrared Receiver",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 209,
@@ -2662,7 +2662,7 @@
     "margin": 20
   },
   {
-    "id": "laser-diode-module-5mw-650nm-5v",
+    "id": "243",
     "name": "Laser Diode Module 5mw 650nm 5V",
     "description": "Diode for rectification and protection.",
     "price": 115,
@@ -2673,7 +2673,7 @@
     "margin": 15
   },
   {
-    "id": "ldr-light-sensor-module-for-arduino-raspberry-pi-smart-lighting-projects",
+    "id": "244",
     "name": "LDR Light Sensor Module for Arduino, Raspberry Pi & Smart Lighting Projects",
     "description": "Light-dependent resistor for light sensing.",
     "price": 56,
@@ -2684,7 +2684,7 @@
     "margin": 7
   },
   {
-    "id": "lm-35-temperature-sensor",
+    "id": "245",
     "name": "LM 35 Temperature Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 104,
@@ -2695,7 +2695,7 @@
     "margin": 15
   },
   {
-    "id": "magnet-door-sensor-reed-switch",
+    "id": "246",
     "name": "Magnet Door Sensor Reed Switch",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 105,
@@ -2706,7 +2706,7 @@
     "margin": 15
   },
   {
-    "id": "max1279-8-x-8-matrix-led",
+    "id": "247",
     "name": "MAX1279 8 x 8 Matrix Led",
     "description": "LED for indicators, lighting, and displays.",
     "price": 200,
@@ -2717,7 +2717,7 @@
     "margin": 20
   },
   {
-    "id": "max30100-pulse-oximeter-heart-rate-sensor-module",
+    "id": "248",
     "name": "MAX30100 Pulse Oximeter Heart Rate Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 164,
@@ -2728,7 +2728,7 @@
     "margin": 20
   },
   {
-    "id": "max30102-pulse-oximeter-heart-rate-sensor-module",
+    "id": "249",
     "name": "MAX30102 Pulse Oximeter Heart Rate Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -2739,7 +2739,7 @@
     "margin": 35
   },
   {
-    "id": "max31865-rtd-platinum-resistance-temperature-detector-rtd-to-digital-converter-module",
+    "id": "250",
     "name": "MAX31865 RTD Platinum Resistance Temperature Detector (RTD) to Digital Converter Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 640,
@@ -2750,7 +2750,7 @@
     "margin": 50
   },
   {
-    "id": "max9837a-audio-amplifier",
+    "id": "251",
     "name": "MAX9837A audio Amplifier",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2761,7 +2761,7 @@
     "margin": 20
   },
   {
-    "id": "microphone-sound-sensor-module-for-arduino-raspberry-pi-audio-detection-module",
+    "id": "252",
     "name": "Microphone Sound Sensor Module for Arduino & Raspberry Pi | Audio Detection Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 144,
@@ -2772,7 +2772,7 @@
     "margin": 15
   },
   {
-    "id": "mlx90614-temprature-sensor",
+    "id": "253",
     "name": "MLX90614 temprature sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 700,
@@ -2783,7 +2783,7 @@
     "margin": 50
   },
   {
-    "id": "mpr121-capacitive-touch-sensor-module",
+    "id": "254",
     "name": "MPR121 Capacitive Touch Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 155,
@@ -2794,7 +2794,7 @@
     "margin": 20
   },
   {
-    "id": "mpu-6050-6-axis-accelerometer-gyroscope",
+    "id": "255",
     "name": "MPU 6050 6 axis Accelerometer & Gyroscope",
     "description": "Accelerometer and gyroscope module for orientation tracking.",
     "price": 219,
@@ -2805,7 +2805,7 @@
     "margin": 20
   },
   {
-    "id": "mpu-9250-6-axis-attitude-gyro-and-accelero-sensor-module",
+    "id": "256",
     "name": "MPU 9250 6-Axis Attitude Gyro and Accelero Sensor Module",
     "description": "Accelerometer and gyroscope module for orientation tracking.",
     "price": 949,
@@ -2816,7 +2816,7 @@
     "margin": 50
   },
   {
-    "id": "mq-7-gas-sensor-for-arduino-raspberry-pi",
+    "id": "257",
     "name": "MQ 7 Gas Sensor for Arduino/Raspberry Pi",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 124,
@@ -2827,7 +2827,7 @@
     "margin": 15
   },
   {
-    "id": "mq135-gas-sensor-for-arduino-raspberry-pi",
+    "id": "258",
     "name": "MQ135 Gas Sensor for Arduino/Raspberry Pi",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 124,
@@ -2838,7 +2838,7 @@
     "margin": 15
   },
   {
-    "id": "mq2-gas-sensor-for-arduino-raspberry-pi",
+    "id": "259",
     "name": "MQ2 Gas Sensor for Arduino/Raspberry Pi",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 114,
@@ -2849,7 +2849,7 @@
     "margin": 15
   },
   {
-    "id": "nrf24l01-module-adapter-board",
+    "id": "260",
     "name": "NRF24L01 module adapter board",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 57,
@@ -2860,7 +2860,7 @@
     "margin": 7
   },
   {
-    "id": "peacefair-pzem-004t-ac-multi-function-energy-meter-module",
+    "id": "261",
     "name": "Peacefair PZEM-004T AC Multi-function Energy Meter Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1045,
@@ -2871,7 +2871,7 @@
     "margin": 70
   },
   {
-    "id": "pir-motion-detector-sensor-module-for-arduino-raspberry-pi-iot-projects",
+    "id": "262",
     "name": "PIR Motion Detector Sensor Module for Arduino, Raspberry Pi & IoT Projects",
     "description": "Passive infrared sensor for motion detection.",
     "price": 94,
@@ -2882,7 +2882,7 @@
     "margin": 15
   },
   {
-    "id": "pulse-rate-heartbeat-sensor-module-for-arduino-raspberry-pi-optical-detection",
+    "id": "263",
     "name": "Pulse Rate & Heartbeat Sensor Module for Arduino & Raspberry Pi | Optical Detection",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 194,
@@ -2893,7 +2893,7 @@
     "margin": 20
   },
   {
-    "id": "r305-fingerprint-sensor-module-for-arduino-raspberry-pi-biometric-access-control",
+    "id": "264",
     "name": "R305 Fingerprint Sensor Module for Arduino & Raspberry Pi | Biometric Access Control",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1469,
@@ -2904,7 +2904,7 @@
     "margin": 70
   },
   {
-    "id": "rain-drop-sensor",
+    "id": "265",
     "name": "Rain Drop Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 90,
@@ -2915,7 +2915,7 @@
     "margin": 15
   },
   {
-    "id": "rc522-rfid-module-for-arduino-raspberry-pi",
+    "id": "266",
     "name": "RC522 RFID Module for Arduino & Raspberry PI",
     "description": "RFID reader module for contactless identification.",
     "price": 114,
@@ -2926,7 +2926,7 @@
     "margin": 15
   },
   {
-    "id": "reed-sensor-magnetic-switch-module",
+    "id": "267",
     "name": "Reed Sensor Magnetic Switch Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 67,
@@ -2937,7 +2937,7 @@
     "margin": 7
   },
   {
-    "id": "rf-433mhz-wireless-transmitter-and-receiver-module-for-arduino-iot-projects",
+    "id": "268",
     "name": "RF 433MHz Wireless Transmitter and Receiver Module for Arduino & IoT Projects",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 189,
@@ -2948,7 +2948,7 @@
     "margin": 20
   },
   {
-    "id": "rf-module-tx-rx-433-mhz-green",
+    "id": "269",
     "name": "RF Module TX/RX 433 MHZ (Green)",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -2959,7 +2959,7 @@
     "margin": 20
   },
   {
-    "id": "rs232-to-ttl-module",
+    "id": "270",
     "name": "RS232 to TTL module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 95,
@@ -2970,7 +2970,7 @@
     "margin": 15
   },
   {
-    "id": "rs485-to-ttl-module",
+    "id": "271",
     "name": "RS485 to TTL module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -2981,7 +2981,7 @@
     "margin": 35
   },
   {
-    "id": "rs485-ttl-auto-direction",
+    "id": "272",
     "name": "RS485 TTL Auto Direction",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 85,
@@ -2992,7 +2992,7 @@
     "margin": 15
   },
   {
-    "id": "rs485-usb-adapter",
+    "id": "273",
     "name": "RS485 Usb Adapter",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 135,
@@ -3003,7 +3003,7 @@
     "margin": 15
   },
   {
-    "id": "sd-card-module",
+    "id": "274",
     "name": "SD Card Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 91,
@@ -3014,7 +3014,7 @@
     "margin": 15
   },
   {
-    "id": "seeed-studio-xiao-ble-nrf52840",
+    "id": "275",
     "name": "Seeed Studio XIAO BLE nRF52840",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 2320,
@@ -3025,7 +3025,7 @@
     "margin": 70
   },
   {
-    "id": "sim900a-gsm-gprs-module-for-arduino-raspberry-pi-wireless-communication-module",
+    "id": "276",
     "name": "SIM900A GSM GPRS Module for Arduino & Raspberry Pi | Wireless Communication Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1169,
@@ -3036,7 +3036,7 @@
     "margin": 70
   },
   {
-    "id": "sn65hvd230-mcp2551-can-bus-transceiver-module",
+    "id": "277",
     "name": "SN65HVD230 / MCP2551 CAN Bus Transceiver Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 170,
@@ -3047,7 +3047,7 @@
     "margin": 20
   },
   {
-    "id": "soil-moisture-sensor-module-for-arduino-raspberry-pi-smart-farming-projects",
+    "id": "278",
     "name": "Soil Moisture Sensor Module for Arduino, Raspberry Pi & Smart Farming Projects",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 66,
@@ -3058,7 +3058,7 @@
     "margin": 7
   },
   {
-    "id": "soil-ph-sensor-with-probe-industrial-grade-soil-acidity-transducer",
+    "id": "279",
     "name": "Soil pH Sensor with Probe – Industrial Grade Soil Acidity Transducer",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 2020,
@@ -3069,7 +3069,7 @@
     "margin": 70
   },
   {
-    "id": "stepper-motor-28ybj-48",
+    "id": "280",
     "name": "Stepper Motor(28YBJ-48)",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 200,
@@ -3080,7 +3080,7 @@
     "margin": 20
   },
   {
-    "id": "stepper-motor-28ybj-48-uln2003-driver-board",
+    "id": "281",
     "name": "Stepper Motor(28YBJ-48) ULN2003 Driver Board",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 115,
@@ -3091,7 +3091,7 @@
     "margin": 15
   },
   {
-    "id": "stepper-motor-28ybj-48-with-uln2003-driver-board",
+    "id": "282",
     "name": "Stepper Motor(28YBJ-48) with ULN2003 Driver Board",
     "description": "Stepper motor for precise, repeatable motion control.",
     "price": 315,
@@ -3102,7 +3102,7 @@
     "margin": 35
   },
   {
-    "id": "sw-420-vibration-sensor-module",
+    "id": "283",
     "name": "SW-420 Vibration Sensor Module",
     "description": "Vibration motor for haptic feedback.",
     "price": 66,
@@ -3113,7 +3113,7 @@
     "margin": 7
   },
   {
-    "id": "sx1278-lora-module-ra-02-433mhz-wireless-spread-spectrum-transmission",
+    "id": "284",
     "name": "SX1278 LoRa Module Ra- 02 433MHZ Wireless Spread Spectrum Transmission",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 550,
@@ -3124,7 +3124,7 @@
     "margin": 50
   },
   {
-    "id": "tcs3200-color-sensor-module-for-arduino-rgb-color-detection-for-mcu-projects",
+    "id": "285",
     "name": "TCS3200 Color Sensor Module for Arduino | RGB Color Detection for MCU Projects",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 469,
@@ -3135,7 +3135,7 @@
     "margin": 50
   },
   {
-    "id": "tds-sensor-module",
+    "id": "286",
     "name": "TDS Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1210,
@@ -3146,7 +3146,7 @@
     "margin": 70
   },
   {
-    "id": "tec1-12710-peltier-thermoelectric-module",
+    "id": "287",
     "name": "TEC1-12710 PELTIER Thermoelectric Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 550,
@@ -3157,7 +3157,7 @@
     "margin": 50
   },
   {
-    "id": "tilt-sensor-module",
+    "id": "288",
     "name": "Tilt Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 1210,
@@ -3168,7 +3168,7 @@
     "margin": 70
   },
   {
-    "id": "touch-sensor",
+    "id": "289",
     "name": "Touch Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 57,
@@ -3179,7 +3179,7 @@
     "margin": 7
   },
   {
-    "id": "traffic-light-module-3-color-led-signal-light-for-arduino",
+    "id": "290",
     "name": "Traffic Light Module – 3-Color LED Signal Light for Arduino",
     "description": "LED for indicators, lighting, and displays.",
     "price": 57,
@@ -3190,7 +3190,7 @@
     "margin": 7
   },
   {
-    "id": "turbidity-sensor",
+    "id": "291",
     "name": "Turbidity Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 705,
@@ -3201,7 +3201,7 @@
     "margin": 50
   },
   {
-    "id": "ultrasonic-holder",
+    "id": "292",
     "name": "Ultrasonic Holder",
     "description": "Ultrasonic distance sensor for measuring range.",
     "price": 28,
@@ -3212,7 +3212,7 @@
     "margin": 3
   },
   {
-    "id": "ultrasonic-mist-maker-humidifier",
+    "id": "293",
     "name": "Ultrasonic Mist Maker Humidifier",
     "description": "Ultrasonic distance sensor for measuring range.",
     "price": 285,
@@ -3223,7 +3223,7 @@
     "margin": 35
   },
   {
-    "id": "vl53l0x-time-of-flight-tof-laser-distance-sensor-module",
+    "id": "294",
     "name": "VL53L0X Time-of-Flight (ToF) Laser Distance Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 180,
@@ -3234,7 +3234,7 @@
     "margin": 20
   },
   {
-    "id": "voltage-sensor-module-for-arduino-raspberry-pi-0-25v-dc-voltage-detection",
+    "id": "295",
     "name": "Voltage Sensor Module for Arduino & Raspberry Pi | 0-25V DC Voltage Detection",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 46,
@@ -3245,7 +3245,7 @@
     "margin": 7
   },
   {
-    "id": "water-flow-sensor-yfs201",
+    "id": "296",
     "name": "Water flow Sensor – YFS201",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 200,
@@ -3256,7 +3256,7 @@
     "margin": 20
   },
   {
-    "id": "water-flow-sensor-yfs401",
+    "id": "297",
     "name": "Water flow Sensor – YFS401",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 385,
@@ -3267,7 +3267,7 @@
     "margin": 35
   },
   {
-    "id": "water-level-sensor",
+    "id": "298",
     "name": "Water Level Sensor",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 85,
@@ -3278,7 +3278,7 @@
     "margin": 15
   },
   {
-    "id": "waterproof-ultrasonic-sensor-with-probe",
+    "id": "299",
     "name": "Waterproof Ultrasonic Sensor with Probe",
     "description": "Ultrasonic distance sensor for measuring range.",
     "price": 105,
@@ -3289,7 +3289,7 @@
     "margin": 15
   },
   {
-    "id": "zmct103c-ac-current-sensor-module",
+    "id": "300",
     "name": "ZMCT103C AC Current Sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 245,
@@ -3300,7 +3300,7 @@
     "margin": 35
   },
   {
-    "id": "zmpt101b-ac-voltage-sensor-module",
+    "id": "301",
     "name": "ZMPT101B AC voltage sensor Module",
     "description": "Sensor or module that adds capability to your projects.",
     "price": 550,
@@ -3311,7 +3311,7 @@
     "margin": 50
   },
   {
-    "id": "st-link-v2-programmer",
+    "id": "302",
     "name": "ST Link V2 Programmer",
     "description": "ST-Link programmer for flashing STM32 boards.",
     "price": 245,
@@ -3322,7 +3322,7 @@
     "margin": 35
   },
   {
-    "id": "stm32f103c8t6-blue-pill",
+    "id": "303",
     "name": "STM32F103C8T6 blue pill",
     "description": "STM32 development board for ARM-based embedded projects.",
     "price": 269,
@@ -3333,7 +3333,7 @@
     "margin": 35
   },
   {
-    "id": "16-pin-ic-base-dip-socket",
+    "id": "304",
     "name": "16-Pin IC Base (DIP Socket)",
     "description": "IC base socket for easy chip replacement.",
     "price": 32,
@@ -3344,7 +3344,7 @@
     "margin": 7
   },
   {
-    "id": "7805-5v-500ma-regulator-ic",
+    "id": "305",
     "name": "7805 5V 500mA Regulator IC",
     "description": "Voltage regulator IC for stable power supply.",
     "price": 32,
@@ -3355,7 +3355,7 @@
     "margin": 7
   },
   {
-    "id": "bc547-transistor-pack-of-5-pieces",
+    "id": "306",
     "name": "BC547 Transistor – (Pack of 5 Pieces)",
     "description": "Transistor for switching and amplification.",
     "price": 17,
@@ -3366,7 +3366,7 @@
     "margin": 3
   },
   {
-    "id": "cd4017-decade-counter-ic",
+    "id": "307",
     "name": "CD4017 Decade Counter IC",
     "description": "Logic IC for digital circuit design.",
     "price": 32,
@@ -3377,7 +3377,7 @@
     "margin": 7
   },
   {
-    "id": "combo-1n-4007-diode-pack-of-5-pieces",
+    "id": "308",
     "name": "Combo – 1N 4007 Diode – Pack of 5 Pieces",
     "description": "Diode for rectification and protection.",
     "price": 32,
@@ -3388,7 +3388,7 @@
     "margin": 7
   },
   {
-    "id": "combo-555-timer-ic-5-pieces",
+    "id": "309",
     "name": "Combo – 555 Timer IC (5 Pieces)",
     "description": "555 timer IC for timing and pulse generation.",
     "price": 51,
@@ -3399,7 +3399,7 @@
     "margin": 7
   },
   {
-    "id": "ic-7404-hex-inverter-not-gate",
+    "id": "310",
     "name": "IC 7404 Hex Inverter (NOT Gate)",
     "description": "Logic IC for digital circuit design.",
     "price": 37,
@@ -3410,7 +3410,7 @@
     "margin": 7
   },
   {
-    "id": "ic-7408-quad-2-input-and-gate",
+    "id": "311",
     "name": "IC 7408 Quad 2-Input AND Gate",
     "description": "Logic IC for digital circuit design.",
     "price": 51,
@@ -3421,7 +3421,7 @@
     "margin": 7
   },
   {
-    "id": "ic-7432-quad-2-input-or-gate",
+    "id": "312",
     "name": "IC 7432 Quad 2-Input OR Gate",
     "description": "Logic IC for digital circuit design.",
     "price": 32,
@@ -3432,7 +3432,7 @@
     "margin": 7
   },
   {
-    "id": "ic-7474-dual-d-type-flip-flop",
+    "id": "313",
     "name": "IC 7474 Dual D-Type Flip-Flop",
     "description": "Logic IC for digital circuit design.",
     "price": 32,
@@ -3443,7 +3443,7 @@
     "margin": 7
   },
   {
-    "id": "irf540n-2-3v-vgs-n-channel-mosfet",
+    "id": "314",
     "name": "IRF540N 2-3V Vgs N – Channel Mosfet",
     "description": "Power MOSFET for high-current switching.",
     "price": 32,
@@ -3454,7 +3454,7 @@
     "margin": 7
   },
   {
-    "id": "lm741-comparator-operational-amplifier",
+    "id": "315",
     "name": "LM741 Comparator / Operational Amplifier",
     "description": "Operational amplifier IC for analog signal processing.",
     "price": 51,
@@ -3465,7 +3465,7 @@
     "margin": 7
   },
   {
-    "id": "pc817-optocoupler-opto-isolator-ic",
+    "id": "316",
     "name": "PC817 Optocoupler (Opto-Isolator IC)",
     "description": "Optocoupler for isolating signals between circuits.",
     "price": 32,
@@ -3476,7 +3476,7 @@
     "margin": 7
   },
   {
-    "id": "tip122-npn-power-transistor",
+    "id": "317",
     "name": "TIP122 NPN Power Transistor",
     "description": "Transistor for switching and amplification.",
     "price": 17,

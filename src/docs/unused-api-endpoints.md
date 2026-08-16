@@ -55,7 +55,6 @@ Has a frontend component (`VitolDisplay.tsx`) but it's **commented out** in `Sch
 | `programme-migration` | — | Programme/branch migration |
 | `reexam` | — | Re-exam details |
 | `registration-status` | — | Registration status |
-| `special-arrear` | — | Special arrear exams |
 | `student-withdraw` | — | Student withdrawal |
 | `transcript` | — | Transcript generation |
 | `update-loginid` | — | Update VTOP login ID |
@@ -66,9 +65,6 @@ Has a frontend component (`VitolDisplay.tsx`) but it's **commented out** in `Sch
 
 | Endpoint | Backend VTOP URL | Notes |
 |---|---|---|
-| `arrear-paper-see` | — | Arrear paper revaluation |
-| `arrear-reg` | — | Arrear registration |
-| `compre-exam` | — | Comprehensive exam |
 | `outcome-set` | — | Outcome set mapping |
 | `paper-see-rev` | — | Paper revaluation |
 | `qcm` | — | QCM (Quiz/Test) |
@@ -158,4 +154,4 @@ Has a frontend component (`VitolDisplay.tsx`) but it's **commented out** in `Sch
 
 ## Previously considered but confirmed used (48 endpoints)
 
-`acknowledgement`, `additional-learning`, `all-grades`, `apaarid`, `arrear-details`, `arrear-grade`, `arrear-schedule`, `attendance`, `bank-info`, `buses`, `calendar`, `change-password`, `circulars`, `compre-info`, `course-completion`, `course-option-change`, `course-page`, `credentials`, `curriculum`, `dayboarder`, `ept-schedule`, `events`, `exc-registration`, `faculty-info`, `feedback-status`, `grades`, `hostel`, `hostel-counselling`, `library-due`, `lms-data`, `login`, `makeup-exam`, `makeup-schedule`, `marks`, `minor-honour`, `payment-receipts`, `payments`, `proctor`, `profile-images`, `project`, `project-course`, `registration-schedule`, `schedule`, `student`, `timetable`, `transport`, `wallet`, `wishlist`
+`acknowledgement`, `additional-learning`, `all-grades`, `apaarid`, `attendance`, `bank-info`, `buses`, `calendar`, `change-password`, `circulars`, `course-completion`, `course-page`, `credentials`, `curriculum`, `dayboarder`, `ept-schedule`, `events`, `exc-registration`, `faculty-info`, `feedback-status`, `grades`, `hostel`, `hostel-counselling`, `library-due`, `lms-data`, `login`, `marks`, `minor-honour`, `payment-receipts`, `payments`, `proctor`, `profile-images`, `registration-schedule`, `schedule`, `student`, `timetable`, `transport`, `wallet`, `wishlist`

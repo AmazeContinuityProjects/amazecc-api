@@ -75,7 +75,7 @@ import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 import { ensureGoroboSchema, type GoroboItem } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
-import { slugifyId, mapItemRow, computePrice } from "@/lib/gorobo/items";
+import { mapItemRow, computePrice } from "@/lib/gorobo/items";
 
 export const dynamic = "force-dynamic";
 
@@ -160,14 +160,10 @@ export async function POST(req: Request) {
     await ensureGoroboSchema();
     const pool = getDbPool();
 
-    let id = slugifyId(name);
-    const { rows: existing } = await pool.query("SELECT id FROM gorobo_items WHERE id = $1", [id]);
-    if (existing.length > 0) {
-      return NextResponse.json(
-        { success: false, error: `Item id "${id}" already exists` },
-        { status: 409 }
-      );
-    }
+    const { rows: maxRow } = await pool.query<{ next: number }>(
+      `SELECT COALESCE(MAX(id::int), 0) + 1 AS next FROM gorobo_items WHERE id ~ '^[0-9]+$'`
+    );
+    const id = String(maxRow[0].next);
 
     const { rows } = await pool.query<GoroboItem>(
       `INSERT INTO gorobo_items (id, name, description, price, base_price, margin, category, in_stock, image)
