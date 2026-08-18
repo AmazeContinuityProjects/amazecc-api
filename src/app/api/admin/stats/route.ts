@@ -41,7 +41,7 @@ export async function GET(req: Request) {
   try {
     const pool = getDbPool();
 
-    const [usersResult, papersResult, busesResult, subsResult, transportRoutesResult, rulesResult] = await Promise.all([
+    const [usersResult, papersResult, busesResult, subsResult, transportRoutesResult, rulesResult, recentLogsResult] = await Promise.all([
       pool.query(`SELECT COUNT(DISTINCT user_id) AS count FROM push_subscriptions`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT
         COUNT(*) AS total,
@@ -55,6 +55,7 @@ export async function GET(req: Request) {
       pool.query(`SELECT COUNT(*) AS count FROM push_subscriptions WHERE vitol_enabled = TRUE`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT COUNT(*) AS count FROM buses_v2`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT COUNT(*) AS count FROM transport_rules`).catch(() => ({ rows: [{ count: 0 }] })),
+      pool.query(`SELECT id, admin_user, admin_role, action, category, target_resource, details, diff, status, action_needed, fix_status, created_at AS timestamp FROM admin_audit_logs ORDER BY created_at DESC LIMIT 50`).catch(() => ({ rows: [] })),
     ]);
 
     return NextResponse.json({
@@ -72,6 +73,10 @@ export async function GET(req: Request) {
         transportRoutes: Number(transportRoutesResult.rows[0]?.count || 0),
         transportRules: Number(rulesResult.rows[0]?.count || 0),
         vitolSubscribers: Number(subsResult.rows[0]?.count || 0),
+        recentLogs: recentLogsResult.rows.map((r: any) => ({
+          ...r,
+          timestamp: r.timestamp ? new Date(r.timestamp).toISOString() : new Date().toISOString()
+        })),
       },
     });
   } catch {

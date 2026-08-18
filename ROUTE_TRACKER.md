@@ -16,7 +16,6 @@
 |-------|--------|-------|
 | ~achievements | `parseAchievements` | Dedicated parser |
 | ~acknowledgement | `parseAcknowledgement` | Dedicated parser |
-| ~bank-info | `parseBankInfo` | Dedicated parser |
 | ~biometric | `parseBiometric` | Dedicated parser |
 | ~bonafide | `parseBonafide` | Dedicated parser |
 | ~change-password | `parseChangePassword` | Dedicated parser |
@@ -25,7 +24,6 @@
 | ~compre-exam | `parseCompreExam` | Dedicated parser |
 | ~contact | `parseContact` | Dedicated parser |
 | ~course-page | `parseCoursePage` | Dedicated parser (AJAX steps use auto-parse) |
-| ~credentials | `parseCredentials` | Dedicated parser |
 | ~curriculum | `parseCurriculum` | Dedicated parser |
 | ~dayboarder | `parseDayboarder` | Dedicated parser |
 | ~extra-curricular | `parseExtraCurricular` | Dedicated parser |
@@ -64,7 +62,6 @@
 | Route | Type | Status | Notes |
 |-------|------|--------|-------|
 | ~coursework-reg | STATIC | raw | "Registration closed" message |
-| ~meeting-info | STATIC | raw | "Not a Research-Scholar" message |
 | ~monthly-report | TABLE+FORM | raw | File upload + history DataTable |
 | ~registration-status | FORM | raw | sem dropdown → AJAX course list |
 | ~research-attendance | FORM | raw | year/month/date → AJAX attendance |
@@ -99,9 +96,7 @@
 |-------|------|--------|-------|
 | ~caterer-change | STATIC | raw | "Not a hosteller" message |
 | ~hostel-attendance | FORM | raw | year/month → AJAX attendance table |
-| ~hostel-leave | — | — | (dump not analyzed yet) |
 | ~late-hour | FORM | raw | Buttons → AJAX request/status/history |
-| ~mess-selection | STATIC | raw | "No valid bookings" message |
 
 ## compre/ (3 routes)
 
@@ -115,7 +110,6 @@
 
 | Route | Type | Status | Notes |
 |-------|------|--------|-------|
-| ~graduated-info | STATIC | raw | (not analyzed yet) |
 | ~programme-migration | FORM | raw | (not analyzed yet) |
 | ~sem-request | FORM | raw | (not analyzed yet) |
 
@@ -168,10 +162,12 @@
 ## Conversion Priority
 
 ### ✅ Completed — Dedicated parser integrated
-1. acknowledgement, bank-info, biometric, bonafide, change-password, credentials, dayboarder
+1. acknowledgement, biometric, bonafide, change-password, dayboarder
 2. extra-curricular, feedback-status, fees-intimation, payment-receipts
 3. achievements, circulars, class-messages, compre-exam, contact, course-page, curriculum
 4. faculty-info, faq, login-history, payments, proctor, wallet
+
+> Note: `bank-info` and `credentials` parsers are now consumed only via `/api/me` (their standalone routes were removed in the Tier-1 cleanup).
 
 ### P0 — Has data tables (write dedicated parser)
 1. arrear-schedule — exam schedule table
@@ -209,13 +205,13 @@
 7. club-enrollment, swf-registration, swf-requisition
 
 ### P3 — Static/no-data pages (auto-parse for message only)
-1. coursework-reg, meeting-info, research-templates
-2. caterer-change, mess-selection
-3. graduated-info, research-award
+1. coursework-reg, research-templates
+2. caterer-change
+3. research-award
 4. online-transfer, fdp-certificate, fdp-registration
 
 ### P4 — Not analyzed yet (need HTML dump)
 1. facility-reg, ir-outbound, library-keys, library-scanning
 2. mdp, outgoing-report, pat-reg, student-withdraw, course-completion
 3. ept-schedule, online-exam-attempt, question-preview
-4. hostel-leave, qbank, regulation, sap-project
+4. qbank, regulation, sap-project

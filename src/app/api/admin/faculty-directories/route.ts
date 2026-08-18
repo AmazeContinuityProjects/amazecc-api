@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAdminPermission } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireAdminPermission(req, 'faculty-directories');
+  if (auth instanceof NextResponse) return auth;
   try {
     const pool = getDbPool();
     const { rows } = await pool.query(
@@ -17,6 +20,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const auth = await requireAdminPermission(req, 'faculty-directories');
+  if (auth instanceof NextResponse) return auth;
   try {
     const { id, school_name, url } = await req.json();
     if (!id || !school_name || !url) {
@@ -39,6 +44,8 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
+  const auth = await requireAdminPermission(req, 'faculty-directories');
+  if (auth instanceof NextResponse) return auth;
   try {
     const { id, school_name, url } = await req.json();
     if (!id || !school_name || !url) {
@@ -63,6 +70,8 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const auth = await requireAdminPermission(req, 'faculty-directories');
+  if (auth instanceof NextResponse) return auth;
   try {
     const { id } = await req.json();
     if (!id) {

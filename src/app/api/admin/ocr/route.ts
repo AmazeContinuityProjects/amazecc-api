@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getDbPool } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/auth';
-
-
-
+import { runPaperOcr } from '@/lib/qbank/ocr';
 
 /**
  * @openapi
@@ -12,6 +9,7 @@ import { requireAdminAuth } from '@/lib/auth';
  *     tags:
  *       - Admin
  *     summary: POST endpoint for /api/admin/ocr
+ *     description: Runs the real OCR pipeline on a question paper (text-layer extraction or tesseract.js for scanned PDFs), inserts the extracted questions, and moves the paper to PENDING_Q_APPROVAL (or OCR_FAILED with logs).
  *     requestBody:
  *       required: true
  *       content:
@@ -21,13 +19,11 @@ import { requireAdminAuth } from '@/lib/auth';
  *             properties:
  *               paperId:
  *                 type: string
+ *               model:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
  *       400:
  *         description: Bad Request
  *       401:
@@ -45,31 +41,22 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { paperId } = await req.json();
+    const { paperId, model } = await req.json();
     if (!paperId) return NextResponse.json({ error: 'Paper ID is required' }, { status: 400 });
 
-    const pool = getDbPool();
-
-    // Check if already processing
-    const { rows } = await pool.query(
-      `SELECT approval_status FROM papers_archive WHERE source_id = $1`,
-      [paperId]
-    );
-
-    if (rows.length === 0) return NextResponse.json({ error: 'Paper not found' }, { status: 404 });
-    if (rows[0].approval_status === 'OCR_QUEUED' || rows[0].approval_status === 'OCR_PROCESSING') {
-      return NextResponse.json({ error: 'Paper is already being processed' }, { status: 400 });
+    const result = await runPaperOcr(paperId, model);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error || 'OCR failed' }, { status: 500 });
     }
-
-    // Update status to QUEUED for the local worker to pick up
-    await pool.query(
-      `UPDATE papers_archive SET approval_status = 'OCR_QUEUED' WHERE source_id = $1`,
-      [paperId]
-    );
-
-    return NextResponse.json({ success: true, message: 'Paper queued for local OCR processing' });
-  } catch (error: any) {
-    console.error('OCR Queue Error:', error);
+    return NextResponse.json({
+      success: true,
+      count: result.count,
+      engine: result.engine,
+      pages: result.pages,
+      elapsedMs: result.elapsedMs,
+    });
+  } catch (error: unknown) {
+    console.error('OCR Pipeline Error:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
