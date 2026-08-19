@@ -30,7 +30,15 @@ function generateSignature(payload: string): string {
  * Signs a username to create a secure admin token.
  * Format: base64(payload).signature
  */
-export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users', 'transport', 'gorobo']): string {
+export function signAdminToken(
+    username: string, 
+    role: 'superadmin' | 'admin' = 'superadmin', 
+    permissions: string[] = [
+        'dashboard', 'audit_logs', 'papers', 'qbank', 'questions', 'diagrams',
+        'fresher-resources', 'faculty-directories', 'gorobo', 'storage', 'buses',
+        'transport', 'cabshare', 'push', 'clubs', 'users', 'settings'
+    ]
+): string {
     const payloadObj = {
         username,
         role,
@@ -102,4 +110,16 @@ export async function requireAdminAuth(req: Promise<Request> | Request): Promise
         return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
     return { username: payload.username, role: payload.role, permissions: payload.permissions };
+}
+
+export async function requireAdminPermission(
+    req: Promise<Request> | Request,
+    permission: string
+): Promise<{ username: string; role: 'superadmin' | 'admin'; permissions: string[] } | NextResponse> {
+    const auth = await requireAdminAuth(req);
+    if (auth instanceof NextResponse) return auth;
+    if (!auth.permissions.includes(permission)) {
+        return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
+    return auth;
 }

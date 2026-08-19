@@ -155,3 +155,22 @@ Has a frontend component (`VitolDisplay.tsx`) but it's **commented out** in `Sch
 ## Previously considered but confirmed used (48 endpoints)
 
 `acknowledgement`, `additional-learning`, `all-grades`, `apaarid`, `attendance`, `bank-info`, `buses`, `calendar`, `change-password`, `circulars`, `course-completion`, `course-page`, `credentials`, `curriculum`, `dayboarder`, `ept-schedule`, `events`, `exc-registration`, `faculty-info`, `feedback-status`, `grades`, `hostel`, `hostel-counselling`, `library-due`, `lms-data`, `login`, `marks`, `minor-honour`, `payment-receipts`, `payments`, `proctor`, `profile-images`, `registration-schedule`, `schedule`, `student`, `timetable`, `transport`, `wallet`, `wishlist`
+
+---
+
+## Removed — Tier-1 cleanup (routes deleted from this API)
+
+| Endpoint | Notes |
+|---|---|
+| `apaarid` | Removed; data now served via `/api/me` (`identity.apaar`) |
+| `bank-info` | Removed; data now served via `/api/me` (`identity.bank`) |
+| `credentials` | Removed; data now served via `/api/me` (`identity.credentials`, `identity.ranks`) |
+| `student` | Removed; data now served via `/api/me` (`identity.student`) |
+| `profile-images` | Removed; data now served via `/api/me` (`identity.proctor`, `identity.hodDean`) |
+| `hostel-leave` | Removed (no safe equivalent; hostel leave data lives under `/api/hostel`) |
+| `hostel-counselling` | Removed (scraped credentials page — security risk) |
+| `graduated-info` | Removed |
+| `meeting-info` | Removed |
+| `mess-selection` | Removed |
+
+App-side consumers were rewired to `/api/me`; UI entry points for removed endpoints were dropped.

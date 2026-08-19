@@ -23,9 +23,7 @@ type OpenApiSpec = {
 
 const categoryGroup: Record<string, string> = {
   "/api/login": "Auth",
-  "/api/student": "Student Profile",
-  "/api/credentials": "Student Profile",
-  "/api/profile-images": "Student Profile",
+  "/api/me": "Student Profile",
   "/api/change-password": "Student Profile",
   "/api/update-loginid": "Student Profile",
   "/api/grades": "Academics",
@@ -61,7 +59,6 @@ const categoryGroup: Record<string, string> = {
   "/api/research": "Research & Thesis",
   "/api/thesis": "Research & Thesis",
   "/api/scholar": "Scholar",
-  "/api/meeting-info": "Scholar",
   "/api/internship": "Projects & Internship",
   "/api/capstone": "Projects & Internship",
   "/api/payments": "Finance",

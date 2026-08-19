@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireAdminAuth } from "@/lib/auth";
 
 export async function POST(req: Request) {
+    const auth = await requireAdminAuth(req);
+    if (auth instanceof NextResponse) return auth;
     try {
         const body = await req.json().catch(() => ({}));
         const { hub_name, city } = body;
@@ -19,6 +22,8 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    const auth = await requireAdminAuth(req);
+    if (auth instanceof NextResponse) return auth;
     try {
         const { searchParams } = new URL(req.url);
         const hub_id = searchParams.get("hub_id");

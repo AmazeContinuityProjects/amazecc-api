@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireAdminAuth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
+    const auth = await requireAdminAuth(req);
+    if (auth instanceof NextResponse) return auth;
     try {
         const pool = getDbPool();
         const { rows } = await pool.query(`
@@ -31,6 +34,8 @@ export async function GET() {
 }
 
 export async function DELETE(req: Request) {
+    const auth = await requireAdminAuth(req);
+    if (auth instanceof NextResponse) return auth;
     try {
         const { searchParams } = new URL(req.url);
         const trip_id = searchParams.get("trip_id");

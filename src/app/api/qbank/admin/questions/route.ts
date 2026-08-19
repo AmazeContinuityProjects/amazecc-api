@@ -147,10 +147,10 @@ export async function PATCH(req: NextRequest) {
     if (!questionId) return NextResponse.json({ success: false, error: 'questionId required' }, { status: 400 });
 
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: Array<string | number | boolean | null> = [];
     let paramIndex = 1;
 
-    const addUpdate = (field: string, value: any) => {
+    const addUpdate = (field: string, value: string | number | boolean | null) => {
       updates.push(`${field} = $${paramIndex}`);
       values.push(value);
       paramIndex++;
@@ -163,7 +163,16 @@ export async function PATCH(req: NextRequest) {
     if ('options' in body) addUpdate('options', body.options ? JSON.stringify(body.options) : null);
     if ('correctAnswer' in body) addUpdate('correct_answer', body.correctAnswer);
     if ('imageUrl' in body) addUpdate('image_url', body.imageUrl);
+    if ('imageUrls' in body) {
+      const urls: string[] = Array.isArray(body.imageUrls) ? body.imageUrls.filter((u: unknown): u is string => typeof u === 'string' && u.length > 0) : [];
+      addUpdate('image_urls', JSON.stringify(urls));
+      addUpdate('image_url', urls[0] || null);
+    }
+    if ('hasDiagram' in body) addUpdate('has_diagram', body.hasDiagram === true);
+    if ('pageNumber' in body) addUpdate('page_number', body.pageNumber);
+    if ('sourcePdfPage' in body) addUpdate('source_pdf_page', body.sourcePdfPage);
     if ('topicName' in body) addUpdate('topic_name', body.topicName);
+    if ('metadata' in body) addUpdate('metadata', body.metadata ? JSON.stringify(body.metadata) : null);
 
     if (updates.length === 0) return NextResponse.json({ success: true });
 

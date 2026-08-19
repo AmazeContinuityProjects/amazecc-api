@@ -232,6 +232,27 @@ export async function POST(req: Request) {
         updated_at TIMESTAMPTZ DEFAULT now()
       );
 
+      -- Admin Audit Logs table
+      CREATE TABLE IF NOT EXISTS admin_audit_logs (
+        id TEXT PRIMARY KEY,
+        admin_user TEXT NOT NULL,
+        admin_role TEXT,
+        action TEXT NOT NULL,
+        category TEXT DEFAULT 'general',
+        target_resource TEXT NOT NULL,
+        details TEXT NOT NULL,
+        diff JSONB,
+        status TEXT DEFAULT 'info',
+        action_needed TEXT,
+        fix_status TEXT,
+        ip_address TEXT,
+        user_agent TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON admin_audit_logs (created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_admin_user ON admin_audit_logs (admin_user);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_category ON admin_audit_logs (category);
+
       -- Add driver_incharge columns to buses_v2 if they don't exist
       DO $$ BEGIN
         ALTER TABLE buses_v2 ADD COLUMN IF NOT EXISTS driver_incharge_name VARCHAR(100) DEFAULT '';
