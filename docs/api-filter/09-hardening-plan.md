@@ -101,8 +101,8 @@ Cap semester loops: `all-grades`, `additional-learning`, `course-completion`, `w
 ## Verification after changes
 
 ```bash
-npm run lint
-npm run build
+pnpm run lint
+pnpm run build
 ```
 
 Re-run the forensic scans (zero-width/unicode, eval/exec, encoded payloads, keyword injection) to confirm no regressions.

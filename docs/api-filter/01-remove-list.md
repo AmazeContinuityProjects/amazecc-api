@@ -51,7 +51,7 @@ These serve no unique value; each is superseded, static, or fake. Referenced in 
 4. Update `src/app/docs/page.tsx` `categoryGroup`/`categoryIcons` maps.
 5. Update `src/app/docs/EndpointTester.tsx` if it special-cases removed routes (it does for `/api/lms-data` and `/api/vitol-data`).
 6. **Before deleting `/api/lms-data` / `/api/vitol-data` / `/api/student` / `/api/profile-images` / `/api/credentials` / `/api/events/download`:** confirm the AmazeCC mobile app does not call them directly; if it does, rewire the app to `/api/me` or the redesigned endpoint first.
-7. Run `npm run lint` and `next build`.
+7. Run `pnpm run lint` and `next build`.
 
 ## Files removed from git history that are related
 

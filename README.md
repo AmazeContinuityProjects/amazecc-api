@@ -55,9 +55,9 @@ Scrapes real-time data from VIT's **VTOP**, **LMS**, **Koha**, and **EventHub** 
 ```bash
 git clone https://github.com/AmazeContinuityProjects/amazecc-api.git
 cd amazecc-api
-npm install
+pnpm install
 # Copy .env.example or configure required env vars (see .env)
-npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the API docs.
