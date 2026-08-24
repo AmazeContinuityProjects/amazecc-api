@@ -1,4 +1,4 @@
-﻿allowBuilds:
+allowBuilds:
   '@scarf/scarf': false
   '@tree-sitter-grammars/tree-sitter-yaml': false
   canvas: true
@@ -7,3 +7,5 @@
   tree-sitter: false
   tree-sitter-json: false
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@amazecontinuityprojects/amazeui@1.6.1'
