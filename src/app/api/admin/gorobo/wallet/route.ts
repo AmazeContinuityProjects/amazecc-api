@@ -20,7 +20,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
 
@@ -115,6 +115,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, summary, transactions });
   } catch (error: any) {
     console.error("admin gorobo wallet GET error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

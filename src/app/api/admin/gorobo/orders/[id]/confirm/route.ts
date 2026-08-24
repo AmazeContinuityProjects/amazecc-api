@@ -22,7 +22,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
 import { mapOrderRow, type GoroboOrderRow } from "@/lib/gorobo/orders";
@@ -66,6 +66,6 @@ export async function POST(req: Request, context: RouteContext) {
     return NextResponse.json({ success: true, order: mapOrderRow(updated[0]) });
   } catch (error: any) {
     console.error("admin gorobo order confirm error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

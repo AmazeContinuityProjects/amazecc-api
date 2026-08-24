@@ -42,7 +42,7 @@
  *             properties:
  *               items:
  *                 type: array
- *                 description: Line items. Inventory lines: {itemId, quantity, unitPrice?}; custom lines: {custom: true, name, quantity, unitPrice}
+ *                 description: "Line items. Inventory lines: {itemId, quantity, unitPrice?}; custom lines: {custom: true, name, quantity, unitPrice}"
  *               discountPct:
  *                 type: number
  *                 minimum: 0
@@ -72,7 +72,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
 import { computeQuote } from "@/lib/gorobo/quote";
@@ -107,7 +107,7 @@ export async function GET(req: Request, context: RouteContext) {
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]), wallet: walletRows });
   } catch (error: any) {
     console.error("admin gorobo order GET error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
 
@@ -179,6 +179,6 @@ export async function PUT(req: Request, context: RouteContext) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
     console.error("admin gorobo order PUT error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

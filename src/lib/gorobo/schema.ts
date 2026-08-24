@@ -1,4 +1,4 @@
-import { getDbPool } from "@/lib/db";
+import { getDbPool, isCircuitBreakerError } from "@/lib/db";
 
 export const GOROBO_ITEMS_DDL = `
 CREATE TABLE IF NOT EXISTS gorobo_items (
@@ -60,20 +60,55 @@ export const GOROBO_ORDER_STATUSES = ["pending", "confirmed", "completed"] as co
 export type GoroboOrderStatus = (typeof GOROBO_ORDER_STATUSES)[number];
 
 let ensured = false;
+let ensuring: Promise<void> | null = null;
+let lastFailureAt = 0;
+const COOLDOWN_MS = 30_000;
 
 /**
  * Idempotently creates (and upgrades) the GoRobo tables if they do not exist yet.
  * Safe to call from any handler before use.
+ * Includes cooldown / circuit-breaker handling so repeated failures (ECIRCUITBREAKER / auth block)
+ * do not hammer PgBouncer/Neon and prolong the block. Concurrent callers share the same promise.
  */
 export async function ensureGoroboSchema(): Promise<void> {
   if (ensured) return;
-  const pool = getDbPool();
-  await pool.query(GOROBO_ITEMS_DDL);
-  await pool.query(GOROBO_ITEMS_ALTERS);
-  await pool.query(GOROBO_ORDERS_DDL);
-  await pool.query(GOROBO_ORDERS_ALTERS);
-  await pool.query(GOROBO_WALLET_ENTRIES_DDL);
-  ensured = true;
+  if (ensuring) return ensuring;
+
+  // If we failed very recently and the error was a circuit-breaker / auth block, fail fast without hitting DB again
+  if (lastFailureAt && Date.now() - lastFailureAt < COOLDOWN_MS) {
+    // Check if last failure was circuit breaker – we store timestamp only for any failure, but we still apply cooldown
+    // to avoid tight loop. Callers will receive 503 via getDbError* helpers.
+    const remaining = Math.ceil((COOLDOWN_MS - (Date.now() - lastFailureAt)) / 1000);
+    throw new Error(
+      `Database temporarily unavailable (recent failure, retry in ~${remaining}s). If this is ECIRCUITBREAKER / too many authentication failures, verify DATABASE_URL credentials and wait 60s.`
+    );
+  }
+
+  ensuring = (async () => {
+    const pool = getDbPool();
+    await pool.query(GOROBO_ITEMS_DDL);
+    await pool.query(GOROBO_ITEMS_ALTERS);
+    await pool.query(GOROBO_ORDERS_DDL);
+    await pool.query(GOROBO_ORDERS_ALTERS);
+    await pool.query(GOROBO_WALLET_ENTRIES_DDL);
+  })();
+
+  try {
+    await ensuring;
+    ensured = true;
+    lastFailureAt = 0;
+  } catch (error: any) {
+    lastFailureAt = Date.now();
+    // If it's a circuit breaker / auth failure, surface a clearer log and keep cooldown
+    if (isCircuitBreakerError(error)) {
+      console.error('[gorobo/schema] ensureGoroboSchema blocked by circuit breaker:', error.message);
+    } else {
+      console.error('[gorobo/schema] ensureGoroboSchema failed:', error?.message || error);
+    }
+    throw error;
+  } finally {
+    ensuring = null;
+  }
 }
 
 export interface GoroboItem {

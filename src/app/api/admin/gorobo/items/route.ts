@@ -72,7 +72,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema, type GoroboItem } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
 import { mapItemRow, computePrice } from "@/lib/gorobo/items";
@@ -110,7 +110,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, count: items.length, items });
   } catch (error: any) {
     console.error("admin gorobo items GET error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
 
@@ -175,6 +175,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, item: mapItemRow(rows[0]) }, { status: 201 });
   } catch (error: any) {
     console.error("admin gorobo items POST error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
