@@ -99,8 +99,8 @@ export async function POST(req: Request) {
 
     const data = parseFacultyInfo(resp.data);
     return NextResponse.json({ success: true, ...data });
-  } catch (err: any) {
-    console.error("faculty-info error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("faculty-info error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

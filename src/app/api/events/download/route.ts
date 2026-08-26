@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         }
 
         // Stream the file directly to the client without buffering in memory
-        return new NextResponse(fileRes.body as any, {
+        return new NextResponse(fileRes.body as unknown as BodyInit, {
             status: 200,
             headers: {
                 "Content-Type": contentType,
@@ -82,8 +82,8 @@ export async function POST(req: Request) {
             }
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Download Proxy Error:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || "Internal server error" }, { status: 500 });
     }
 }

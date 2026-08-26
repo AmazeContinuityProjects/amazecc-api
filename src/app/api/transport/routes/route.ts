@@ -20,7 +20,7 @@ export async function GET() {
     `);
 
     return NextResponse.json({ success: true, routes });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch transport routes:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

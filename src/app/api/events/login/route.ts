@@ -42,8 +42,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, jsessionid }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return NextResponse.json({ success: false, error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
   }
 }

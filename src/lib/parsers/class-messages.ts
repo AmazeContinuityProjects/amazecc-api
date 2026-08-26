@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 
 export interface ClassMessagesData {
   title: string;
-  messages: any[];
+  messages: unknown[];
   note: string;
 }
 

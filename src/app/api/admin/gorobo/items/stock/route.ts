@@ -15,14 +15,14 @@ export async function PATCH(req: Request) {
   const auth = await requireGoroboAdmin(req);
   if (auth instanceof NextResponse) return auth;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { itemId, delta, stockQuantity } = body;
+  const { itemId, delta, stockQuantity } = body as Record<string, unknown>;
   if (!itemId) {
     return NextResponse.json({ success: false, error: "itemId is required" }, { status: 400 });
   }
@@ -32,10 +32,10 @@ export async function PATCH(req: Request) {
     const pool = getDbPool();
 
     let query: string;
-    let params: any[];
+    let params: unknown[];
 
     if (stockQuantity !== undefined) {
-      const newQty = Math.max(0, parseInt(stockQuantity, 10) || 0);
+      const newQty = Math.max(0, parseInt(String(stockQuantity), 10) || 0);
       query = `UPDATE gorobo_items
                SET stock_quantity = $1,
                    in_stock = ($1 > 0),
@@ -45,7 +45,7 @@ export async function PATCH(req: Request) {
                          sku, stock_quantity, low_stock_threshold, location_bin, datasheet_url, tags, updated_at`;
       params = [newQty, itemId];
     } else if (delta !== undefined) {
-      const d = parseInt(delta, 10) || 0;
+      const d = parseInt(String(delta), 10) || 0;
       query = `UPDATE gorobo_items
                SET stock_quantity = GREATEST(0, stock_quantity + $1),
                    in_stock = (GREATEST(0, stock_quantity + $1) > 0),
@@ -64,8 +64,8 @@ export async function PATCH(req: Request) {
     }
 
     return NextResponse.json({ success: true, item: mapItemRow(rows[0]) });
-  } catch (error: any) {
-    console.error("admin gorobo items stock PATCH error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo items stock PATCH error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

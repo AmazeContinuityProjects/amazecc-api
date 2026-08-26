@@ -70,7 +70,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Event Hub authentication failed. Please check your credentials." }, { status: 401 });
         }
 
-        const registeredEvents: any[] = [];
+        const registeredEvents: unknown[] = [];
 
         // Parse the tables in the profile page
         // Usually, the registered events table is the one with headers "S.No", "Event Name", "Order Id" etc.
@@ -164,8 +164,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ events: registeredEvents }, { status: 200 });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
     }
 }

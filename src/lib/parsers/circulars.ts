@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 
 export interface CircularItem {
   id?: string | null;
@@ -19,10 +20,10 @@ export function parseCirculars(html: string): CircularsData {
     circulars: [],
   };
 
-  function parseUl(ul: cheerio.Cheerio<any>): CircularItem[] {
+  function parseUl(ul: cheerio.Cheerio<Element>): CircularItem[] {
     const items: CircularItem[] = [];
-    ul.children("li").each((_i: number, li: any) => {
-      const $li = $(li);
+    ul.children("li").each((_i: number, li: unknown) => {
+      const $li = $(li as Element);
       const span = $li.children("span").first();
       const link = $li.children("a").first();
       const childUl = $li.children("ul");

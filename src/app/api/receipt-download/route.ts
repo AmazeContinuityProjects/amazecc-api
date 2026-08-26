@@ -108,8 +108,8 @@ export async function POST(req: Request) {
       status: 200,
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
-  } catch (err: any) {
-    console.error("receipt-download error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("receipt-download error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

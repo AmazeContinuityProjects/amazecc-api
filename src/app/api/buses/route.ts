@@ -27,7 +27,7 @@ import defaultBuses from '@/data/dayscholar_buses.json';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const fallbackBuses = (defaultBuses as any).default || defaultBuses;
+  const fallbackBuses = (defaultBuses as unknown as Record<string, unknown>).default || defaultBuses;
   try {
     const pool = getDbPool();
     if (!process.env.DATABASE_URL) {
@@ -58,7 +58,7 @@ export async function GET() {
       if (rows.length > 0) {
         const buses = rows.map(b => ({
           ...b,
-          boardingPoints: (b.stops || []).map((s: any) => s.stopName),
+          boardingPoints: (b.stops || []).map((s: Record<string, unknown>) => (s.stopName as string)),
           stops: b.stops || [],
           placements: b.placements || [],
         }));
@@ -117,7 +117,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ success: true, buses });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch buses:', error);
     return NextResponse.json({ success: true, buses: fallbackBuses, error: "Internal server error" });
   }

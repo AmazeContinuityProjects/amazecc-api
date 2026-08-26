@@ -93,12 +93,12 @@ export async function GET(req: NextRequest) {
     const total = parseInt(channel?.["opensearch:totalResults"] || "0", 10);
     const rawItems = channel?.item || [];
 
-    const books = rawItems.map((item: any) => {
-      const title = (typeof item.title === "string" ? item.title : item.title?.[0] || "").trim();
-      const link = typeof item.link === "string" ? item.link : item.link?.[0] || "";
+    const books = (rawItems as Record<string, unknown>[]).map((item: Record<string, unknown>) => {
+      const title = (typeof item.title === "string" ? item.title : (item.title as unknown as string[])?.[0] || "").trim();
+      const link = typeof item.link === "string" ? item.link : (item.link as unknown as string[])?.[0] || "";
       const biblionumber = link.match(/biblionumber=(\d+)/)?.[1] || "";
-      const identifier = (typeof item["dc:identifier"] === "string" ? item["dc:identifier"] : item["dc:identifier"]?.[0] || "").replace(/^ISBN:/i, "");
-      const desc = typeof item.description === "string" ? item.description : item.description?.[0] || "";
+      const identifier = (typeof item["dc:identifier"] === "string" ? item["dc:identifier"] as string : (item["dc:identifier"] as unknown as string[])?.[0] || "").replace(/^ISBN:/i, "");
+      const desc = typeof item.description === "string" ? item.description as string : (item.description as unknown as string[])?.[0] || "";
 
       let author = "";
       let publisher = "";
@@ -117,8 +117,8 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, books, total, query: q, offset, count });
-  } catch (err: any) {
-    console.error("koha/search error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("koha/search error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

@@ -13,8 +13,8 @@ export async function POST(req: Request) {
             [hub_name, city || 'Chennai']
         );
         return NextResponse.json({ success: true, hub: rows[0] });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -27,7 +27,7 @@ export async function DELETE(req: Request) {
         const pool = getDbPool();
         await pool.query("DELETE FROM cabshare_hubs WHERE hub_id = $1", [hub_id]);
         return NextResponse.json({ success: true, message: "Hub deleted successfully" });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

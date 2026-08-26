@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ success: true, message: 'Paper status reset to PENDING' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OCR Reset Error:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

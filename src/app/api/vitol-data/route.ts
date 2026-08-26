@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { AxiosInstance } from "axios";
 import * as cheerio from "cheerio";
 import getVitolClient from "@/lib/clients/VitolClient";
 
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
         const result = await ScrapeVitolData(username, pass, vitolSite);
 
         return NextResponse.json(result, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
@@ -158,7 +159,7 @@ async function ScrapeVitolData(username: string, password: string, vitolSite: st
         const finalResults: Assingment[] = [];
 
         for (const dayData of allEvents) {
-            for (const ev of dayData.events) {
+            for (const ev of (dayData as Record<string, unknown>).events as Array<Record<string, unknown> & { link: string }>) {
                 try {
                     const eventRes = await VitolClient.get(ev.link, {
                         headers: {
@@ -197,35 +198,35 @@ async function ScrapeVitolData(username: string, password: string, vitolSite: st
                             name,
                             opens: opensText,
                             done: isDone,
-                            day: dayData.day,
-                            month: dayData.month,
-                            year: dayData.year,
+                            day: dayData.day as number,
+                            month: dayData.month as number,
+                            year: dayData.year as number,
                             url: ev.link
                         });
                     }
 
-                } catch (err: any) {
-                    console.error("❌ Failed parsing:", ev.link, err.message);
+                } catch (err: unknown) {
+                    console.error("❌ Failed parsing:", ev.link, (err instanceof Error ? err.message : String(err)));
                 }
             }
         }
         return finalResults;
-    } catch (err: any) {
-        console.error("Error:", err.message);
+    } catch (err: unknown) {
+        console.error("Error:", (err instanceof Error ? err.message : String(err)));
         throw err;
     }
 }
 
 function extractCalendarEvents(html: string) {
     const $ = cheerio.load(html);
-    const events: any[] = [];
+    const events: Array<Record<string, unknown>> = [];
 
     $("td.day.hasevent").each((i, el) => {
         const day = $(el).data("day");
         const month = $(el).find("a[data-day]").data("month") || null;
         const year = $(el).find("a[data-day]").data("year") || null;
 
-        const dayEvents: any[] = [];
+        const dayEvents: Array<Record<string, unknown>> = [];
 
         $(el)
             .find('[data-region="event-item"] a[data-action="view-event"]')
@@ -241,7 +242,7 @@ function extractCalendarEvents(html: string) {
     return events;
 }
 
-async function fetchCalendarMonthHTML(sesskey: string, year: number, month: number, cookies: string, VitolClient: any): Promise<string> {
+async function fetchCalendarMonthHTML(sesskey: string, year: number, month: number, cookies: string, VitolClient: AxiosInstance): Promise<string> {
     const body = [
         {
             index: 0,

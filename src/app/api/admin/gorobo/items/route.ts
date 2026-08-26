@@ -26,7 +26,7 @@ export async function GET(req: Request) {
                         COUNT(*) OVER() AS total_catalog_count
                  FROM gorobo_items`;
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (search) {
       params.push(`%${search}%`);
@@ -60,8 +60,8 @@ export async function GET(req: Request) {
       limit,
       items
     });
-  } catch (error: any) {
-    console.error("admin gorobo items GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo items GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -70,17 +70,17 @@ export async function POST(req: Request) {
   const auth = await requireGoroboAdmin(req);
   if (auth instanceof NextResponse) return auth;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const name = typeof body?.name === "string" ? body.name.trim() : "";
-  const category = typeof body?.category === "string" ? body.category.trim() : "";
-  const basePrice = Number(body?.basePrice);
-  const margin = Number(body?.margin);
+  const name = typeof (body as Record<string, unknown>)?.name === "string" ? ((body as Record<string, unknown>).name as string).trim() : "";
+  const category = typeof (body as Record<string, unknown>)?.category === "string" ? ((body as Record<string, unknown>).category as string).trim() : "";
+  const basePrice = Number((body as Record<string, unknown>)?.basePrice);
+  const margin = Number((body as Record<string, unknown>)?.margin);
 
   if (!name || name.length > 100) {
     return NextResponse.json(
@@ -104,15 +104,15 @@ export async function POST(req: Request) {
   const base = Math.round(basePrice * 100) / 100;
   const marg = Math.round(margin * 100) / 100;
   const price = computePrice(base, marg);
-  const description = typeof body?.description === "string" ? body.description.trim() : "";
-  const image = typeof body?.image === "string" ? body.image.trim() : "";
-  const sku = typeof body?.sku === "string" ? body.sku.trim() : "";
-  const stockQuantity = Math.max(0, parseInt(body?.stockQuantity ?? 0, 10) || 0);
-  const lowStockThreshold = Math.max(0, parseInt(body?.lowStockThreshold ?? 5, 10) || 5);
-  const locationBin = typeof body?.locationBin === "string" ? body.locationBin.trim() : "";
-  const datasheetUrl = typeof body?.datasheetUrl === "string" ? body.datasheetUrl.trim() : "";
-  const tags = Array.isArray(body?.tags) ? body.tags : [];
-  const inStock = body?.inStock !== false && stockQuantity > 0;
+  const description = typeof (body as Record<string, unknown>)?.description === "string" ? ((body as Record<string, unknown>).description as string).trim() : "";
+  const image = typeof (body as Record<string, unknown>)?.image === "string" ? ((body as Record<string, unknown>).image as string).trim() : "";
+  const sku = typeof (body as Record<string, unknown>)?.sku === "string" ? ((body as Record<string, unknown>).sku as string).trim() : "";
+  const stockQuantity = Math.max(0, parseInt(String((body as Record<string, unknown>)?.stockQuantity ?? 0), 10) || 0);
+  const lowStockThreshold = Math.max(0, parseInt(String((body as Record<string, unknown>)?.lowStockThreshold ?? 5), 10) || 5);
+  const locationBin = typeof (body as Record<string, unknown>)?.locationBin === "string" ? ((body as Record<string, unknown>).locationBin as string).trim() : "";
+  const datasheetUrl = typeof (body as Record<string, unknown>)?.datasheetUrl === "string" ? ((body as Record<string, unknown>).datasheetUrl as string).trim() : "";
+  const tags = Array.isArray((body as Record<string, unknown>)?.tags) ? ((body as Record<string, unknown>).tags as unknown[]) : [];
+  const inStock = (body as Record<string, unknown>)?.inStock !== false && stockQuantity > 0;
 
   try {
     await ensureGoroboSchema();
@@ -145,8 +145,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, item: mapItemRow(rows[0]) }, { status: 201 });
-  } catch (error: any) {
-    console.error("admin gorobo items POST error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo items POST error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

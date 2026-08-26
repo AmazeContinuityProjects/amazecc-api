@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ success: true, message: 'Paper queued for local OCR processing' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OCR Queue Error:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

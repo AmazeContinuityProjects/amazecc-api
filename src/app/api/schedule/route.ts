@@ -111,7 +111,7 @@ export async function POST(req: Request) {
             semester: semesterId,
             Schedule: Schedule
         }, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

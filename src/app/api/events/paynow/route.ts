@@ -84,8 +84,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ status: "payment_form", html: htmlPayload, tcUrl: tcUrl }, { status: 200 });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
     }
 }

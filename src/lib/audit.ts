@@ -4,7 +4,7 @@ export interface AuditLogEntry {
   admin_user: string;
   action: string;
   target_resource?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   ip_address?: string;
   user_agent?: string;
 }

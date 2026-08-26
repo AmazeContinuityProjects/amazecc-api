@@ -47,7 +47,8 @@ export async function syncClubsBackground(cookies: string, csrf: string, authori
             }
             console.log(`Background: VTOP Clubs sync complete. Added ${addedCount} new clubs.`);
         }
-    } catch (err: any) {
-        console.error("Background: Error syncing VTOP clubs:", err.message);
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("Background: Error syncing VTOP clubs:", message);
     }
 }

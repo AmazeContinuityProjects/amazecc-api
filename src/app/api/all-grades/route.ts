@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
-import { GradeItem, GradeResultsMap } from "@/types/data/allgrades";
+import { GradeItem, GradeResultsMap, GradeBreakdown } from "@/types/data/allgrades";
 
 async function batchAll<T, R>(
   items: T[],
@@ -145,7 +145,7 @@ export async function POST(req: Request) {
                 const detailTables = $$$("table.table-striped")
                     .filter((_, el) => $$$(el).text().includes("Mark Title"));
 
-                const breakdown: any[] = [];
+                const breakdown: (GradeBreakdown & { type: string })[] = [];
 
                 detailTables.each((tIndex, tableEl) => {
                     const type = tIndex === 0 ? "Theory" : tIndex === 1 ? "Lab" : `Component ${tIndex + 1}`;
@@ -170,7 +170,7 @@ export async function POST(req: Request) {
                     });
                 });
 
-                grade.details = breakdown.length ? breakdown : null;
+                grade.details = (breakdown.length ? breakdown : null) as unknown as GradeBreakdown[] | null;
             } catch {
                 grade.details = null;
             }
@@ -256,7 +256,7 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({ grades: output }, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

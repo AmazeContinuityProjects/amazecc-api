@@ -191,8 +191,8 @@ export default function ApiDocs() {
       });
       if (data.clubToken) setClubToken(data.clubToken);
       setIsAuthDialogOpen(false);
-    } catch (err: any) {
-      setLoginError(err.message);
+    } catch (err: unknown) {
+      setLoginError((err instanceof Error ? err.message : String(err)));
     } finally {
       setLoginLoading(false);
     }

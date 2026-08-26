@@ -71,7 +71,7 @@ export async function GET(req: Request) {
     );
 
     return NextResponse.json({ success: true, users: rows });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch users:', error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
         is_active: true,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to add user:', error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },

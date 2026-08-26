@@ -70,8 +70,8 @@ export async function POST(req: Request) {
       || /\.pdf/i.test(resp.data)
       || /already uploaded|submitted successfully/i.test(resp.data);
     return NextResponse.json({ success: true, hasApaar, ...parsed });
-  } catch (err: any) {
-    console.error("apaarid error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("apaarid error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

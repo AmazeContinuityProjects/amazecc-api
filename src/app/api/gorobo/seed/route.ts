@@ -131,7 +131,7 @@ export async function POST(req: Request) {
       }
 
       await client.query("COMMIT");
-    } catch (error: any) {
+    } catch (error: unknown) {
       await client.query("ROLLBACK");
       throw error;
     } finally {
@@ -143,8 +143,8 @@ export async function POST(req: Request) {
       message: "GoRoBo items seeded successfully",
       stats: { items: data.length, replaced: replace },
     });
-  } catch (error: any) {
-    console.error("gorobo seed POST error:", error.message);
+  } catch (error: unknown) {
+    console.error("gorobo seed POST error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

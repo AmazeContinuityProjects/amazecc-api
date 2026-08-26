@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const pool = getDbPool();
     const { rows } = await pool.query('SELECT * FROM transport_rules ORDER BY rule_number');
     return NextResponse.json({ success: true, rules: rows });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch transport rules:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: 'Rules updated successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update transport rules:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

@@ -30,37 +30,37 @@ export async function GET(req: Request) {
       );
     };
 
-    const r2Papers = allPapers.filter((p: any) => !isRemoteUrl(p.file_url) && p.file_url !== 'DIRECT_JSON');
-    const otherPapers = allPapers.filter((p: any) => isRemoteUrl(p.file_url));
-    const jsonPapers = allPapers.filter((p: any) => p.file_url === 'DIRECT_JSON');
+    const r2Papers = allPapers.filter((p: Record<string, unknown>) => !isRemoteUrl(p.file_url as string) && (p.file_url as string) !== 'DIRECT_JSON');
+    const otherPapers = allPapers.filter((p: Record<string, unknown>) => isRemoteUrl(p.file_url as string));
+    const jsonPapers = allPapers.filter((p: Record<string, unknown>) => (p.file_url as string) === 'DIRECT_JSON');
 
-    const totalSize = r2Papers.reduce((sum: number, p: any) => sum + (Number(p.file_size) || 0), 0);
+    const totalSize = r2Papers.reduce((sum: number, p: Record<string, unknown>) => sum + (Number(p.file_size as string | number | undefined) || 0), 0);
 
     const largestFiles = [...allPapers]
-      .filter((p: any) => p.file_size)
-      .sort((a: any, b: any) => (Number(b.file_size) || 0) - (Number(a.file_size) || 0))
+      .filter((p: Record<string, unknown>) => p.file_size as unknown)
+      .sort((a: Record<string, unknown>, b: Record<string, unknown>) => (Number(b.file_size as string | number | undefined) || 0) - (Number(a.file_size as string | number | undefined) || 0))
       .slice(0, 5)
-      .map((p: any) => ({
-        source_id: p.source_id,
-        course_code: p.course_code,
-        title: p.title,
-        file_size: Number(p.file_size) || 0,
-        storage_provider: p.storage_provider,
-        created_at: p.created_at,
-        file_url: p.file_url
+      .map((p: Record<string, unknown>) => ({
+        source_id: p.source_id as string,
+        course_code: p.course_code as string,
+        title: p.title as string,
+        file_size: Number(p.file_size as string | number | undefined) || 0,
+        storage_provider: p.storage_provider as string,
+        created_at: p.created_at as string,
+        file_url: p.file_url as string
       }));
 
     const recentUploads = [...allPapers]
-      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .sort((a: Record<string, unknown>, b: Record<string, unknown>) => new Date(b.created_at as string).getTime() - new Date(a.created_at as string).getTime())
       .slice(0, 5)
-      .map((p: any) => ({
-        source_id: p.source_id,
-        course_code: p.course_code,
-        title: p.title,
-        file_size: Number(p.file_size) || 0,
-        storage_provider: p.storage_provider,
-        created_at: p.created_at,
-        file_url: p.file_url
+      .map((p: Record<string, unknown>) => ({
+        source_id: p.source_id as string,
+        course_code: p.course_code as string,
+        title: p.title as string,
+        file_size: Number(p.file_size as string | number | undefined) || 0,
+        storage_provider: p.storage_provider as string,
+        created_at: p.created_at as string,
+        file_url: p.file_url as string
       }));
 
     // Fetch diagram count
@@ -81,9 +81,9 @@ export async function GET(req: Request) {
         recentUploads
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Storage stats GET error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -112,8 +112,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Storage POST error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

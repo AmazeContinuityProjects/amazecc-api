@@ -116,10 +116,10 @@ export async function POST(req: Request) {
       qrCode,
       pageCsrf,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Transport fetch error:", error);
     return NextResponse.json(
-      { hasRegistration: false, error: error.message || "Failed to fetch transport data" },
+      { hasRegistration: false, error: (error instanceof Error ? error.message : String(error)) || "Failed to fetch transport data" },
       { status: 200 }
     );
   }

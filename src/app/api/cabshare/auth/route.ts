@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { AxiosResponse } from "axios";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { getCaptcha } from "../../login/captcha";
 import { solveCaptcha } from "../../login/solveCaptcha";
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
         const allCookies = [...(cookies || []), ...(loginCookies || [])].join("; ");
 
         // Handle 302 Redirect for Dashboard
-        let dashboardRes: any;
+        let dashboardRes: AxiosResponse;
         if (loginRes.status === 302 && loginRes.headers.location) {
             dashboardRes = await client.get(loginRes.headers.location, { headers: { Cookie: allCookies } });
         } else {
@@ -97,8 +98,8 @@ export async function POST(req: Request) {
             // In a real app we'd sign a JWT here. For this implementation, the frontend will pass reg_number as auth.
         });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("CabShare Auth Error:", err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

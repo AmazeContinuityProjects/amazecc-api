@@ -29,11 +29,11 @@ function createPool(): Pool {
     connectionTimeoutMillis: 10_000,
   });
 
-  p.on('error', (err: any) => {
+  p.on('error', (err: unknown) => {
     // Background pool errors (e.g., terminated connections) – log but do not crash process
     // ECIRCUITBREAKER / "too many authentication failures" indicates PgBouncer/Neon has temporarily blocked the tenant
     // due to repeated failed auth attempts (usually wrong password or rotated DATABASE_URL)
-    const msg = err?.message || String(err || '');
+    const msg = err instanceof Error ? err.message : String(err ?? '');
     if (
       msg.includes('ECIRCUITBREAKER') ||
       msg.includes('too many authentication failures') ||
@@ -68,8 +68,8 @@ export function getDbPool(): Pool {
 }
 
 // Helper for route handlers to map low-level pg errors to user-facing HTTP status
-export function isCircuitBreakerError(error: any): boolean {
-  const msg = error?.message || String(error || '');
+export function isCircuitBreakerError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error ?? '');
   return (
     msg.includes('ECIRCUITBREAKER') ||
     msg.includes('too many authentication failures') ||
@@ -77,15 +77,15 @@ export function isCircuitBreakerError(error: any): boolean {
   );
 }
 
-export function getDbErrorStatus(error: any): number {
+export function getDbErrorStatus(error: unknown): number {
   return isCircuitBreakerError(error) ? 503 : 500;
 }
 
-export function getDbErrorMessage(error: any): string {
+export function getDbErrorMessage(error: unknown): string {
   if (isCircuitBreakerError(error)) {
     return 'Database temporarily unavailable (circuit breaker: too many authentication failures). Verify DATABASE_URL credentials on Vercel and wait ~60 seconds before retrying. If the issue persists, rotate DATABASE_URL or check Supabase/Neon connection limits.';
   }
-  return error?.message || 'Internal database error';
+  return error instanceof Error ? error.message : 'Internal database error';
 }
 
 // For testing / graceful shutdown: allow resetting pool (e.g., after credentials rotate)

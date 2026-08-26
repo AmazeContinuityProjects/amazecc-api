@@ -113,8 +113,8 @@ export async function GET(req: Request) {
     }));
 
     return NextResponse.json({ success: true, summary, transactions });
-  } catch (error: any) {
-    console.error("admin gorobo wallet GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo wallet GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

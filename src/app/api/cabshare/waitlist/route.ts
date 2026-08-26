@@ -23,8 +23,8 @@ export async function POST(req: Request) {
         );
 
         return NextResponse.json({ success: true, message: "Added to waitlist" });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("CabShare Waitlist POST Error:", err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

@@ -52,14 +52,14 @@ export async function POST(req: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const party = body?.party;
+  const party = (body as Record<string, unknown>)?.party;
   if (party !== "customer" && party !== "vendor") {
     return NextResponse.json(
       { success: false, error: "party must be either \"customer\" or \"vendor\"" },
@@ -88,8 +88,8 @@ export async function POST(req: Request, context: RouteContext) {
     );
 
     return NextResponse.json({ success: true, settled: rows.length, entries: rows });
-  } catch (error: any) {
-    console.error("admin gorobo wallet settle error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo wallet settle error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

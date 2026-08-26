@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { AxiosResponse } from "axios";
 import { syncClubsBackground } from "@/lib/syncClubs";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
@@ -84,7 +85,7 @@ export async function POST(req: Request) {
         const loginCookies = loginRes.headers["set-cookie"];
         const allCookies = [...(cookies || []), ...(loginCookies || [])].join("; ");
 
-        let dashboardRes: any;
+        let dashboardRes: AxiosResponse;
         if (loginRes.status === 302 && loginRes.headers.location) {
             dashboardRes = await client.get(loginRes.headers.location, {
                 headers: { Cookie: allCookies },
@@ -116,9 +117,9 @@ export async function POST(req: Request) {
         }
 
         const $ = cheerio.load(dashboardHtml);
-        const new_csrf: any = $('input[name="_csrf"]').val();
-        let authorizedID: any =
-            $('#authorizedID').val() || $('input[name="authorizedid"]').val();
+        const new_csrf: string = String($('input[name="_csrf"]').val() ?? "");
+        let authorizedID: string =
+            (String($('#authorizedID').val() ?? "") || String($('input[name="authorizedid"]').val() ?? ""));
 
         if (!authorizedID) {
             authorizedID = username.toUpperCase();
@@ -168,7 +169,7 @@ export async function POST(req: Request) {
             clubRoles, // Provide the roles they have
         }, { status: 200 });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }

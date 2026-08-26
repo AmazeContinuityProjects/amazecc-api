@@ -22,7 +22,7 @@ export async function GET(req: Request) {
              ${user_hash ? `, (SELECT COUNT(*) > 0 FROM post_promotions p WHERE p.post_id = f.id AND p.user_hash = '${user_hash}') as has_promoted` : ', false as has_promoted'}
       FROM club_feed f
     `;
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (club_id) {
       query += ' WHERE f.club_id = $1';

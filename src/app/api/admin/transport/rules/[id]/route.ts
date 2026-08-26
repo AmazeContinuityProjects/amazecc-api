@@ -25,7 +25,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     }
 
     return NextResponse.json({ success: true, message: 'Rule deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to delete rule:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

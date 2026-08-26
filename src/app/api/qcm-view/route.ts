@@ -194,7 +194,7 @@ export async function POST(req: Request) {
       ? semesterIds.filter(s => s.value === semesterId)
       : semesterIds;
 
-    const allSemesterData: Record<string, any> = {};
+    const allSemesterData: Record<string, unknown> = {};
 
     for (const sem of semsToFetch) {
       try {
@@ -264,8 +264,8 @@ export async function POST(req: Request) {
           ...(messages.length > 0 ? { messages } : {}),
           ...(plainText ? { plainText } : {}),
         };
-      } catch (err: any) {
-        allSemesterData[sem.value] = { semester: sem.text, error: err.message };
+      } catch (err: unknown) {
+        allSemesterData[sem.value] = { semester: sem.text, error: (err instanceof Error ? err.message : String(err)) };
       }
     }
 
@@ -274,8 +274,8 @@ export async function POST(req: Request) {
       semesters: semesterIds,
       data: allSemesterData,
     });
-  } catch (err: any) {
-    console.error("qcm-view error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("qcm-view error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

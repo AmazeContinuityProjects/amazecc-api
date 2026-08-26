@@ -251,7 +251,7 @@ export async function POST(req: Request) {
                 );
 
                 const $$$ = cheerio.load(attendanceRes.data);
-                const detailed: any[] = [];
+                const detailed: Array<{ date: string; status: string }> = [];
 
                 $$$("table.table tr").each((i, row) => {
                     if (i === 0) return;
@@ -265,11 +265,11 @@ export async function POST(req: Request) {
                     });
                 });
 
-                course.viewLink = detailed;
-            } catch (err: any) {
+                course.viewLink = detailed as unknown as typeof course.viewLink;
+            } catch (err: unknown) {
                 console.error(
                     `Failed fetching detail for ${course.courseCode}`,
-                    err.message
+                    (err instanceof Error ? err.message : String(err))
                 );
             }
 
@@ -281,7 +281,7 @@ export async function POST(req: Request) {
         );
 
         return NextResponse.json({ attRes: { semester: semesterId, attendance: detailedAttendance }, marksRes: marksRes }, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
@@ -297,7 +297,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Class statistics not found" }, { status: 404 });
         }
         return NextResponse.json(stats, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

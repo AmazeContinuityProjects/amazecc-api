@@ -37,7 +37,7 @@ import https from "https";
 
 const KOHA_API = "https://webopaccc.vit.ac.in/api/v1";
 
-function fetchJson(url: string): Promise<any> {
+function fetchJson(url: string): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     https.get(url, { agent: new https.Agent({ rejectUnauthorized: false }), headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" } }, (res) => {
       let data = "";
@@ -70,17 +70,17 @@ export async function GET(req: NextRequest) {
       biblioIds.map((id) => fetchJson(`${KOHA_API}/public/biblios/${id}/items`))
     );
 
-    const itemsMap: Record<string, any[]> = {};
+    const itemsMap: Record<string, unknown[]> = {};
     biblioIds.forEach((id, i) => {
       if (results[i].status === "fulfilled") {
-        const items = (results[i] as any).value || [];
-        itemsMap[id] = items.map((it: any) => ({
-          itemId: it.item_id,
-          barcode: it.external_id,
-          homeLibrary: it.home_library_id,
-          holdingLibrary: it.holding_library_id,
-          location: it.location,
-          callNumber: it.callnumber,
+        const items = ((results[i] as unknown) as { value: unknown[] }).value || [];
+        itemsMap[id] = (items as Record<string, unknown>[]).map((it: Record<string, unknown>) => ({
+          itemId: it.item_id as string,
+          barcode: it.external_id as string,
+          homeLibrary: it.home_library_id as string,
+          holdingLibrary: it.holding_library_id as string,
+          location: it.location as string,
+          callNumber: it.callnumber as string,
           status: it.not_for_loan_status
             ? "Not for loan"
             : it.damaged_status
@@ -90,14 +90,14 @@ export async function GET(req: NextRequest) {
                 : it.checked_out_date
                   ? "Checked out"
                   : "Available",
-          dueDate: it.checked_out_date || null,
+          dueDate: (it.checked_out_date as string) || null,
         }));
       }
     });
 
     return NextResponse.json({ success: true, items: itemsMap });
-  } catch (err: any) {
-    console.error("koha/availability error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("koha/availability error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

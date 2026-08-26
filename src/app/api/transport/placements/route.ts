@@ -16,24 +16,24 @@ export async function GET() {
       WHERE jsonb_array_length(placements) > 0
       ORDER BY route_number::int
     `);
-    const flat: any[] = [];
+    const flat: Array<Record<string, unknown>> = [];
     for (const r of rows) {
-      for (const p of r.placements || []) {
+      for (const p of ((r as Record<string, unknown>).placements as Array<Record<string, unknown>> | undefined) || []) {
         flat.push({
-          routeId: r.id,
-          routeNumber: r.route_number,
-          routeName: r.route_name,
-          dispersalTime: p.dispersalTime,
-          zone: p.zone,
+          routeId: (r as Record<string, unknown>).id as string,
+          routeNumber: (r as Record<string, unknown>).route_number as string,
+          routeName: (r as Record<string, unknown>).route_name as string,
+          dispersalTime: p.dispersalTime as string,
+          zone: p.zone as string,
         });
       }
     }
-    flat.sort((a: any, b: any) => {
-      if (a.dispersalTime !== b.dispersalTime) return a.dispersalTime < b.dispersalTime ? -1 : 1;
-      return parseInt(a.routeNumber) - parseInt(b.routeNumber);
+    flat.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+      if ((a.dispersalTime as string) !== (b.dispersalTime as string)) return (a.dispersalTime as string) < (b.dispersalTime as string) ? -1 : 1;
+      return parseInt(a.routeNumber as string) - parseInt(b.routeNumber as string);
     });
     return NextResponse.json({ success: true, placements: flat });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch placements:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

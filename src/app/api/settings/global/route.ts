@@ -17,12 +17,12 @@ export async function GET() {
         await ensureTable();
         const pool = getDbPool();
         const { rows } = await pool.query("SELECT key, value FROM app_config");
-        const config: Record<string, any> = {};
+        const config: Record<string, unknown> = {};
         for (const row of rows) {
             config[row.key] = row.value;
         }
         return NextResponse.json({ success: true, config });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

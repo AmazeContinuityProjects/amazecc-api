@@ -54,7 +54,7 @@ export function EndpointTester({
 
   // Infer prerequisites
   const isVtop = useMemo(() => {
-    const schema = (details as any)?.requestBody?.content?.["application/json"]?.schema?.properties;
+    const schema = (details as unknown as { requestBody?: { content?: { "application/json"?: { schema?: { properties?: Record<string, unknown> } } } } })?.requestBody?.content?.["application/json"]?.schema?.properties;
     return !!(schema?.authorizedID && schema?.cookies && schema?.csrf);
   }, [details]);
   const isAdmin = path.startsWith("/api/admin");
@@ -63,7 +63,7 @@ export function EndpointTester({
 
   // Initialize request body template if JSON schema is present
   useEffect(() => {
-    const bodySchema = (details as any)?.requestBody?.content?.["application/json"]?.schema as any;
+    const bodySchema = (details as unknown as { requestBody?: { content?: { "application/json"?: { schema?: unknown } } } })?.requestBody?.content?.["application/json"]?.schema as Record<string, unknown>;
     if (bodySchema && !requestBody) {
         if (bodySchema.example) {
             setRequestBody(JSON.stringify(bodySchema.example, null, 2));
@@ -165,8 +165,8 @@ export function EndpointTester({
       }
 
       // Process parameters
-      if (details && (details as any).parameters) {
-        for (const param of (details as any).parameters) {
+      if (details && (details as unknown as { parameters?: Array<Record<string, unknown>> }).parameters) {
+        for (const param of ((details as unknown as { parameters?: Array<Record<string, unknown>> }).parameters ?? [] as Array<Record<string, unknown>>)) {
           const name = String(param.name);
           const val = paramValues[name];
           if (val === undefined || val === "") {
@@ -220,8 +220,8 @@ export function EndpointTester({
         headers: responseHeaders,
         time: Math.round(endTime - startTime)
       });
-    } catch (err: any) {
-      setError(err.message || "An error occurred while making the request");
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : String(err)) || "An error occurred while making the request");
     } finally {
       setLoading(false);
     }
@@ -239,15 +239,15 @@ export function EndpointTester({
               </h2>
             </div>
             
-            {(details as any)?.summary && (
+            {Boolean((details as unknown as { summary?: string }).summary) && (
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                {String((details as any).summary)}
+                {String((details as unknown as { summary?: string }).summary)}
               </h3>
             )}
             
-            {(details as any)?.description && (
+            {Boolean((details as unknown as { description?: string }).description) && (
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                {String((details as any).description)}
+                {String((details as unknown as { description?: string }).description)}
               </p>
             )}
 
@@ -259,14 +259,14 @@ export function EndpointTester({
             </div>
          </div>
 
-         {/* Parameters */}
-         {(details as any)?.parameters && ((details as any).parameters.length > 0) && (
+          {/* Parameters */}
+          {Boolean((details as unknown as { parameters?: Array<Record<string, unknown>> }).parameters?.length) && (
            <div className="mb-8">
              <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4 border-b border-gray-200 dark:border-gray-800 pb-2">
                <List className="w-4 h-4 text-accent" /> Parameters
              </h4>
              <div className="space-y-4">
-               {((details as any).parameters as Record<string, unknown>[]).map((param, i) => (
+               {((details as unknown as { parameters?: Array<Record<string, unknown>> }).parameters as Record<string, unknown>[]).map((param, i) => (
                  <div key={i} className="p-4 rounded-xl bg-gray-50 dark:bg-[#0a0a0a] border border-gray-100 dark:border-gray-900 shadow-sm">
                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -357,14 +357,14 @@ export function EndpointTester({
            )}
          </div>
 
-         {/* Standard Responses */}
-         {(details as any)?.responses && Object.keys((details as any).responses).length > 0 && (
+          {/* Standard Responses */}
+          {Boolean((details as unknown as { responses?: Record<string, unknown> }).responses) && Object.keys((details as unknown as { responses?: Record<string, unknown> }).responses ?? {}).length > 0 && (
            <div className="mb-8">
              <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4 border-b border-gray-200 dark:border-gray-800 pb-2">
                <BookOpen className="w-4 h-4 text-accent" /> Standard Responses
              </h4>
              <div className="space-y-3">
-               {Object.entries((details as any).responses).map(([statusCode, resp]: [string, any]) => (
+                {Object.entries((details as unknown as { responses?: Record<string, unknown> }).responses as Record<string, Record<string, unknown>>).map(([statusCode, resp]: [string, Record<string, unknown>]) => (
                  <div key={statusCode} className="p-3 rounded-xl bg-gray-50 dark:bg-[#0a0a0a] border border-gray-100 dark:border-gray-900 shadow-sm flex items-start gap-3">
                     <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold font-mono shadow-sm mt-0.5 ${
                         statusCode.startsWith('2') ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' :
@@ -374,7 +374,7 @@ export function EndpointTester({
                         {statusCode}
                     </span>
                     <div className="flex-1">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 font-semibold block mb-1">{String(resp.description || 'Response')}</span>
+                      <span className="text-xs text-gray-700 dark:text-gray-300 font-semibold block mb-1">{String((resp.description as string | undefined) || 'Response')}</span>
                     </div>
                  </div>
                ))}

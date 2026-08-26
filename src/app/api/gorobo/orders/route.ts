@@ -93,15 +93,16 @@ export async function POST(req: Request) {
   const limit = checkRateLimit(`gorobo-order:${ip}`, 5, 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfterMs);
 
-  let body: any;
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const name = typeof body?.name === "string" ? body.name.trim() : "";
-  const phone = normalizePhone(body?.phone);
+  const bodyObj = body as Record<string, unknown>;
+  const name = typeof bodyObj.name === "string" ? (bodyObj.name as string).trim() : "";
+  const phone = normalizePhone(bodyObj.phone);
 
   if (!name || name.length > 100) {
     return NextResponse.json(
@@ -116,7 +117,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const rawItems = Array.isArray(body?.items) ? body.items : null;
+  const rawItems = Array.isArray(bodyObj.items) ? bodyObj.items as unknown[] : null;
   if (!rawItems || rawItems.length === 0 || rawItems.length > 100) {
     return NextResponse.json(
       { success: false, error: "items must be a non-empty array of up to 100 entries" },
@@ -125,21 +126,21 @@ export async function POST(req: Request) {
   }
 
   const merged = new Map<string, number>();
-  for (const entry of rawItems) {
-    if (!entry || typeof entry.itemId !== "string" || !entry.itemId || entry.itemId.length > 64) {
+  for (const entry of rawItems as Array<Record<string, unknown>>) {
+    if (!entry || typeof (entry as Record<string, unknown>).itemId !== "string" || !(entry as Record<string, unknown>).itemId || ((entry as Record<string, unknown>).itemId as string).length > 64) {
       return NextResponse.json(
         { success: false, error: "each item must have a valid itemId" },
         { status: 400 }
       );
     }
-    const quantity = Number(entry.quantity);
+    const quantity = Number((entry as Record<string, unknown>).quantity);
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
       return NextResponse.json(
-        { success: false, error: `quantity for ${entry.itemId} must be an integer between 1 and 99` },
+        { success: false, error: `quantity for ${(entry as Record<string, unknown>).itemId} must be an integer between 1 and 99` },
         { status: 400 }
       );
     }
-    merged.set(entry.itemId, Math.min((merged.get(entry.itemId) ?? 0) + quantity, 99));
+    merged.set((entry as Record<string, unknown>).itemId as string, Math.min((merged.get((entry as Record<string, unknown>).itemId as string) ?? 0) + quantity, 99));
   }
 
   const orderItems: GoroboOrderItem[] = [...merged.entries()].map(([itemId, quantity]) => ({
@@ -148,8 +149,8 @@ export async function POST(req: Request) {
   }));
 
   const deliveryMode =
-    body?.deliveryMode === "buzz" || body?.deliveryMode === "bolt" ? "buzz" : "normal";
-  const mapsUrl = typeof body?.mapsUrl === "string" ? body.mapsUrl.trim() : "";
+    bodyObj.deliveryMode === "buzz" || bodyObj.deliveryMode === "bolt" ? "buzz" : "normal";
+  const mapsUrl = typeof bodyObj.mapsUrl === "string" ? (bodyObj.mapsUrl as string).trim() : "";
 
   try {
     await ensureGoroboSchema();
@@ -223,8 +224,8 @@ export async function POST(req: Request) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error("gorobo orders POST error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("gorobo orders POST error:", (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

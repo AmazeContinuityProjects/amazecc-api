@@ -21,8 +21,8 @@ export async function GET(req: Request) {
         `, [user_id]);
 
         return NextResponse.json({ success: true, notifications: rows });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -46,7 +46,7 @@ export async function PATCH(req: Request) {
         }
 
         return NextResponse.json({ success: true, message: "Marked as read" });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

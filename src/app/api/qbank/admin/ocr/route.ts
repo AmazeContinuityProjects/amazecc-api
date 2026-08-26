@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ success: true, count: extractedQuestions.length });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OCR Pipeline Error:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

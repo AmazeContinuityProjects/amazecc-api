@@ -39,7 +39,7 @@ function isValidBiblionumber(value: string): boolean {
   return /^[0-9]+$/.test(value);
 }
 
-function fetchJson(url: string, accept?: string): Promise<any> {
+function fetchJson(url: string, accept?: string): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     const headers: Record<string, string> = { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" };
     if (accept) headers["Accept"] = accept;
@@ -58,16 +58,16 @@ function fetchJson(url: string, accept?: string): Promise<any> {
   });
 }
 
-function getSubfields(fields: any[], tag: string, code?: string): string[] {
+function getSubfields(fields: Record<string, unknown>[], tag: string, code?: string): string[] {
   const results: string[] = [];
   for (const f of fields) {
-    const key = Object.keys(f)[0];
-    if (key.startsWith(tag)) {
-      const subfields = f[key]?.subfields || [];
-      for (const sf of subfields) {
-        const sfKey = Object.keys(sf)[0];
+    const key = Object.keys(f)[0] as string;
+    if (key && key.startsWith(tag)) {
+      const subfields = ((f[key] as Record<string, unknown>)?.subfields as Record<string, unknown>[] | undefined) || [];
+      for (const sf of subfields as Record<string, unknown>[]) {
+        const sfKey = Object.keys(sf)[0] as string;
         if (!code || sfKey === code) {
-          results.push(sf[sfKey]);
+          results.push(sf[sfKey] as string);
         }
       }
     }
@@ -96,37 +96,37 @@ export async function GET(req: NextRequest) {
       fetchJson(itemsUrl),
     ]);
 
-    const fields = marcData.status === "fulfilled" ? (marcData.value?.fields || []) : [];
+    const fields = marcData.status === "fulfilled" ? (((marcData.value as Record<string, unknown>)?.fields as Record<string, unknown>[] | undefined) || []) : [];
 
-    const title = getSubfields(fields, "245", "a").join(" ");
-    const author = getSubfields(fields, "100", "a").join(" ") || getSubfields(fields, "700", "a").join("; ");
-    const isbn = getSubfields(fields, "020", "a").join(", ");
-    const edition = getSubfields(fields, "250", "a").join(" ");
-    const publisherName = getSubfields(fields, "260", "b").join(" ");
-    const publisherDate = getSubfields(fields, "260", "c").join(" ");
+    const title = getSubfields(fields as Record<string, unknown>[], "245", "a").join(" ");
+    const author = getSubfields(fields as Record<string, unknown>[], "100", "a").join(" ") || getSubfields(fields as Record<string, unknown>[], "700", "a").join("; ");
+    const isbn = getSubfields(fields as Record<string, unknown>[], "020", "a").join(", ");
+    const edition = getSubfields(fields as Record<string, unknown>[], "250", "a").join(" ");
+    const publisherName = getSubfields(fields as Record<string, unknown>[], "260", "b").join(" ");
+    const publisherDate = getSubfields(fields as Record<string, unknown>[], "260", "c").join(" ");
     const publisher = [publisherName, publisherDate].filter(Boolean).join(" ");
-    const description = getSubfields(fields, "300", "a").join(" ");
-    const ddc = getSubfields(fields, "082", "a").join(" ");
-    const subjects = getSubfields(fields, "650", "a");
-    const summary = getSubfields(fields, "520", "a").join(" ");
-    const holdings: any[] = [];
-    if (itemsData.status === "fulfilled" && Array.isArray(itemsData.value)) {
-      for (const it of itemsData.value) {
+    const description = getSubfields(fields as Record<string, unknown>[], "300", "a").join(" ");
+    const ddc = getSubfields(fields as Record<string, unknown>[], "082", "a").join(" ");
+    const subjects = getSubfields(fields as Record<string, unknown>[], "650", "a");
+    const summary = getSubfields(fields as Record<string, unknown>[], "520", "a").join(" ");
+    const holdings: Array<Record<string, unknown>> = [];
+    if (itemsData.status === "fulfilled" && Array.isArray((itemsData as unknown as { value: unknown }).value)) {
+      for (const it of (itemsData as unknown as { value: Record<string, unknown>[] }).value) {
         holdings.push({
-          itemId: it.item_id,
-          barcode: it.external_id,
-          currentLibrary: it.home_library_id,
-          homeLibrary: it.holding_library_id,
-          shelvingLocation: it.location,
-          callNumber: it.callnumber,
+          itemId: it.item_id as string,
+          barcode: it.external_id as string,
+          currentLibrary: it.home_library_id as string,
+          homeLibrary: it.holding_library_id as string,
+          shelvingLocation: it.location as string,
+          callNumber: it.callnumber as string,
           status: it.not_for_loan_status
             ? "Not for loan"
             : it.damaged_status ? "Damaged"
             : it.lost_status ? "Lost"
             : it.checked_out_date ? "Checked out"
             : "Available",
-          dateDue: it.date_due || null,
-          notes: it.notes || "",
+          dateDue: (it.date_due as string) || null,
+          notes: (it.notes as string) || "",
         });
       }
     }
@@ -147,8 +147,8 @@ export async function GET(req: NextRequest) {
         holdings,
       },
     });
-  } catch (err: any) {
-    console.error("koha/detail error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("koha/detail error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

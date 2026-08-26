@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const status = req.nextUrl.searchParams.get('status');
 
     let queryText = `SELECT * FROM papers_archive`;
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (status && status !== 'ALL') {
       queryText += ` WHERE approval_status = $1`;
@@ -86,7 +86,7 @@ export async function PATCH(req: NextRequest) {
     };
 
     const setClauses: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
     let paramIndex = 1;
 
     for (const [key, value] of Object.entries(updates)) {

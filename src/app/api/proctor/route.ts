@@ -69,10 +69,10 @@ export async function POST(req: Request) {
       success: true,
       ...data,
     });
-  } catch (err: any) {
-    console.error("proctor error:", err.message);
+  } catch (err: unknown) {
+    console.error("proctor error:", (err instanceof Error ? err.message : String(err)));
     return NextResponse.json(
-      { success: false, error: err.message },
+      { success: false, error: (err instanceof Error ? err.message : String(err)) },
       { status: 500 }
     );
   }

@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       ORDER BY route_number::int, route_name
     `);
     return NextResponse.json({ success: true, routes: rows });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch transport routes:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: 'Routes updated successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update transport routes:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

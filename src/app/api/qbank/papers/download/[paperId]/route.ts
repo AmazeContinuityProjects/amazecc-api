@@ -47,7 +47,7 @@ export async function GET(
         'Content-Type': 'application/pdf',
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Paper download error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

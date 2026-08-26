@@ -9,7 +9,7 @@ export async function getCaptcha(): Promise<CaptchaResult> {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
             const setupRes = await client.get("/vtop/prelogin/setup");
-            const cookies: any = setupRes.headers["set-cookie"];
+            const cookies: string[] = (setupRes.headers["set-cookie"] as unknown as string[]) || [];
             const $ = cheerio.load(setupRes.data);
 
             const csrfValue = $("#stdForm input[name=_csrf]").val();
@@ -25,14 +25,14 @@ export async function getCaptcha(): Promise<CaptchaResult> {
                 new URLSearchParams({ _csrf: csrf, flag: "VTOP" }).toString(),
                 {
                     headers: {
-                        Cookie: cookies.join("; "),
+                        Cookie: (cookies as string[]).join("; "),
                         "Content-Type": "application/x-www-form-urlencoded"
                     }
                 }
             );
 
             const loginPage = await client.get("/vtop/login", {
-                headers: { Cookie: cookies.join("; ") }
+                headers: { Cookie: (cookies as string[]).join("; ") }
             });
 
             const $$ = cheerio.load(loginPage.data);
@@ -51,7 +51,7 @@ export async function getCaptcha(): Promise<CaptchaResult> {
                 } else {
                     const imgRes = await client.get(imgSrc, {
                         responseType: "arraybuffer",
-                        headers: { Cookie: cookies.join("; ") }
+                        headers: { Cookie: (cookies as string[]).join("; ") }
                     });
 
                     base64 =
@@ -63,10 +63,10 @@ export async function getCaptcha(): Promise<CaptchaResult> {
             } else {
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             if (attempt === MAX_RETRIES) {
                 return {
-                    error: `Failed after ${MAX_RETRIES} attempts. Last error: ${err.message}`
+                    error: `Failed after ${MAX_RETRIES} attempts. Last error: ${(err instanceof Error ? err.message : String(err))}`
                 };
             }
             await new Promise(resolve => setTimeout(resolve, 1000));

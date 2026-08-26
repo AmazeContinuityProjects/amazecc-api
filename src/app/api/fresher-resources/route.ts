@@ -47,8 +47,8 @@ export async function GET() {
        ORDER BY sort_order ASC, id ASC`
     );
     return NextResponse.json({ success: true, resources: rows });
-  } catch (error: any) {
-    console.error('fresher-resources error:', error.message);
+  } catch (error: unknown) {
+    console.error('fresher-resources error:', (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, resources: [] });
   }
 }

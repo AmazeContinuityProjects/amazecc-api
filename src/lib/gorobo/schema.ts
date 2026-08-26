@@ -124,12 +124,13 @@ export async function ensureGoroboSchema(): Promise<void> {
     await ensuring;
     ensured = true;
     lastFailureAt = 0;
-  } catch (error: any) {
+  } catch (error: unknown) {
     lastFailureAt = Date.now();
+    const message = error instanceof Error ? error.message : String(error);
     if (isCircuitBreakerError(error)) {
-      console.error('[gorobo/schema] ensureGoroboSchema blocked by circuit breaker:', error.message);
+      console.error('[gorobo/schema] ensureGoroboSchema blocked by circuit breaker:', message);
     } else {
-      console.error('[gorobo/schema] ensureGoroboSchema failed:', error?.message || error);
+      console.error('[gorobo/schema] ensureGoroboSchema failed:', message);
     }
     throw error;
   } finally {

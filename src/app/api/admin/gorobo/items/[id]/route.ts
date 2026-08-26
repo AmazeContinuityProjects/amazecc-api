@@ -17,7 +17,7 @@ export async function PUT(req: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
@@ -39,19 +39,19 @@ export async function PUT(req: Request, context: RouteContext) {
     }
 
     const current = existing[0];
-    const name = body.name !== undefined ? (typeof body.name === "string" ? body.name.trim() : null) : current.name;
-    const category = body.category !== undefined ? (typeof body.category === "string" ? body.category.trim() : null) : current.category;
-    const basePrice = body.basePrice !== undefined ? Number(body.basePrice) : Number(current.base_price);
-    const margin = body.margin !== undefined ? Number(body.margin) : Number(current.margin);
-    const description = body.description !== undefined ? (typeof body.description === "string" ? body.description.trim() : current.description) : current.description;
-    const image = body.image !== undefined ? (typeof body.image === "string" ? body.image.trim() : current.image) : current.image;
-    const sku = body.sku !== undefined ? (typeof body.sku === "string" ? body.sku.trim() : "") : (current.sku || "");
-    const stockQuantity = body.stockQuantity !== undefined ? Math.max(0, parseInt(body.stockQuantity, 10) || 0) : Number(current.stock_quantity ?? 0);
-    const lowStockThreshold = body.lowStockThreshold !== undefined ? Math.max(0, parseInt(body.lowStockThreshold, 10) || 5) : Number(current.low_stock_threshold ?? 5);
-    const locationBin = body.locationBin !== undefined ? (typeof body.locationBin === "string" ? body.locationBin.trim() : "") : (current.location_bin || "");
-    const datasheetUrl = body.datasheetUrl !== undefined ? (typeof body.datasheetUrl === "string" ? body.datasheetUrl.trim() : "") : (current.datasheet_url || "");
-    const tags = body.tags !== undefined ? (Array.isArray(body.tags) ? body.tags : []) : (Array.isArray(current.tags) ? current.tags : []);
-    const inStock = body.inStock !== undefined ? body.inStock !== false && stockQuantity > 0 : current.in_stock && stockQuantity > 0;
+    const name = (body as Record<string, unknown>).name !== undefined ? (typeof (body as Record<string, unknown>).name === "string" ? ((body as Record<string, unknown>).name as string).trim() : null) : current.name;
+    const category = (body as Record<string, unknown>).category !== undefined ? (typeof (body as Record<string, unknown>).category === "string" ? ((body as Record<string, unknown>).category as string).trim() : null) : current.category;
+    const basePrice = (body as Record<string, unknown>).basePrice !== undefined ? Number((body as Record<string, unknown>).basePrice) : Number(current.base_price);
+    const margin = (body as Record<string, unknown>).margin !== undefined ? Number((body as Record<string, unknown>).margin) : Number(current.margin);
+    const description = (body as Record<string, unknown>).description !== undefined ? (typeof (body as Record<string, unknown>).description === "string" ? ((body as Record<string, unknown>).description as string).trim() : current.description) : current.description;
+    const image = (body as Record<string, unknown>).image !== undefined ? (typeof (body as Record<string, unknown>).image === "string" ? ((body as Record<string, unknown>).image as string).trim() : current.image) : current.image;
+    const sku = (body as Record<string, unknown>).sku !== undefined ? (typeof (body as Record<string, unknown>).sku === "string" ? ((body as Record<string, unknown>).sku as string).trim() : "") : (current.sku || "");
+    const stockQuantity = (body as Record<string, unknown>).stockQuantity !== undefined ? Math.max(0, parseInt(String((body as Record<string, unknown>).stockQuantity), 10) || 0) : Number(current.stock_quantity ?? 0);
+    const lowStockThreshold = (body as Record<string, unknown>).lowStockThreshold !== undefined ? Math.max(0, parseInt(String((body as Record<string, unknown>).lowStockThreshold), 10) || 5) : Number(current.low_stock_threshold ?? 5);
+    const locationBin = (body as Record<string, unknown>).locationBin !== undefined ? (typeof (body as Record<string, unknown>).locationBin === "string" ? ((body as Record<string, unknown>).locationBin as string).trim() : "") : (current.location_bin || "");
+    const datasheetUrl = (body as Record<string, unknown>).datasheetUrl !== undefined ? (typeof (body as Record<string, unknown>).datasheetUrl === "string" ? ((body as Record<string, unknown>).datasheetUrl as string).trim() : "") : (current.datasheet_url || "");
+    const tags = (body as Record<string, unknown>).tags !== undefined ? (Array.isArray((body as Record<string, unknown>).tags) ? (body as Record<string, unknown>).tags : []) : (Array.isArray(current.tags) ? current.tags : []);
+    const inStock = (body as Record<string, unknown>).inStock !== undefined ? (body as Record<string, unknown>).inStock !== false && stockQuantity > 0 : current.in_stock && stockQuantity > 0;
 
     if (!name || name.length > 100) {
       return NextResponse.json({ success: false, error: "name must be 1-100 characters" }, { status: 400 });
@@ -93,8 +93,8 @@ export async function PUT(req: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, item: mapItemRow(rows[0]) });
-  } catch (error: any) {
-    console.error("admin gorobo items PUT error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo items PUT error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -126,8 +126,8 @@ export async function DELETE(req: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, message: `Item ${id} deleted successfully` });
-  } catch (error: any) {
-    console.error("admin gorobo items DELETE error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo items DELETE error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

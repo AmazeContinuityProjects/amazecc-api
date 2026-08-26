@@ -33,8 +33,8 @@ export async function GET(req: Request, context: RouteContext) {
     );
 
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]), wallet: walletRows });
-  } catch (error: any) {
-    console.error("admin gorobo order GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo order GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -45,7 +45,7 @@ export async function PUT(req: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
@@ -109,11 +109,11 @@ export async function PUT(req: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]) });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof QuoteValidationError) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 400 });
     }
-    console.error("admin gorobo order PUT error:", error.message);
+    console.error("admin gorobo order PUT error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -128,7 +128,7 @@ export async function PATCH(req: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
@@ -148,11 +148,11 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     const current = existing[0];
-    const newStatus = body.status !== undefined ? body.status : current.status;
-    const newNotes = body.notes !== undefined ? body.notes : current.notes;
-    const newDeliveryMode = body.deliveryMode !== undefined ? body.deliveryMode : (current.delivery_mode || "normal");
+    const newStatus = (body as Record<string, unknown>).status !== undefined ? ((body as Record<string, unknown>).status as string) : current.status;
+    const newNotes = (body as Record<string, unknown>).notes !== undefined ? ((body as Record<string, unknown>).notes as string) : current.notes;
+    const newDeliveryMode = (body as Record<string, unknown>).deliveryMode !== undefined ? ((body as Record<string, unknown>).deliveryMode as string) : (current.delivery_mode || "normal");
 
-    if (newStatus && !(GOROBO_ORDER_STATUSES as readonly string[]).includes(newStatus)) {
+    if (newStatus && !(GOROBO_ORDER_STATUSES as readonly string[]).includes(newStatus as string)) {
       return NextResponse.json(
         { success: false, error: `Invalid status. Must be one of: ${GOROBO_ORDER_STATUSES.join(", ")}` },
         { status: 400 }
@@ -200,8 +200,8 @@ export async function PATCH(req: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]) });
-  } catch (error: any) {
-    console.error("admin gorobo order PATCH error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo order PATCH error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

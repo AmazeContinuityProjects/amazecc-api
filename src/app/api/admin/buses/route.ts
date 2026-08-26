@@ -151,7 +151,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: 'Buses updated successfully in the database.' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update buses:', error);
     return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }

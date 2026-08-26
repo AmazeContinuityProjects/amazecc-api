@@ -65,10 +65,10 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
-  } catch (err: any) {
-    console.error("university-day error:", err.message);
+  } catch (err: unknown) {
+    console.error("university-day error:", (err instanceof Error ? err.message : String(err)));
     return NextResponse.json(
-      { success: false, error: err.message },
+      { success: false, error: (err instanceof Error ? err.message : String(err)) },
       { status: 500 }
     );
   }

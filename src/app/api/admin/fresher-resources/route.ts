@@ -17,9 +17,9 @@ export async function GET(req: Request) {
        ORDER BY sort_order ASC, id ASC`
     );
     return NextResponse.json({ success: true, resources: rows });
-  } catch (error: any) {
-    console.error('admin fresher-resources GET error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin fresher-resources GET error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -59,8 +59,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, resource: rows[0] });
-  } catch (error: any) {
-    console.error('admin fresher-resources POST error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin fresher-resources POST error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

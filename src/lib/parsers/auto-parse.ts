@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 
 export interface ParsedVtopPage {
   title: string;
@@ -56,48 +57,52 @@ export function parseVtopHtml(html: string): ParsedVtopPage {
     const rows: Record<string, string>[] = [];
 
     // Find the header row: Look for the first row with multiple <th> or multiple <td> without massive colspans
-    let $headerRow: any = null;
+    let $headerRow: cheerio.Cheerio<Element> | null = null;
     let headerRowIndex = 0;
-    
-    $table.find("tr").each((idx: number, tr: any) => {
-      if ($headerRow) return;
-      const ths = $(tr).find("th");
-      const tds = $(tr).find("td");
-      
+    const trElements = $table.find("tr").toArray();
+    for (let idx = 0; idx < trElements.length; idx++) {
+      if ($headerRow) break;
+      const tr = trElements[idx];
+      const $tr = $(tr);
+      const ths = $tr.find("th");
+      const tds = $tr.find("td");
       // If it has actual <th> tags, it's likely the header
       if (ths.length > 1) {
-        $headerRow = $(tr);
+        $headerRow = $tr;
         headerRowIndex = idx;
-        return;
+        break;
       }
-      
       // Otherwise, if it has multiple <td>s and isn't just a title row (like <td colspan="10">)
       if (tds.length > 1) {
         let hasLargeColspan = false;
-        tds.each((_: number, td: any) => {
-          if (parseInt($(td).attr("colspan") || "1", 10) > 3) hasLargeColspan = true;
-        });
+        const tdArray = tds.toArray();
+        for (const td of tdArray) {
+          if (parseInt($(td).attr("colspan") || "1", 10) > 3) {
+            hasLargeColspan = true;
+            break;
+          }
+        }
         if (!hasLargeColspan) {
-          $headerRow = $(tr);
+          $headerRow = $tr;
           headerRowIndex = idx;
-          return;
+          break;
         }
       }
-    });
+    }
 
     if (!$headerRow) return; // No valid header row found
 
-    $headerRow.find("th, td").each((_: number, cell: any) => {
-      const text = $(cell).text().trim().replace(/\s+/g, " ");
+    $headerRow.find("th, td").each((_: number, cell: unknown) => {
+      const text = $(cell as Element).text().trim().replace(/\s+/g, " ");
       if (text) headers.push(text);
       else headers.push(`col${headers.length}`);
     });
 
-    $table.find("tr").slice(headerRowIndex + 1).each((_: number, row: any) => {
+    $table.find("tr").slice(headerRowIndex + 1).each((_: number, row: unknown) => {
       const rowData: Record<string, string> = {};
       let hasData = false;
-      $(row).find("td").each((i: number, cell: any) => {
-        const text = $(cell).text().trim().replace(/\s+/g, " ");
+      $(row as Element).find("td").each((i: number, cell: unknown) => {
+        const text = $(cell as Element).text().trim().replace(/\s+/g, " ");
         if (text) {
           rowData[headers[i] || `col${i}`] = text;
           hasData = true;

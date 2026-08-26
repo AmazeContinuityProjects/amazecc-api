@@ -19,24 +19,26 @@ export async function GET(req: Request) {
       WHERE jsonb_array_length(placements) > 0
       ORDER BY route_number::int
     `);
-    const flat: any[] = [];
+    const flat: Array<Record<string, unknown>> = [];
     for (const r of rows) {
-      for (const p of r.placements || []) {
+      for (const p of (r as Record<string, unknown>).placements as Array<Record<string, unknown>> || []) {
         flat.push({
-          routeId: r.id,
-          routeNumber: r.route_number,
-          routeName: r.route_name,
+          routeId: (r as Record<string, unknown>).id,
+          routeNumber: (r as Record<string, unknown>).route_number,
+          routeName: (r as Record<string, unknown>).route_name,
           dispersalTime: p.dispersalTime,
           zone: p.zone,
         });
       }
     }
-    flat.sort((a: any, b: any) => {
-      if (a.dispersalTime !== b.dispersalTime) return a.dispersalTime < b.dispersalTime ? -1 : 1;
-      return parseInt(a.routeNumber) - parseInt(b.routeNumber);
+    flat.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+      const aTime = a.dispersalTime as string;
+      const bTime = b.dispersalTime as string;
+      if (aTime !== bTime) return aTime < bTime ? -1 : 1;
+      return parseInt(a.routeNumber as string) - parseInt(b.routeNumber as string);
     });
     return NextResponse.json({ success: true, placements: flat });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch placements:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
@@ -62,7 +64,7 @@ export async function POST(req: Request) {
       await client.query('BEGIN');
       await client.query("UPDATE buses_v2 SET placements = '[]'::jsonb");
 
-      const byRoute: Record<string, any[]> = {};
+      const byRoute: Record<string, unknown[]> = {};
       for (const p of placements) {
         if (!byRoute[p.routeNumber]) byRoute[p.routeNumber] = [];
         byRoute[p.routeNumber].push({ dispersalTime: p.dispersalTime, zone: p.zone });
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: 'Placements updated successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update placements:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

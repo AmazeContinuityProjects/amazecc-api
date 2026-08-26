@@ -122,14 +122,14 @@ export async function POST(req: Request, context: RouteContext) {
         order: mapOrderRow(freshOrder[0]),
         wallet: walletRows,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
     }
-  } catch (error: any) {
-    console.error("admin gorobo order complete error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo order complete error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

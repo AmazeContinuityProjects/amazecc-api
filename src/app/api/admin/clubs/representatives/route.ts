@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
     const pool = getDbPool();
     let query = 'SELECT * FROM club_representatives';
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (club_id) {
       query += ' WHERE club_id = $1';
