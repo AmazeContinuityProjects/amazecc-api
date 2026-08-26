@@ -22,13 +22,21 @@ export interface QBankPaper {
 }
 
 export function getDirectDownloadUrl(url: string): string {
-  if (url.includes('drive.google.com')) {
-    const fileIdMatch =
-      url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (fileIdMatch && fileIdMatch[1]) {
-      return `https://docs.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+  try {
+    const parsedUrl = new URL(url);
+    const host = parsedUrl.hostname.toLowerCase();
+
+    if (host === 'drive.google.com') {
+      const fileIdMatch =
+        url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (fileIdMatch && fileIdMatch[1]) {
+        return `https://docs.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+      }
     }
+  } catch {
+    // Keep original behavior for invalid or non-absolute URLs.
   }
+
   return url;
 }
 
