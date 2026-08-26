@@ -56,9 +56,9 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ success: true, trip_id });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("CabShare Trips POST Error:", err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -77,7 +77,7 @@ export async function GET(req: Request) {
             JOIN cabshare_hubs h ON t.hub_id = h.hub_id
             WHERE t.status = 'active'
         `;
-        const params: any[] = [];
+        const params: unknown[] = [];
         let paramIdx = 1;
 
         if (hub_id) {
@@ -98,8 +98,8 @@ export async function GET(req: Request) {
         const { rows } = await pool.query(query, params);
         
         return NextResponse.json({ success: true, trips: rows });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("CabShare Trips GET Error:", err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

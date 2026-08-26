@@ -105,7 +105,7 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
 
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
     let paramIndex = 1;
 
     if (body.role !== undefined) {
@@ -161,11 +161,11 @@ export async function PATCH(req: Request, context: RouteContext) {
     );
 
     return NextResponse.json({ success: true, user: updated[0] });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update user:', error);
     console.error('Failed to update user:', error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal server error" },
+      { success: false, error: (error instanceof Error ? error.message : String(error)) || "Internal server error" },
       { status: 500 }
     );
   }
@@ -238,7 +238,7 @@ export async function DELETE(req: Request, context: RouteContext) {
       success: true,
       message: `User ${targetUsername} deleted successfully`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to delete user:', error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },

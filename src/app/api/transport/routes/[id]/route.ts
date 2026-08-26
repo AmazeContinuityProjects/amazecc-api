@@ -25,7 +25,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       success: true,
       route: routes[0],
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch route:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

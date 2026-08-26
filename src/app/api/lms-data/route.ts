@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         const result = await ScrapeLMS(username, pass);
 
         return NextResponse.json(result, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
@@ -138,8 +138,8 @@ async function ScrapeLMS(username: string, password: string): Promise<Assingment
             // ...calendarEventsNext
         ];
 
-        const eventPromises = allEvents.flatMap(dayData =>
-            dayData.events.map(async (ev: any) => {
+        const eventPromises = (allEvents as Array<Record<string, unknown> & { events: Array<Record<string, unknown> & { link: string }> }>).flatMap((dayData) =>
+            (dayData.events as Array<Record<string, unknown> & { link: string }>).map(async (ev) => {
                 try {
                     const eventRes = await LMSClient.get(ev.link, {
                         headers: { Cookie: loginCookies }
@@ -189,14 +189,14 @@ async function ScrapeLMS(username: string, password: string): Promise<Assingment
                         name,
                         due: dueText,
                         done: isDone,
-                        day: dayData.day,
-                        month: dayData.month,
-                        year: dayData.year,
+                        day: dayData.day as number,
+                        month: dayData.month as number,
+                        year: dayData.year as number,
                         url: ev.link,
                         teachers
                     };
-                } catch (err: any) {
-                    console.error("❌ Failed parsing:", ev.link, err.message);
+                } catch (err: unknown) {
+                    console.error("❌ Failed parsing:", ev.link, (err instanceof Error ? err.message : String(err)));
                     return null;
                 }
             })
@@ -205,23 +205,23 @@ async function ScrapeLMS(username: string, password: string): Promise<Assingment
         const finalResults = (await Promise.all(eventPromises))
             .filter(Boolean);
 
-        return finalResults;
-    } catch (err: any) {
-        console.error("Error:", err.message);
+        return finalResults.filter(Boolean) as Assingment[];
+    } catch (err: unknown) {
+        console.error("Error:", (err instanceof Error ? err.message : String(err)));
         throw err;
     }
 }
 
 function extractCalendarEvents(html: string) {
     const $ = cheerio.load(html);
-    const events: any[] = [];
+    const events: Array<Record<string, unknown>> = [];
 
     $("td.day.hasevent").each((i, el) => {
         const day = $(el).data("day");
         const month = $(el).find("a[data-day]").data("month") || null;
         const year = $(el).find("a[data-day]").data("year") || null;
 
-        const dayEvents: any[] = [];
+        const dayEvents: Array<Record<string, unknown>> = [];
 
         $(el)
             .find('[data-region="event-item"] a[data-action="view-event"]')

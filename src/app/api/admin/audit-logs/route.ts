@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '100', 10), 500);
 
     const conditions: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
     let idx = 1;
 
     if (user) {
@@ -52,8 +52,8 @@ export async function GET(req: Request) {
       success: true,
       logs: rows
     });
-  } catch (error: any) {
-    console.error('admin/audit-logs GET error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin/audit-logs GET error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

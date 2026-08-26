@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: `Inserted ${students.length} students for route ${routeNumber}` });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update students:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
@@ -77,7 +77,7 @@ export async function DELETE(req: Request) {
 
     const { rowCount } = await pool.query('DELETE FROM bus_students WHERE route_id = $1', [routeId]);
     return NextResponse.json({ success: true, message: `Deleted ${rowCount} students for route ${routeId}` });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to delete students:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

@@ -36,7 +36,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     );
 
     return NextResponse.json({ success: true, message: 'Stops updated successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update stops:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

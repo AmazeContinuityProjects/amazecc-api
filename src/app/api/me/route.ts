@@ -94,8 +94,8 @@ export async function POST(req: Request) {
     const identity = buildIdentity({ student, proctor, hodDean, credentials, apaar: apaarParsed, hasApaar, bank });
 
     return NextResponse.json({ success: true, identity });
-  } catch (err: any) {
-    console.error("me error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("me error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

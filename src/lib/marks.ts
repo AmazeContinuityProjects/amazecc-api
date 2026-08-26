@@ -163,8 +163,9 @@ export async function getMarks(cookies: string[] | string, authorizedID: string,
         });
 
         return { courses, cgpa };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        throw new Error(`Failed to fetch marks: ${err.message || 'Unknown error'}`);
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        throw new Error(`Failed to fetch marks: ${message}`);
     }
 }

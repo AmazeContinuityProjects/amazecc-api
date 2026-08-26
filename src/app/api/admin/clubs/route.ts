@@ -12,7 +12,7 @@ export async function GET(req: Request) {
         const pool = getDbPool();
         const result = await pool.query('SELECT * FROM club_details ORDER BY club_name ASC');
         return NextResponse.json({ success: true, clubs: result.rows }, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error fetching club details in admin GET:', error);
         return NextResponse.json({ success: false, error: 'Failed to fetch club details' }, { status: 500 });
     }
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         const result = await pool.query(query, values);
 
         return NextResponse.json({ success: true, club: result.rows[0] }, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating club details in admin POST:', error);
         return NextResponse.json({ success: false, error: 'Failed to update club details' }, { status: 500 });
     }

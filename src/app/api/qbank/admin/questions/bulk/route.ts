@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       client.release();
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Bulk questions import error:', error);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }

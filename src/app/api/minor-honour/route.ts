@@ -38,18 +38,19 @@
 
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
+import type { AxiosInstance } from "axios";
 import { URLSearchParams } from "url";
 import * as cheerio from "cheerio";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 
 async function processCascade(
-  client: any,
+  client: AxiosInstance,
   initUrl: string,
   headers: Record<string, string>,
   baseParams: Record<string, string>,
   selectOptions: Record<string, { value: string; text: string; selected: boolean }[]>,
-): Promise<Record<string, any>> {
-  const result: Record<string, any> = {};
+): Promise<Record<string, unknown>> {
+  const result: Record<string, unknown> = {};
   const processedFields = new Set(Object.keys(baseParams));
 
   for (const [fieldName, fieldOptions] of Object.entries(selectOptions)) {
@@ -57,7 +58,7 @@ async function processCascade(
     const opts = fieldOptions as { value: string; text: string; selected: boolean }[] | undefined;
     if (!opts || opts.length === 0) continue;
 
-    const children: Record<string, any> = {};
+    const children: Record<string, unknown> = {};
     for (const sub of opts) {
       if (!sub.value || sub.value === "null" || sub.value === "") continue;
       const params: Record<string, string> = { ...baseParams, [fieldName]: sub.value, x: new Date().toUTCString() };
@@ -65,15 +66,15 @@ async function processCascade(
         const resp = await client.post(initUrl, new URLSearchParams(params).toString(), { headers });
         const parsed = parseVtopHtml(resp.data);
 
-        const deeperOptions: Record<string, any> = {};
-        for (const [cf, co] of Object.entries(parsed.selectOptions)) {
+        const deeperOptions: Record<string, { value: string; text: string; selected: boolean }[]> = {};
+        for (const [cf, co] of Object.entries(parsed.selectOptions as Record<string, unknown>)) {
           if (processedFields.has(cf) || cf === fieldName) continue;
           const childOpts = co as { value: string; text: string; selected: boolean }[] | undefined;
           if (childOpts && childOpts.length > 0) deeperOptions[cf] = childOpts;
         }
 
         const deeperCascade = Object.keys(deeperOptions).length > 0
-          ? await processCascade(client, initUrl, headers, params, deeperOptions)
+          ? await processCascade(client, initUrl, headers, params, deeperOptions as Record<string, { value: string; text: string; selected: boolean }[]>)
           : undefined;
 
         children[sub.text] = {
@@ -81,8 +82,8 @@ async function processCascade(
           tables: parsed.tables || [],
           ...(deeperCascade && Object.keys(deeperCascade).length > 0 ? { cascadingOptions: deeperCascade } : {}),
         };
-      } catch (e: any) {
-        children[sub.text] = { error: e.message };
+      } catch (e: unknown) {
+        children[sub.text] = { error: (e instanceof Error ? e.message : String(e)) };
       }
     }
     if (Object.keys(children).length > 0)
@@ -136,7 +137,7 @@ export async function POST(req: Request) {
       if (name) hiddenFields[name] = val;
     });
 
-    const semesters: Record<string, any> = {};
+    const semesters: Record<string, unknown> = {};
     for (const opt of options) {
       try {
         const baseParams: Record<string, string> = {
@@ -149,19 +150,19 @@ export async function POST(req: Request) {
 
         const dataResp = await client.post(INIT_URL, new URLSearchParams(baseParams).toString(), { headers });
         const parsed = parseVtopHtml(dataResp.data);
-        const semData: any = { ...parsed };
+        const semData: Record<string, unknown> = { ...parsed } as Record<string, unknown>;
 
-        const cascade = await processCascade(client, INIT_URL, headers, baseParams, parsed.selectOptions);
-        if (Object.keys(cascade).length > 0) semData.cascadingOptions = cascade;
+        const cascade = await processCascade(client, INIT_URL, headers, baseParams, parsed.selectOptions as Record<string, { value: string; text: string; selected: boolean }[]>);
+        if (Object.keys(cascade).length > 0) (semData as Record<string, unknown>).cascadingOptions = cascade;
 
         if (parsed.tables?.length > 0 || Object.keys(parsed.keyValuePairs || {}).length > 0 || Object.keys(cascade).length > 0)
           semesters[opt.text] = semData;
-      } catch (e: any) {
-        semesters[opt.text] = { error: e.message };
+      } catch (e: unknown) {
+        semesters[opt.text] = { error: (e instanceof Error ? e.message : String(e)) };
       }
     }
     return NextResponse.json({ success: true, semesters });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

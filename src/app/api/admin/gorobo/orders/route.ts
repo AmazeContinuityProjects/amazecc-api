@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     const conditions: string[] = [];
     const params: string[] = [];
     if (status) {
-      if (!(GOROBO_ORDER_STATUSES as readonly string[]).includes(status as any)) {
+      if (!(GOROBO_ORDER_STATUSES as readonly string[]).includes(status as string)) {
         return NextResponse.json(
           { success: false, error: `status must be one of: ${GOROBO_ORDER_STATUSES.join(", ")}` },
           { status: 400 }
@@ -43,8 +43,8 @@ export async function GET(req: Request) {
     const { rows } = await pool.query<GoroboOrderRow>(query, params);
     const orders = rows.map(mapOrderRow);
     return NextResponse.json({ success: true, count: orders.length, orders });
-  } catch (error: any) {
-    console.error("admin gorobo orders GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo orders GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -57,19 +57,19 @@ export async function POST(req: Request) {
   const auth = await requireGoroboAdmin(req);
   if (auth instanceof NextResponse) return auth;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const userName = typeof body?.userName === "string" ? body.userName.trim() : "";
-  const phoneNumber = typeof body?.phoneNumber === "string" ? body.phoneNumber.trim() : "";
-  const deliveryMode = typeof body?.deliveryMode === "string" ? body.deliveryMode.trim() : "counter_pickup";
-  const mapsUrl = typeof body?.mapsUrl === "string" ? body.mapsUrl.trim() : "";
-  const status = typeof body?.status === "string" && (GOROBO_ORDER_STATUSES as readonly string[]).includes(body.status)
-    ? body.status
+  const userName = typeof (body as Record<string, unknown>)?.userName === "string" ? ((body as Record<string, unknown>).userName as string).trim() : "";
+  const phoneNumber = typeof (body as Record<string, unknown>)?.phoneNumber === "string" ? ((body as Record<string, unknown>).phoneNumber as string).trim() : "";
+  const deliveryMode = typeof (body as Record<string, unknown>)?.deliveryMode === "string" ? ((body as Record<string, unknown>).deliveryMode as string).trim() : "counter_pickup";
+  const mapsUrl = typeof (body as Record<string, unknown>)?.mapsUrl === "string" ? ((body as Record<string, unknown>).mapsUrl as string).trim() : "";
+  const status = typeof (body as Record<string, unknown>)?.status === "string" && (GOROBO_ORDER_STATUSES as readonly string[]).includes(((body as Record<string, unknown>).status as string))
+    ? ((body as Record<string, unknown>).status as string)
     : "pending";
 
   if (!userName) {
@@ -141,11 +141,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]) }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof QuoteValidationError) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 400 });
     }
-    console.error("admin gorobo orders POST error:", error.message);
+    console.error("admin gorobo orders POST error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

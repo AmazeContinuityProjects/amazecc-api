@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 
 export interface CurriculumCategory {
   code: string;
@@ -146,7 +147,7 @@ export function parseCurriculumCategoryView(html: string): CurriculumBasket[] {
   return baskets;
 }
 
-function parseTable($: cheerio.CheerioAPI, $table: cheerio.Cheerio<any>, title: string): CurriculumBasket {
+function parseTable($: cheerio.CheerioAPI, $table: cheerio.Cheerio<Element>, title: string): CurriculumBasket {
   const items: CurriculumBasketItem[] = [];
 
   // First, build a map of dtr-data values per row from DataTables responsive details

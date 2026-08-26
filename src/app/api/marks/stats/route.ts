@@ -57,7 +57,7 @@ export async function GET(req: Request) {
       [classIds]
     );
 
-    const result: Record<string, any> = {};
+    const result: Record<string, Record<string, unknown>> = {};
 
     for (const cid of classIds) {
       result[cid] = {
@@ -66,16 +66,16 @@ export async function GET(req: Request) {
       };
     }
 
-    overallQuery.rows.forEach(row => {
-      const { class_id, count, mean, m2 } = row;
-      const sd = count > 1 ? Math.sqrt(m2 / count) : 0;
-      result[class_id].overall = { count, mean, sd };
+    overallQuery.rows.forEach((row: Record<string, unknown>) => {
+      const { class_id, count, mean, m2 } = row as { class_id: string; count: number; mean: number; m2: number };
+      const sd = (count as number) > 1 ? Math.sqrt((m2 as number) / (count as number)) : 0;
+      (result[class_id] as Record<string, unknown>).overall = { count, mean, sd };
     });
 
-    assessmentQuery.rows.forEach(row => {
-      const { class_id, assessment_title, count, mean, m2 } = row;
-      const sd = count > 1 ? Math.sqrt(m2 / count) : 0;
-      result[class_id].assessments[assessment_title] = { count, mean, sd };
+    assessmentQuery.rows.forEach((row: Record<string, unknown>) => {
+      const { class_id, assessment_title, count, mean, m2 } = row as { class_id: string; assessment_title: string; count: number; mean: number; m2: number };
+      const sd = (count as number) > 1 ? Math.sqrt((m2 as number) / (count as number)) : 0;
+      ((result[class_id] as Record<string, unknown>).assessments as Record<string, unknown>)[assessment_title as string] = { count, mean, sd };
     });
 
     return NextResponse.json(result);

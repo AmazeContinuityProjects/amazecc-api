@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       if (v && v !== "null" && v !== "") options.push({ value: v, text: $(el).text().trim() });
     });
 
-    const semesters: Record<string, any> = {};
+    const semesters: Record<string, unknown> = {};
     for (const opt of options) {
       try {
         const dataResp = await client.post(
@@ -99,13 +99,13 @@ export async function POST(req: Request) {
         const parsed = parseVtopHtml(dataResp.data);
         const hasData = parsed.tables?.length > 0 || Object.keys(parsed.keyValuePairs || {}).length > 0;
         if (hasData) semesters[opt.text] = { ...parsed };
-      } catch (e: any) {
-        semesters[opt.text] = { error: e.message };
+      } catch (e: unknown) {
+        semesters[opt.text] = { error: (e instanceof Error ? e.message : String(e)) };
       }
     }
     return NextResponse.json({ success: true, semesters });
-  } catch (err: any) {
-    console.error("additional-learning error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("additional-learning error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

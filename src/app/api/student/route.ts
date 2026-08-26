@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         const profile = parseStudentProfile(profileRes.data);
 
         return NextResponse.json({ profile }, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

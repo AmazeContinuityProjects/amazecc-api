@@ -73,15 +73,15 @@ export async function POST(req: Request) {
       if (v && v !== "null" && v !== "") options.push({ value: v, text: $(el).text().trim() });
     });
 
-    const semesters: Record<string, any> = {};
+    const semesters: Record<string, unknown> = {};
     for (const opt of options) {
       try {
         const dataResp = await client.post(INIT_URL, new URLSearchParams({ authorizedID, x: new Date().toUTCString(), [semFieldName]: opt.value, _csrf: csrf }).toString(), { headers });
         semesters[opt.text] = { ...parseVtopHtml(dataResp.data) };
-      } catch (e: any) { semesters[opt.text] = { error: e.message }; }
+      } catch (e: unknown) { semesters[opt.text] = { error: (e instanceof Error ? e.message : String(e)) }; }
     }
     return NextResponse.json({ success: true, semesters });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

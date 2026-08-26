@@ -55,11 +55,11 @@ export async function POST(req: Request) {
         },
         timeout: 30000 // 30 seconds
       });
-    } catch (downloadError: any) {
+    } catch (downloadError: unknown) {
       console.error(`Failed to download file from ${downloadUrl}:`, downloadError);
       return NextResponse.json({ 
         success: false, 
-        error: `Failed to download file from remote host: ${downloadError.message}` 
+        error: `Failed to download file from remote host: ${(downloadError instanceof Error ? downloadError.message : String(downloadError))}` 
       }, { status: 502 });
     }
 
@@ -77,9 +77,9 @@ export async function POST(req: Request) {
           ContentType: contentType,
         })
       );
-    } catch (uploadError: any) {
+    } catch (uploadError: unknown) {
       console.error('R2 storage upload error:', uploadError);
-      return NextResponse.json({ success: false, error: `Storage upload failed: ${uploadError.message}` }, { status: 500 });
+      return NextResponse.json({ success: false, error: `Storage upload failed: ${(uploadError instanceof Error ? uploadError.message : String(uploadError))}` }, { status: 500 });
     }
 
     // Construct the public download URL pointing back to our API
@@ -99,8 +99,8 @@ export async function POST(req: Request) {
       fileUrl: publicUrl, 
       fileSize: buffer.length 
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Import to storage error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

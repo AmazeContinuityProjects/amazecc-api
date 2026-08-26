@@ -22,8 +22,8 @@ export async function POST(req: Request) {
         );
 
         return NextResponse.json({ success: true, message: "User blocked successfully" });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -46,7 +46,7 @@ export async function DELETE(req: Request) {
         await pool.query("DELETE FROM cabshare_blocks WHERE blocker_id = $1 AND blocked_id = $2", [blocker_id, blocked_id]);
 
         return NextResponse.json({ success: true, message: "User unblocked successfully" });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

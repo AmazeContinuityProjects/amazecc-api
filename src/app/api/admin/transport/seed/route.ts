@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         await client.query(
           `INSERT INTO buses_v2 (route_number, route_name, type, driver_name, driver_phone, whatsapp_group, bus_location, supervisor_name, supervisor_phone, driver_incharge_name, driver_incharge_phone, stops, placements)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb)`,
-          [r.routeNumber, r.routeName, r.type, r.driverName || '', r.driverPhone || '', r.whatsappGroup || '', r.busLocation || '', r.supervisorName || '', r.supervisorPhone || '', (r as any).driverInchargeName || '', (r as any).driverInchargePhone || '', stopsJson, placementsJson]
+          [r.routeNumber, r.routeName, r.type, r.driverName || '', r.driverPhone || '', r.whatsappGroup || '', r.busLocation || '', r.supervisorName || '', r.supervisorPhone || '', ((r as Record<string, unknown>).driverInchargeName as string) || '', ((r as Record<string, unknown>).driverInchargePhone as string) || '', stopsJson, placementsJson]
         );
       }
     }
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       message: 'Transport data seeded successfully',
       stats: { routes: routeCount, placements: placementCount, rules: ruleCount },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     await client.query('ROLLBACK');
     console.error('Failed to seed transport data:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });

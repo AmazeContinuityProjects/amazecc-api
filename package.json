@@ -2,6 +2,7 @@
   "name": "temp-next",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.24.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,6 +19,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "domhandler": "5.0.3",
     "dotenv": "^17.4.2",
     "fast-xml-parser": "^5.9.3",
     "framer-motion": "^12.42.2",

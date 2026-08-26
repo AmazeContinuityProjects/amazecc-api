@@ -34,8 +34,8 @@ export async function GET(req: Request) {
     }));
 
     return NextResponse.json({ success: true, count: bundles.length, bundles });
-  } catch (error: any) {
-    console.error("admin gorobo bundles GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo bundles GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -44,21 +44,21 @@ export async function POST(req: Request) {
   const auth = await requireGoroboAdmin(req);
   if (auth instanceof NextResponse) return auth;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const name = typeof body?.name === "string" ? body.name.trim() : "";
-  const description = typeof body?.description === "string" ? body.description.trim() : "";
-  const category = typeof body?.category === "string" ? body.category.trim() : "Project Kits";
-  const items = Array.isArray(body?.items) ? body.items : [];
-  const bundlePrice = Number(body?.bundlePrice ?? 0);
-  const discountPct = Number(body?.discountPct ?? 0);
-  const image = typeof body?.image === "string" ? body.image.trim() : "";
-  const isActive = body?.isActive !== false;
+  const name = typeof (body as Record<string, unknown>)?.name === "string" ? ((body as Record<string, unknown>).name as string).trim() : "";
+  const description = typeof (body as Record<string, unknown>)?.description === "string" ? ((body as Record<string, unknown>).description as string).trim() : "";
+  const category = typeof (body as Record<string, unknown>)?.category === "string" ? ((body as Record<string, unknown>).category as string).trim() : "Project Kits";
+  const items = Array.isArray((body as Record<string, unknown>)?.items) ? ((body as Record<string, unknown>).items as unknown[]) : [];
+  const bundlePrice = Number((body as Record<string, unknown>)?.bundlePrice ?? 0);
+  const discountPct = Number((body as Record<string, unknown>)?.discountPct ?? 0);
+  const image = typeof (body as Record<string, unknown>)?.image === "string" ? ((body as Record<string, unknown>).image as string).trim() : "";
+  const isActive = (body as Record<string, unknown>)?.isActive !== false;
 
   if (!name) {
     return NextResponse.json({ success: false, error: "name is required" }, { status: 400 });
@@ -99,8 +99,8 @@ export async function POST(req: Request) {
         updatedAt: created.updated_at,
       }
     }, { status: 201 });
-  } catch (error: any) {
-    console.error("admin gorobo bundles POST error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo bundles POST error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

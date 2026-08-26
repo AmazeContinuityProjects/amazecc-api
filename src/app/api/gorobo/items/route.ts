@@ -180,8 +180,8 @@ export async function GET(req: Request) {
       },
       { headers: { "Cache-Control": CACHE_CONTROL } },
     );
-  } catch (error: any) {
-    console.error("gorobo items GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("gorobo items GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json(
       { success: false, error: getDbErrorMessage(error) },
       { status: getDbErrorStatus(error), headers: { "Cache-Control": "no-store" } },

@@ -97,8 +97,8 @@ export async function GET(req: Request) {
       ORDER BY hour ASC
     `);
     const hourlyData = hourlyRes.rows;
-    const hourLabels = hourlyData.map((d: any) => d.hour);
-    const hourCounts = hourlyData.map((d: any) => Number(d.count));
+    const hourLabels = hourlyData.map((d: Record<string, unknown>) => (d.hour as string));
+    const hourCounts = hourlyData.map((d: Record<string, unknown>) => Number(d.count as string | number));
 
     // 2. Route Hourly Data
     const routeRes = await pool.query(`
@@ -135,8 +135,8 @@ export async function GET(req: Request) {
       GROUP BY "user"
     `);
     const firstSeenHourPerUser = new Map<string, string>();
-    firstSeenRes.rows.forEach((row: any) => {
-      firstSeenHourPerUser.set(row.user, row.firstHour);
+    firstSeenRes.rows.forEach((row: Record<string, unknown>) => {
+      firstSeenHourPerUser.set(row.user as string, row.firstHour as string);
     });
 
     // 5. Unique Users Hourly
@@ -162,16 +162,16 @@ export async function GET(req: Request) {
     
     // Process returning vs new users
     const userHourlyGroups = new Map<string, Set<string>>();
-    visitorRecordsRes.rows.forEach((row: any) => {
-        if (!userHourlyGroups.has(row.hour)) {
-            userHourlyGroups.set(row.hour, new Set());
+    visitorRecordsRes.rows.forEach((row: Record<string, unknown>) => {
+        if (!userHourlyGroups.has(row.hour as string)) {
+            userHourlyGroups.set(row.hour as string, new Set());
         }
-        userHourlyGroups.get(row.hour)?.add(row.user);
+        userHourlyGroups.get(row.hour as string)?.add(row.user as string);
     });
 
-    const returningUserCounts: any[] = [];
-    uniqueUsersHourly.forEach((row: any) => {
-        const hour = row.hour;
+    const returningUserCounts: number[] = [];
+    uniqueUsersHourly.forEach((row: Record<string, unknown>) => {
+        const hour = row.hour as string;
         const usersInHour = userHourlyGroups.get(hour) || new Set();
         let returningCount = 0;
 
@@ -183,15 +183,15 @@ export async function GET(req: Request) {
         returningUserCounts.push(returningCount);
     });
 
-    const uniqueUserCounts = uniqueUsersHourly.map((d: any) => Number(d.uniqueUsers));
-    const sortedHours = uniqueUsersHourly.map((d: any) => d.hour);
+    const uniqueUserCounts = uniqueUsersHourly.map((d: Record<string, unknown>) => Number((d.uniqueUsers as string | number)));
+    const sortedHours = uniqueUsersHourly.map((d: Record<string, unknown>) => (d.hour as string));
 
-    const sourceHours = [...new Set(sourceHourlyData.map((d: any) => d.hour))].sort();
-    const sources = [...new Set(sourceHourlyData.map((d: any) => d.source || "unknown"))];
+    const sourceHours = [...new Set(sourceHourlyData.map((d: Record<string, unknown>) => (d.hour as string)))].sort();
+    const sources = [...new Set(sourceHourlyData.map((d: Record<string, unknown>) => (d.source as string) || "unknown"))];
 
-const allHours = [...new Set(routeHourlyData.map((d: any) => d.hour))].sort();
+const allHours = [...new Set(routeHourlyData.map((d: Record<string, unknown>) => (d.hour as string)))].sort();
 
-    const routes = routeRes.rows.map((r: any) => r.route);
+    const routes = routeRes.rows.map((r: Record<string, unknown>) => (r.route as string));
 
     const routeDatasets = routes.map((route, index) => {
       const colors = [
@@ -210,8 +210,8 @@ const allHours = [...new Set(routeHourlyData.map((d: any) => d.hour))].sort();
       const color = colors[index % colors.length] || 'rgb(100, 100, 100)';
 
       const data = allHours.map(hour => {
-        const entry: any = routeHourlyData.find(
-          (d: any) => d.hour === hour && d.route === route
+        const entry: Record<string, unknown> | undefined = routeHourlyData.find(
+          (d: Record<string, unknown>) => (d.hour as string) === hour && d.route === route
         );
         return entry ? Number(entry.count) : 0;
       });
@@ -238,8 +238,8 @@ const allHours = [...new Set(routeHourlyData.map((d: any) => d.hour))].sort();
       const color = colors[index % colors.length] || 'rgb(100, 100, 100)';
       
       const data = sourceHours.map(hour => {
-        const entry: any = sourceHourlyData.find(
-          (d: any) => d.hour === hour && (d.source || "unknown") === source
+        const entry: Record<string, unknown> | undefined = sourceHourlyData.find(
+          (d: Record<string, unknown>) => (d.hour as string) === hour && (d.source || "unknown") === source
         );
         return entry ? Number(entry.count) : 0;
       });

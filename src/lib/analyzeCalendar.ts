@@ -167,11 +167,15 @@ export function analyzeCalendar(calendar: CalendarInput = {}): AnalyzeCalendarRe
 export function analyzeAllCalendars(calendars: unknown): AnalyzeAllCalendarsReturn {
     if (!calendars) return { results: [], importantEvents: new Map() };
 
+    const isObjectWithCalendars = (value: unknown): value is { calendars: unknown } =>
+        typeof value === "object" && value !== null && "calendars" in value;
+    const nested = isObjectWithCalendars(calendars) ? calendars.calendars : undefined;
+
     const calArray: CalendarInput[] = Array.isArray(calendars)
-        ? calendars
-        : (calendars as any).calendars
-            ? (calendars as any).calendars
-            : [calendars];
+        ? (calendars as CalendarInput[])
+        : Array.isArray(nested)
+            ? (nested as CalendarInput[])
+            : [calendars as CalendarInput];
 
     const results: CalendarResult[] = [];
     const importantEvents = new Map<string, ImportantEvent>();

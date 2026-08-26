@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     );
 
     return NextResponse.json({ success: true, data: rows });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Papers fetch error:', error);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }

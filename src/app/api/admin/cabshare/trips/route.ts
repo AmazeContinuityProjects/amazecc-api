@@ -25,8 +25,8 @@ export async function GET() {
         }
 
         return NextResponse.json({ success: true, trips: rows });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -39,7 +39,7 @@ export async function DELETE(req: Request) {
         const pool = getDbPool();
         await pool.query("DELETE FROM cabshare_trips WHERE trip_id = $1", [trip_id]);
         return NextResponse.json({ success: true, message: "Trip deleted successfully" });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

@@ -49,8 +49,8 @@ export async function GET(req: Request) {
         }
 
         return NextResponse.json({ success: true, my_trips: myTrips, joined_trips: joinedTrips });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("CabShare My Trips GET Error:", err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

@@ -151,8 +151,8 @@ export async function GET(req: Request) {
         }))
       }
     });
-  } catch (error: any) {
-    console.error("admin gorobo analytics GET error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo analytics GET error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

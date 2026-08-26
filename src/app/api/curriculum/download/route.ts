@@ -81,15 +81,15 @@ export async function POST(req: Request) {
 
     const fallbackExt = contentType.includes("zip") ? "zip" : "pdf";
     const contentDisposition = downloadRes.headers.get("content-disposition") || `attachment; filename="curriculum.${fallbackExt}"`;
-    return new NextResponse(downloadRes.body as any, {
+    return new NextResponse(downloadRes.body as unknown as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": contentType,
         "Content-Disposition": contentDisposition,
       },
     });
-  } catch (err: any) {
-    console.error("curriculum download error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("curriculum download error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

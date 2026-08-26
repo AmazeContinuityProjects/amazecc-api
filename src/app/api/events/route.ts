@@ -49,7 +49,7 @@ export async function GET() {
 
         const html = await response.text();
         const $ = cheerio.load(html);
-        const extractedEvents: any[] = [];
+        const extractedEvents: unknown[] = [];
 
         $('#events .card').each((i, card) => {
             const $card = $(card);
@@ -114,8 +114,8 @@ export async function GET() {
         });
 
         return NextResponse.json(extractedEvents, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
     }
 }

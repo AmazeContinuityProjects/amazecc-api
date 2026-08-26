@@ -147,10 +147,10 @@ export async function PATCH(req: NextRequest) {
     if (!questionId) return NextResponse.json({ success: false, error: 'questionId required' }, { status: 400 });
 
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
     let paramIndex = 1;
 
-    const addUpdate = (field: string, value: any) => {
+    const addUpdate = (field: string, value: unknown) => {
       updates.push(`${field} = $${paramIndex}`);
       values.push(value);
       paramIndex++;

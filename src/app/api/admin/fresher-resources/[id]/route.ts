@@ -26,7 +26,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     const fields = await req.json();
     const allowed = ['title', 'description', 'url', 'icon', 'sort_order', 'is_active', 'type', 'content'];
     const setClauses: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
     let idx = 1;
 
     for (const key of allowed) {
@@ -62,9 +62,9 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     });
 
     return NextResponse.json({ success: true, resource: rows[0] });
-  } catch (error: any) {
-    console.error('admin fresher-resources PATCH error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin fresher-resources PATCH error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -104,8 +104,8 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error('admin fresher-resources DELETE error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin fresher-resources DELETE error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

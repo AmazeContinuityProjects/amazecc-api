@@ -204,8 +204,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: `Registration failed with status ${status}` }, { status: 400 });
         }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
     }
 }

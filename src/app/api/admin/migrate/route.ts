@@ -277,7 +277,7 @@ export async function POST(req: Request) {
     await pool.query(sql);
 
     return NextResponse.json({ success: true, message: 'All tables created: buses, papers_archive, qbank_questions, qbank_topics, qbank_question_topics, fresher_resources, bus_routes, bus_stops, bus_placements, bus_students, transport_rules' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Migration failed:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -338,7 +338,7 @@ export async function GET(req: Request) {
       serverTime: rows[0].time,
       tables: tables.map(t => t.table_name),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('DB check failed:', error);
     return NextResponse.json({ connected: false, error: "Internal server error" });
   }

@@ -15,9 +15,9 @@ export async function GET(req: Request) {
       `SELECT id, school_name, url FROM faculty_directory_urls ORDER BY school_name ASC`
     );
     return NextResponse.json({ success: true, directories: rows });
-  } catch (error: any) {
-    console.error('admin/faculty-directories GET error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin/faculty-directories GET error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -52,12 +52,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, message: 'Directory added successfully' });
-  } catch (error: any) {
-    if (error.code === '23505') { // Unique violation
+  } catch (error: unknown) {
+    if ((error as { code?: string })?.code === '23505') { // Unique violation
       return NextResponse.json({ success: false, error: 'A school with this ID already exists' }, { status: 400 });
     }
-    console.error('admin/faculty-directories POST error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('admin/faculty-directories POST error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -96,9 +96,9 @@ export async function PUT(req: Request) {
     });
 
     return NextResponse.json({ success: true, message: 'Directory updated successfully' });
-  } catch (error: any) {
-    console.error('admin/faculty-directories PUT error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin/faculty-directories PUT error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -137,8 +137,8 @@ export async function DELETE(req: Request) {
     });
 
     return NextResponse.json({ success: true, message: 'Directory deleted successfully' });
-  } catch (error: any) {
-    console.error('admin/faculty-directories DELETE error:', error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('admin/faculty-directories DELETE error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

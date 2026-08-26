@@ -64,8 +64,8 @@ export async function POST(req: Request, context: RouteContext) {
     );
 
     return NextResponse.json({ success: true, order: mapOrderRow(updated[0]) });
-  } catch (error: any) {
-    console.error("admin gorobo order confirm error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo order confirm error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

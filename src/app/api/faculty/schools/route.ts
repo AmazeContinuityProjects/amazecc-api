@@ -10,8 +10,8 @@ export async function GET() {
       `SELECT id, school_name FROM faculty_directory_urls ORDER BY school_name ASC`
     );
     return NextResponse.json({ success: true, schools: rows });
-  } catch (error: any) {
-    console.error('faculty/schools error:', error.message);
-    return NextResponse.json({ success: false, schools: [], error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('faculty/schools error:', (error instanceof Error ? error.message : String(error)));
+    return NextResponse.json({ success: false, schools: [], error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

@@ -63,8 +63,8 @@ export async function POST(req: Request) {
       }
     );
     return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
-  } catch (err: any) {
-    console.error("club-enrollment error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("club-enrollment error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

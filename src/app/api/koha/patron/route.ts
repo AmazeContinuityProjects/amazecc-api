@@ -52,12 +52,12 @@ function kohaFetch(method: string, path: string, cookies: string, postData?: str
       path: path.startsWith("http") ? new URL(path).pathname + new URL(path).search : path,
       method,
       agent,
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)", Connection: "close" } as any,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)", Connection: "close" } as unknown as Record<string, string>,
     };
-    if (cookies) (opts.headers as any)["Cookie"] = cookies;
+    if (cookies) (opts.headers as unknown as Record<string, string>)["Cookie"] = cookies;
     if (postData) {
-      (opts.headers as any)["Content-Type"] = "application/x-www-form-urlencoded";
-      (opts.headers as any)["Content-Length"] = Buffer.byteLength(postData);
+      (opts.headers as unknown as Record<string, string>)["Content-Type"] = "application/x-www-form-urlencoded";
+      (opts.headers as unknown as Record<string, string>)["Content-Length"] = String(Buffer.byteLength(postData));
     }
     const req = https.request(opts, (res) => {
       let data = "";
@@ -91,18 +91,18 @@ const PAGE_MAP: Record<string, string> = {
   lists: "/cgi-bin/koha/opac-shelves.pl?op=list",
 };
 
-function parsePage($: cheerio.CheerioAPI): any {
-  const page: any = {};
+function parsePage($: cheerio.CheerioAPI): Record<string, unknown> {
+  const page: Record<string, unknown> = {};
 
   page.title = $("h1").first().text().trim() || $("title").text().trim();
 
   page.patronName = $(".userlabel").text().replace("Welcome,", "").trim() || "";
 
-  const tables: any[] = [];
+  const tables: Array<Record<string, unknown>> = [];
   $("table").each((_, el) => {
     const caption = $(el).find("caption").text().trim() || $(el).prev("h4, h5").text().trim() || "";
     const headers: string[] = [];
-    const rows: any[] = [];
+    const rows: string[][] = [];
     $(el).find("thead th").each((_, th) => { headers.push($(th).text().trim()); });
     $(el).find("tbody tr").each((_, tr) => {
       const cells: string[] = [];
@@ -152,11 +152,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, page: pageName, data: parsePage($) });
     }
 
-    const result: any = { loggedIn: true, patronName: "" };
+    const result: Record<string, unknown> = { loggedIn: true, patronName: "" };
     const $ = cheerio.load(loginResult.body);
     result.patronName = $(".userlabel").text().replace("Welcome,", "").trim() || "";
 
-    const pages: any = {};
+    const pages: Record<string, unknown> = {};
     for (const [key, url] of Object.entries(PAGE_MAP)) {
       const r = await kohaFetch("GET", url, cookies);
       const p$ = cheerio.load(r.body);
@@ -165,8 +165,8 @@ export async function POST(req: NextRequest) {
     result.pages = pages;
 
     return NextResponse.json({ success: true, data: result });
-  } catch (err: any) {
-    console.error("koha/patron error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("koha/patron error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

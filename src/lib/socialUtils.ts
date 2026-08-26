@@ -38,15 +38,22 @@ export type FriendGroup = {
   createdAt: string;
 };
 
+type AttendanceForExport = Record<string, unknown> & {
+  slotName?: unknown;
+  courseCode?: unknown;
+  courseTitle?: unknown;
+  slotVenue?: unknown;
+};
+
 export function exportScheduleCode(
-  attendance: any[],
+  attendance: AttendanceForExport[],
   name: string,
   regNumber: string
 ): string {
-  const slotMap = config.slotMap as any;
+  const slotMap = config.slotMap as Record<string, Record<string, { time: string }>>;
   const friendSlots: FriendClassSlot[] = [];
 
-  attendance.forEach((course) => {
+  attendance.forEach((course: AttendanceForExport) => {
     const slots = String(course.slotName || "")
       .split("+")
       .map((s) => s.trim())
@@ -58,9 +65,9 @@ export function exportScheduleCode(
           friendSlots.push({
             day: DAYS_MAP[shortDay] || shortDay,
             timeSlot: slotMap[shortDay][slot].time,
-            courseCode: course.courseCode || "",
-            courseTitle: course.courseTitle || "",
-            venue: course.slotVenue || "",
+            courseCode: String(course.courseCode ?? ""),
+            courseTitle: String(course.courseTitle ?? ""),
+            venue: String(course.slotVenue ?? ""),
             slotId: slot,
           });
         }

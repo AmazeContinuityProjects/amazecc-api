@@ -82,8 +82,8 @@ export async function POST(req: Request) {
       verifyMenu: "true", authorizedID, _csrf: csrf, nocache: Date.now().toString(),
     }).toString(), { headers });
     return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
-  } catch (err: any) {
-    console.error("book-recommendation error:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("book-recommendation error:", (err instanceof Error ? err.message : String(err)));
+    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
   }
 }

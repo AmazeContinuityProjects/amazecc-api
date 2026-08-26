@@ -16,7 +16,7 @@ export async function PUT(req: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: any;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
@@ -35,14 +35,14 @@ export async function PUT(req: Request, context: RouteContext) {
       return NextResponse.json({ success: false, error: "Bundle not found" }, { status: 404 });
     }
 
-    const name = typeof body?.name === "string" ? body.name.trim() : null;
-    const description = typeof body?.description === "string" ? body.description.trim() : null;
-    const category = typeof body?.category === "string" ? body.category.trim() : null;
-    const items = Array.isArray(body?.items) ? body.items : null;
-    const bundlePrice = body?.bundlePrice !== undefined ? Number(body.bundlePrice) : null;
-    const discountPct = body?.discountPct !== undefined ? Number(body.discountPct) : null;
-    const image = typeof body?.image === "string" ? body.image.trim() : null;
-    const isActive = body?.isActive !== undefined ? Boolean(body.isActive) : null;
+    const name = typeof (body as Record<string, unknown>)?.name === "string" ? ((body as Record<string, unknown>).name as string).trim() : null;
+    const description = typeof (body as Record<string, unknown>)?.description === "string" ? ((body as Record<string, unknown>).description as string).trim() : null;
+    const category = typeof (body as Record<string, unknown>)?.category === "string" ? ((body as Record<string, unknown>).category as string).trim() : null;
+    const items = Array.isArray((body as Record<string, unknown>)?.items) ? ((body as Record<string, unknown>).items as unknown[]) : null;
+    const bundlePrice = (body as Record<string, unknown>)?.bundlePrice !== undefined ? Number((body as Record<string, unknown>).bundlePrice) : null;
+    const discountPct = (body as Record<string, unknown>)?.discountPct !== undefined ? Number((body as Record<string, unknown>).discountPct) : null;
+    const image = typeof (body as Record<string, unknown>)?.image === "string" ? ((body as Record<string, unknown>).image as string).trim() : null;
+    const isActive = (body as Record<string, unknown>)?.isActive !== undefined ? Boolean((body as Record<string, unknown>).isActive) : null;
 
     const { rows } = await pool.query<GoroboBundle>(
       `UPDATE gorobo_bundles
@@ -94,8 +94,8 @@ export async function PUT(req: Request, context: RouteContext) {
         updatedAt: updated.updated_at,
       }
     });
-  } catch (error: any) {
-    console.error("admin gorobo bundle PUT error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo bundle PUT error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
@@ -127,8 +127,8 @@ export async function DELETE(req: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, message: "Bundle deleted successfully" });
-  } catch (error: any) {
-    console.error("admin gorobo bundle DELETE error:", error.message);
+  } catch (error: unknown) {
+    console.error("admin gorobo bundle DELETE error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }
