@@ -1,38 +1,9 @@
-/**
- * @openapi
- * /api/admin/stats:
- *   get:
- *     tags:
- *       - Admin
- *     summary: Auto-generated GET endpoint for /api/admin/stats
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               {}:
- *                 type: object
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
-
- *       400:
- *         description: Bad Request
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal Server Error
- */
-
 import { NextResponse } from 'next/server';
 import { requireAdminAuth } from '@/lib/auth';
 import { getDbPool } from '@/lib/db';
+import { ensureAuditLogsTable } from '@/lib/audit';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   const auth = await requireAdminAuth(req);
@@ -40,8 +11,17 @@ export async function GET(req: Request) {
 
   try {
     const pool = getDbPool();
+    await ensureAuditLogsTable();
 
-    const [usersResult, papersResult, busesResult, subsResult, transportRoutesResult, rulesResult] = await Promise.all([
+    const [
+      usersResult,
+      papersResult,
+      busesResult,
+      subsResult,
+      transportRoutesResult,
+      rulesResult,
+      auditLogsResult
+    ] = await Promise.all([
       pool.query(`SELECT COUNT(DISTINCT user_id) AS count FROM push_subscriptions`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT
         COUNT(*) AS total,
@@ -55,6 +35,19 @@ export async function GET(req: Request) {
       pool.query(`SELECT COUNT(*) AS count FROM push_subscriptions WHERE vitol_enabled = TRUE`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT COUNT(*) AS count FROM buses_v2`).catch(() => ({ rows: [{ count: 0 }] })),
       pool.query(`SELECT COUNT(*) AS count FROM transport_rules`).catch(() => ({ rows: [{ count: 0 }] })),
+      pool.query(`
+        SELECT 
+          id, 
+          admin_user, 
+          action, 
+          target_resource, 
+          created_at AS timestamp,
+          details,
+          ip_address
+        FROM admin_audit_logs 
+        ORDER BY created_at DESC 
+        LIMIT 100
+      `).catch(() => ({ rows: [] }))
     ]);
 
     return NextResponse.json({
@@ -72,6 +65,15 @@ export async function GET(req: Request) {
         transportRoutes: Number(transportRoutesResult.rows[0]?.count || 0),
         transportRules: Number(rulesResult.rows[0]?.count || 0),
         vitolSubscribers: Number(subsResult.rows[0]?.count || 0),
+        recentLogs: auditLogsResult.rows.map(r => ({
+          id: r.id,
+          admin_user: r.admin_user,
+          action: r.action,
+          target_resource: r.target_resource,
+          timestamp: r.timestamp,
+          details: r.details,
+          ip_address: r.ip_address
+        }))
       },
     });
   } catch {

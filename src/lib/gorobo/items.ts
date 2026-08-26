@@ -11,6 +11,12 @@ export function mapItemRow(r: GoroboItem) {
     category: r.category,
     inStock: r.in_stock,
     image: r.image,
+    sku: r.sku || "",
+    stockQuantity: Number(r.stock_quantity ?? 0),
+    lowStockThreshold: Number(r.low_stock_threshold ?? 5),
+    locationBin: r.location_bin || "",
+    datasheetUrl: r.datasheet_url || "",
+    tags: Array.isArray(r.tags) ? r.tags : [],
     updatedAt: r.updated_at,
   };
 }

@@ -138,10 +138,21 @@ export async function POST(req: Request) {
             );
             
             if (rows.length > 0) {
+                // Deduplicate by club_id, prioritizing super-club-rep if duplicate rows exist
+                const roleMap = new Map<string, { club_id: string; role: string }>();
+                for (const r of rows) {
+                    if (!r.club_id) continue;
+                    const existing = roleMap.get(r.club_id);
+                    if (!existing || r.role === 'super-club-rep') {
+                        roleMap.set(r.club_id, r);
+                    }
+                }
+                const uniqueRoles = Array.from(roleMap.values());
+
                 // Issue a token containing all the clubs they represent. 
                 // The frontend can pass 'x-club-id' header to select the club context dynamically.
-                clubToken = signClubToken(authorizedID, rows);
-                clubRoles = rows;
+                clubToken = signClubToken(authorizedID, uniqueRoles);
+                clubRoles = uniqueRoles;
             }
         } catch (dbErr) {
             console.error("Failed to fetch club roles for login:", dbErr);

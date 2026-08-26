@@ -30,7 +30,7 @@ function generateSignature(payload: string): string {
  * Signs a username to create a secure admin token.
  * Format: base64(payload).signature
  */
-export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users', 'transport', 'gorobo']): string {
+export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'users', 'transport', 'gorobo']): string {
     const payloadObj = {
         username,
         role,
@@ -101,5 +101,19 @@ export async function requireAdminAuth(req: Promise<Request> | Request): Promise
     if (!payload) {
         return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
-    return { username: payload.username, role: payload.role, permissions: payload.permissions };
+    return { username: payload.username, role: payload.role, permissions: payload.permissions || [] };
 }
+
+/**
+ * Helper to check if an authenticated admin user has one or more required permissions.
+ * Superadmins always bypass permission checks.
+ */
+export function hasAdminPermission(
+    admin: { role: 'superadmin' | 'admin'; permissions: string[] },
+    required: string | string[]
+): boolean {
+    if (admin.role === 'superadmin') return true;
+    const perms = Array.isArray(required) ? required : [required];
+    return perms.some(p => admin.permissions?.includes(p));
+}
+

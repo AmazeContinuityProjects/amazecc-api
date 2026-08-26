@@ -211,11 +211,25 @@ export async function POST(req: Request) {
       CREATE TABLE IF NOT EXISTS admin_users (
         username TEXT PRIMARY KEY,
         role TEXT DEFAULT 'admin' CHECK (role IN ('superadmin', 'admin')),
-        permissions JSONB DEFAULT '["dashboard","qbank","buses","push"]',
+        permissions JSONB DEFAULT '["dashboard","qbank","buses","push","fresher-resources","faculty-directories","faculty-directory"]',
         added_by TEXT,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMPTZ DEFAULT now()
       );
+
+      -- Admin activity audit logs table
+      CREATE TABLE IF NOT EXISTS admin_audit_logs (
+        id SERIAL PRIMARY KEY,
+        admin_user TEXT NOT NULL,
+        action TEXT NOT NULL,
+        target_resource TEXT DEFAULT '',
+        details JSONB DEFAULT '{}'::jsonb,
+        ip_address TEXT DEFAULT '',
+        user_agent TEXT DEFAULT '',
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_created_at ON admin_audit_logs (created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_admin_user ON admin_audit_logs (admin_user);
 
       -- Fresher resources table
       CREATE TABLE IF NOT EXISTS fresher_resources (

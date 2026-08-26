@@ -45,18 +45,35 @@ export async function POST(req: Request) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const { content, links, image_urls, event_id } = await req.json();
+    const data = await req.json();
+    const { content, links, image_urls, event_id } = data;
 
     if (!content) {
       return NextResponse.json({ success: false, error: 'Content is required' }, { status: 400 });
     }
 
+    let club_id = auth.club_id;
     const pool = getDbPool();
+
+    if (data.club_id && String(data.club_id).trim() !== String(auth.club_id).trim()) {
+      const requestedClubId = String(data.club_id).trim();
+      if (auth.role !== 'super-club-rep') {
+        const { rowCount } = await pool.query(
+          'SELECT 1 FROM club_representatives WHERE vtop_id = $1 AND club_id = $2',
+          [auth.vtop_id, requestedClubId]
+        );
+        if (!rowCount) {
+          return NextResponse.json({ success: false, error: 'Unauthorized for this club' }, { status: 403 });
+        }
+      }
+      club_id = requestedClubId;
+    }
+
     const { rows } = await pool.query(
       `INSERT INTO club_feed (club_id, event_id, content, links, image_urls, posted_by)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [auth.club_id, event_id || null, content, JSON.stringify(links || []), JSON.stringify(image_urls || []), auth.vtop_id]
+      [club_id, event_id || null, content, JSON.stringify(links || []), JSON.stringify(image_urls || []), auth.vtop_id]
     );
 
     return NextResponse.json({ success: true, post: rows[0] });
@@ -79,14 +96,32 @@ export async function DELETE(req: Request) {
     }
 
     const pool = getDbPool();
-    // Ensure the post belongs to the authenticated user's club
-    const { rowCount } = await pool.query(
-      'DELETE FROM club_feed WHERE id = $1 AND club_id = $2',
-      [post_id, auth.club_id]
-    );
 
-    if (!rowCount || rowCount === 0) {
-      return NextResponse.json({ success: false, error: 'Post not found or unauthorized' }, { status: 404 });
+    if (auth.role === 'super-club-rep') {
+      const { rowCount } = await pool.query(
+        'DELETE FROM club_feed WHERE id = $1',
+        [post_id]
+      );
+      if (!rowCount || rowCount === 0) {
+        return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+      }
+    } else {
+      // Find the post's club_id and verify rep permission
+      const postRes = await pool.query('SELECT club_id FROM club_feed WHERE id = $1', [post_id]);
+      if (postRes.rows.length === 0) {
+        return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+      }
+      const postClubId = postRes.rows[0].club_id;
+      
+      const repCheck = await pool.query(
+        'SELECT 1 FROM club_representatives WHERE vtop_id = $1 AND club_id = $2',
+        [auth.vtop_id, postClubId]
+      );
+      if (repCheck.rows.length === 0) {
+        return NextResponse.json({ success: false, error: 'Unauthorized to delete this post' }, { status: 403 });
+      }
+
+      await pool.query('DELETE FROM club_feed WHERE id = $1', [post_id]);
     }
 
     return NextResponse.json({ success: true });

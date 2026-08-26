@@ -1,55 +1,7 @@
-/**
- * @openapi
- * /api/admin/fresher-resources:
- *   post:
- *     tags:
- *       - Admin
- *     summary: Auto-generated POST endpoint for /api/admin/fresher-resources
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               icon:
- *                 type: string
- *               url:
- *                 type: string
- *               sort_order:
- *                 type: string
- *               description:
- *                 type: string
- *               type:
- *                 type: string
- *               is_active:
- *                 type: string
- *               title:
- *                 type: string
- *               content:
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               example:
- *                 resources: "sample_value"
- *                 success: true
- *                 resource: "sample_value"
- *       400:
- *         description: Bad Request
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal Server Error
- */
-
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { requireAdminAuth } from '@/lib/auth';
+import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
+import { logAdminAction } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,6 +27,13 @@ export async function POST(req: Request) {
   const auth = await requireAdminAuth(req);
   if (auth instanceof NextResponse) return auth;
 
+  if (!hasAdminPermission(auth, 'fresher-resources')) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: fresher-resources permission required' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { title, description, url, icon, sort_order, is_active, type, content } = await req.json();
     if (!title) {
@@ -91,6 +50,14 @@ export async function POST(req: Request) {
        RETURNING id, title, description, url, icon, sort_order, is_active, type, content, created_at`,
       [title, description || '', resourceType === 'link' ? url : null, icon || 'ExternalLink', sort_order ?? 0, is_active ?? true, resourceType, content || '']
     );
+
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Create Fresher Resource',
+      target_resource: `/api/admin/fresher-resources/${rows[0].id}`,
+      details: { id: rows[0].id, title, type: resourceType }
+    });
+
     return NextResponse.json({ success: true, resource: rows[0] });
   } catch (error: any) {
     console.error('admin fresher-resources POST error:', error.message);

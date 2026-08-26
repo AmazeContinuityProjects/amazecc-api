@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
+import { logAdminAction } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireAdminAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const pool = getDbPool();
     const { rows } = await pool.query(
@@ -17,6 +22,16 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const auth = await requireAdminAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  if (!hasAdminPermission(auth, ['faculty-directory', 'faculty-directories'])) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: faculty-directory permission required' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { id, school_name, url } = await req.json();
     if (!id || !school_name || !url) {
@@ -28,10 +43,18 @@ export async function POST(req: Request) {
       `INSERT INTO faculty_directory_urls (id, school_name, url) VALUES ($1, $2, $3)`,
       [id, school_name, url]
     );
+
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Add Faculty Directory',
+      target_resource: `/api/admin/faculty-directories/${id}`,
+      details: { id, school_name, url }
+    });
+
     return NextResponse.json({ success: true, message: 'Directory added successfully' });
   } catch (error: any) {
     if (error.code === '23505') { // Unique violation
-        return NextResponse.json({ success: false, error: 'A school with this ID already exists' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'A school with this ID already exists' }, { status: 400 });
     }
     console.error('admin/faculty-directories POST error:', error.message);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -39,6 +62,16 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
+  const auth = await requireAdminAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  if (!hasAdminPermission(auth, ['faculty-directory', 'faculty-directories'])) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: faculty-directory permission required' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { id, school_name, url } = await req.json();
     if (!id || !school_name || !url) {
@@ -55,6 +88,13 @@ export async function PUT(req: Request) {
       return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
     }
 
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Update Faculty Directory',
+      target_resource: `/api/admin/faculty-directories/${id}`,
+      details: { id, school_name, url }
+    });
+
     return NextResponse.json({ success: true, message: 'Directory updated successfully' });
   } catch (error: any) {
     console.error('admin/faculty-directories PUT error:', error.message);
@@ -63,6 +103,16 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const auth = await requireAdminAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  if (!hasAdminPermission(auth, ['faculty-directory', 'faculty-directories'])) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: faculty-directory permission required' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { id } = await req.json();
     if (!id) {
@@ -78,6 +128,13 @@ export async function DELETE(req: Request) {
     if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Directory not found' }, { status: 404 });
     }
+
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Delete Faculty Directory',
+      target_resource: `/api/admin/faculty-directories/${id}`,
+      details: { id }
+    });
 
     return NextResponse.json({ success: true, message: 'Directory deleted successfully' });
   } catch (error: any) {

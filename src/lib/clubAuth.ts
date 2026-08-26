@@ -107,13 +107,14 @@ export async function requireClubAuth(req: Promise<Request> | Request): Promise<
 
     const xClubId = request.headers.get('x-club-id') || request.headers.get('X-Club-Id');
     if (xClubId && payload.clubs) {
-        const clubContext = payload.clubs.find(c => c.club_id === xClubId);
+        const trimmedXClubId = String(xClubId).trim();
+        const clubContext = payload.clubs.find(c => String(c.club_id).trim() === trimmedXClubId);
         
         if (clubContext) {
             payload.club_id = clubContext.club_id;
             payload.role = clubContext.role;
         } else if (payload.clubs.some(c => c.role === 'super-club-rep')) {
-            payload.club_id = xClubId;
+            payload.club_id = trimmedXClubId;
             payload.role = 'super-club-rep';
         } else {
             return NextResponse.json({ success: false, error: 'Unauthorized for this club' }, { status: 403 });

@@ -1,50 +1,20 @@
-/**
- * @openapi
- * /api/admin/fresher-resources/[id]:
- *   post:
- *     tags:
- *       - Admin
- *     summary: Auto-generated POST endpoint for /api/admin/fresher-resources/[id]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               cookies:
- *                 type: string
- *               authorizedID:
- *                 type: string
- *               csrf:
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               example:
- *                 success: true
- *                 resource: "sample_value"
- *       400:
- *         description: Bad Request
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal Server Error
- */
-
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import { requireAdminAuth } from '@/lib/auth';
+import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
+import { logAdminAction } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   const auth = await requireAdminAuth(req);
   if (auth instanceof NextResponse) return auth;
+
+  if (!hasAdminPermission(auth, 'fresher-resources')) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: fresher-resources permission required' },
+      { status: 403 }
+    );
+  }
 
   try {
     const { id } = await context.params;
@@ -84,6 +54,13 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
       return NextResponse.json({ success: false, error: 'Resource not found' }, { status: 404 });
     }
 
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Update Fresher Resource',
+      target_resource: `/api/admin/fresher-resources/${numericId}`,
+      details: { id: numericId, updatedFields: Object.keys(fields) }
+    });
+
     return NextResponse.json({ success: true, resource: rows[0] });
   } catch (error: any) {
     console.error('admin fresher-resources PATCH error:', error.message);
@@ -94,6 +71,13 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
 export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   const auth = await requireAdminAuth(req);
   if (auth instanceof NextResponse) return auth;
+
+  if (!hasAdminPermission(auth, 'fresher-resources')) {
+    return NextResponse.json(
+      { success: false, error: 'Permission denied: fresher-resources permission required' },
+      { status: 403 }
+    );
+  }
 
   try {
     const { id } = await context.params;
@@ -111,6 +95,13 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     if (!rowCount || rowCount === 0) {
       return NextResponse.json({ success: false, error: 'Resource not found' }, { status: 404 });
     }
+
+    await logAdminAction({
+      admin_user: auth.username,
+      action: 'Delete Fresher Resource',
+      target_resource: `/api/admin/fresher-resources/${numericId}`,
+      details: { id: numericId }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
