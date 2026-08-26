@@ -114,8 +114,8 @@ export async function POST(req: Request) {
         const isSuperadmin = adminIds.includes(normalizedUsername);
 
         // 3. Check if user exists in admin_users table
-        let role: 'superadmin' | 'admin' = 'admin';
-        let permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'gorobo'];
+        let role: 'superadmin' | 'admin';
+        let permissions: string[];
 
         if (isSuperadmin) {
             // Superadmin from env var - full access

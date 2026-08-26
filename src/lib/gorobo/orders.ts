@@ -1,5 +1,5 @@
 import type { GoroboOrderLine } from "@/lib/gorobo/schema";
-import { computeQuote, type Quote } from "@/lib/gorobo/quote";
+import type { Quote } from "@/lib/gorobo/quote";
 
 export interface GoroboOrderRow {
   id: string;
