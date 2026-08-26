@@ -59,7 +59,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema } from "@/lib/gorobo/schema";
 import { requireAdminAuth } from "@/lib/auth";
 import seedItems from "@/data/gorobo/items.json";
@@ -145,6 +145,6 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("gorobo seed POST error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });
   }
 }

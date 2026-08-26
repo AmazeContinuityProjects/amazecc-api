@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { signAdminToken } from '@/lib/auth';
 import { getDbPool } from '@/lib/db';
 import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit';
+import { logAdminAction } from '@/lib/audit';
 
 /**
  * @swagger
@@ -113,13 +114,13 @@ export async function POST(req: Request) {
         const isSuperadmin = adminIds.includes(normalizedUsername);
 
         // 3. Check if user exists in admin_users table
-        let role: 'superadmin' | 'admin' = 'admin';
-        let permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'gorobo'];
+        let role: 'superadmin' | 'admin';
+        let permissions: string[];
 
         if (isSuperadmin) {
             // Superadmin from env var - full access
             role = 'superadmin';
-            permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'users', 'transport', 'gorobo'];
+            permissions = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'users', 'transport', 'gorobo'];
             
             // Ensure superadmin exists in database
             try {
@@ -183,10 +184,25 @@ export async function POST(req: Request) {
             }
         }
 
-        // 4. Generate signed token with role and permissions
+        // 4. Record admin login in audit log
+        await logAdminAction({
+            admin_user: normalizedUsername,
+            action: 'Admin Login',
+            target_resource: '/api/admin/auth',
+            details: {
+                role,
+                permissions,
+                auth_method: isSuperadmin ? 'ENV_SUPERADMIN' : 'DB_ADMIN',
+                login_timestamp: new Date().toISOString()
+            },
+            ip_address: ip,
+            user_agent: req.headers.get('user-agent') || ''
+        });
+
+        // 5. Generate signed token with role and permissions
         const token = signAdminToken(normalizedUsername, role, permissions);
 
-        // 5. Return token to frontend
+        // 6. Return token to frontend
         return NextResponse.json({
             success: true,
             username: normalizedUsername,

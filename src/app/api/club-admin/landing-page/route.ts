@@ -32,9 +32,25 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
+    let club_id = auth.club_id;
+    const pool = getDbPool();
+
+    if (body.club_id && String(body.club_id).trim() !== String(auth.club_id).trim()) {
+      const requestedClubId = String(body.club_id).trim();
+      if (auth.role !== 'super-club-rep') {
+        const { rowCount } = await pool.query(
+          'SELECT 1 FROM club_representatives WHERE vtop_id = $1 AND club_id = $2',
+          [auth.vtop_id, requestedClubId]
+        );
+        if (!rowCount) {
+          return NextResponse.json({ success: false, error: 'Unauthorized for this club' }, { status: 403 });
+        }
+      }
+      club_id = requestedClubId;
+    }
+
     const { theme, showcase_projects, popular_events } = body;
 
-    const pool = getDbPool();
     const { rows } = await pool.query(
       `INSERT INTO club_landing_pages (club_id, theme, showcase_projects, popular_events, updated_at)
        VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
@@ -45,7 +61,7 @@ export async function POST(req: Request) {
          updated_at = CURRENT_TIMESTAMP
        RETURNING *`,
       [
-        auth.club_id,
+        club_id,
         JSON.stringify(theme || { primary_color: '#3B82F6', mode: 'light' }),
         JSON.stringify(showcase_projects || []),
         JSON.stringify(popular_events || [])

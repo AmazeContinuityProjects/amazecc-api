@@ -138,7 +138,11 @@ export async function POST(req: Request) {
     }
 
     // Validate permissions
-    const validPermissions = ['dashboard', 'qbank', 'buses', 'push', 'users', 'transport', 'gorobo'];
+    const validPermissions = [
+      'dashboard', 'qbank', 'buses', 'push', 'users', 'transport', 'gorobo',
+      'fresher-resources', 'faculty-directory', 'faculty-directories',
+      'cabshare', 'clubs', 'storage', 'audit_logs', 'settings'
+    ];
     const invalidPerms = permissions.filter((p: string) => !validPermissions.includes(p));
     if (invalidPerms.length > 0) {
       return NextResponse.json(
