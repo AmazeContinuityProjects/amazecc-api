@@ -128,8 +128,8 @@ export async function POST(req: Request) {
         syncClubsBackground(allCookies, new_csrf, authorizedID);
 
         // Check if user is a club representative
-        let clubToken = undefined;
-        let clubRoles = [];
+        let clubToken: string | undefined = undefined;
+        let clubRoles: Array<{ club_id: string; role: string }> = [];
         try {
             const pool = getDbPool();
             const { rows } = await pool.query(
