@@ -100,7 +100,7 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const vtop_id = searchParams.get('vtop_id');
-    let club_id = searchParams.get('club_id') || auth.club_id;
+    const club_id = searchParams.get('club_id') || auth.club_id;
 
     if (!vtop_id) {
       return NextResponse.json({ success: false, error: 'vtop_id is required' }, { status: 400 });

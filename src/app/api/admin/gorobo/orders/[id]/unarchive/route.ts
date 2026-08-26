@@ -27,7 +27,7 @@ import { NextResponse } from "next/server";
 import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import { ensureGoroboSchema } from "@/lib/gorobo/schema";
 import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
-import { ORDER_SELECT, mapOrderRow, type GoroboOrderRow } from "@/lib/gorobo/orders";
+import { mapOrderRow, type GoroboOrderRow } from "@/lib/gorobo/orders";
 
 export const dynamic = "force-dynamic";
 
