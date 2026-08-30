@@ -96,39 +96,9 @@ export async function POST(req: Request) {
             metaDetails['Total Fees'] = feeInput.val()?.toString() || '0';
         }
 
-        // Find the image URL
-        let imageUrl = '';
-        const imgEl = $('.eventPoster img');
-        if (imgEl.length) {
-            imageUrl = imgEl.attr('src') || '';
-        }
-
-        let imageSrc = '';
-        if (imageUrl) {
-            if (!imageUrl.startsWith('http')) {
-                imageUrl = imageUrl.startsWith('/') ? `https://eventhubcc.vit.ac.in${imageUrl}` : `https://eventhubcc.vit.ac.in/EventHub/${imageUrl}`;
-            }
-
-            // Fetch the image as arrayBuffer since it requires the JSESSIONID cookie
-            try {
-                const imgRes = await fetch(imageUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Cookie': cookie,
-                        'User-Agent': 'Mozilla/5.0'
-                    }
-                });
-                
-                if (imgRes.ok) {
-                    const buffer = await imgRes.arrayBuffer();
-                    const base64 = Buffer.from(buffer).toString('base64');
-                    const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
-                    imageSrc = `data:${contentType};base64,${base64}`;
-                }
-            } catch (err) {
-                console.error("Failed to fetch image as base64:", err);
-            }
-        }
+        // Public poster image URL — the client renders it directly from the
+        // EventHub ID instead of us proxying/fetching a base64 blob.
+        const imageSrc = `https://eventhubcc.vit.ac.in/EventHub/image/?id=${encodeURIComponent(String(eid))}`;
 
         return NextResponse.json({
             eid,
