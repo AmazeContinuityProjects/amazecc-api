@@ -94,6 +94,7 @@ const categoryGroup: Record<string, string> = {
   "/api/stats": "System",
   "/api/docs": "System",
   "/api/notifications": "Notifications",
+  "/api/social": "Social",
   "/api/cron": "Cron",
 };
 
@@ -105,6 +106,7 @@ const categoryIcons: Record<string, string> = {
   "Faculty & Mentorship": "👨‍🏫", "Circulars": "📢", "Student Services": "🛠️",
   "Feedback & Outcomes": "📊", "SAP": "🌐", "MOOCs & SWF": "💻", "FDP": "📈",
   "External LMS": "🎓", "Admin": "⚙️", "QBank": "❓", "System": "🖥️", "Notifications": "🔔", "Cron": "⏱️",
+  "Social": "🤝",
 };
 
 const categoryOrder = [
