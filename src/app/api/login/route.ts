@@ -47,6 +47,28 @@ import * as cheerio from "cheerio";
  *         description: Internal Server Error
  */
 
+const VTOP_PHASE_BUDGET_MS = 50_000;
+const VTOP_REQUEST_TIMEOUT_MS = 15_000;
+const DB_LOOKUP_BUDGET_MS = 5_000;
+
+class DeadlineError extends Error {}
+
+function withDeadline<T>(work: Promise<T>, ms: number, message: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new DeadlineError(message)), ms);
+        work.then(
+            (value) => {
+                clearTimeout(timer);
+                resolve(value);
+            },
+            (err: unknown) => {
+                clearTimeout(timer);
+                reject(err);
+            }
+        );
+    });
+}
+
 export async function POST(req: Request) {
     const ip = getClientIp(req);
     const rl = checkRateLimit(`login:${ip}`, 5, 60000);
@@ -54,49 +76,59 @@ export async function POST(req: Request) {
 
     try {
         const {  username, password  } = await req.json().catch(()=>({}));
-        const captchaRes = await getCaptcha();
-        if("error" in captchaRes){
-            return NextResponse.json({ success: false, error: captchaRes.error }, { status: 500 });
-        }
-
-        const { captchaBase64, cookies, csrf } = captchaRes;
-        const captcha = await solveCaptcha(captchaBase64);
-
         const client = VTOPClient();
 
-        const loginRes = await client.post(
-            "/vtop/login",
-            new URLSearchParams({
-                _csrf: csrf,
-                username,
-                password,
-                captchaStr: captcha,
-            }).toString(),
-            {
-                headers: {
-                    Cookie: cookies.join("; "),
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                maxRedirects: 0,
-                validateStatus: (s) => s < 400 || s === 302,
-            }
+        const { allCookies, dashboardHtml } = await withDeadline(
+            (async () => {
+                const captchaRes = await getCaptcha();
+                if("error" in captchaRes){
+                    throw new Error(captchaRes.error);
+                }
+
+                const { captchaBase64, cookies, csrf } = captchaRes;
+                const captcha = await solveCaptcha(captchaBase64);
+
+                const loginRes = await client.post(
+                    "/vtop/login",
+                    new URLSearchParams({
+                        _csrf: csrf,
+                        username,
+                        password,
+                        captchaStr: captcha,
+                    }).toString(),
+                    {
+                        headers: {
+                            Cookie: cookies.join("; "),
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        maxRedirects: 0,
+                        validateStatus: (s) => s < 400 || s === 302,
+                        timeout: VTOP_REQUEST_TIMEOUT_MS,
+                    }
+                );
+
+                const loginCookies = loginRes.headers["set-cookie"];
+                const allCookies = [...(cookies || []), ...(loginCookies || [])].join("; ");
+
+                let dashboardRes: AxiosResponse;
+                if (loginRes.status === 302 && loginRes.headers.location) {
+                    dashboardRes = await client.get(loginRes.headers.location, {
+                        headers: { Cookie: allCookies },
+                        timeout: VTOP_REQUEST_TIMEOUT_MS,
+                    });
+                } else {
+                    dashboardRes = await client.get("/vtop/open/page", {
+                        headers: { Cookie: allCookies },
+                        timeout: VTOP_REQUEST_TIMEOUT_MS,
+                    });
+                }
+
+                return { allCookies, dashboardHtml: dashboardRes.data as string };
+            })(),
+            VTOP_PHASE_BUDGET_MS,
+            `VTOP login did not complete within ${VTOP_PHASE_BUDGET_MS}ms`
         );
 
-        const loginCookies = loginRes.headers["set-cookie"];
-        const allCookies = [...(cookies || []), ...(loginCookies || [])].join("; ");
-
-        let dashboardRes: AxiosResponse;
-        if (loginRes.status === 302 && loginRes.headers.location) {
-            dashboardRes = await client.get(loginRes.headers.location, {
-                headers: { Cookie: allCookies },
-            });
-        } else {
-            dashboardRes = await client.get("/vtop/open/page", {
-                headers: { Cookie: allCookies },
-            });
-        }
-
-        const dashboardHtml = dashboardRes.data;
         let isAuthorized = false;
 
         if (/authorizedidx/i.test(dashboardHtml)) {
@@ -133,9 +165,13 @@ export async function POST(req: Request) {
         let clubRoles: Array<{ club_id: string; role: string }> = [];
         try {
             const pool = getDbPool();
-            const { rows } = await pool.query(
-                'SELECT club_id, role FROM club_representatives WHERE vtop_id = $1',
-                [authorizedID]
+            const { rows } = await withDeadline(
+                pool.query(
+                    'SELECT club_id, role FROM club_representatives WHERE vtop_id = $1',
+                    [authorizedID]
+                ),
+                DB_LOOKUP_BUDGET_MS,
+                `club_representatives lookup exceeded ${DB_LOOKUP_BUDGET_MS}ms`
             );
             
             if (rows.length > 0) {
@@ -171,7 +207,16 @@ export async function POST(req: Request) {
 
     } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+        if (err instanceof DeadlineError) {
+            return NextResponse.json(
+                { success: false, error: "VTOP did not respond in time. Please try again." },
+                { status: 504 }
+            );
+        }
+        return NextResponse.json(
+            { success: false, error: err instanceof Error ? err.message : "Internal server error" },
+            { status: 502 }
+        );
     }
 }
 
