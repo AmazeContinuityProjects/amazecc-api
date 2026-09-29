@@ -36,14 +36,14 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { getEventHubCookie } from "@/lib/eventHubAuth";
+import { getEventHubCookie, looksLikeLoginPage } from "@/lib/eventHubAuth";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { username, password, jsessionid } = body;
 
-        const cookie = await getEventHubCookie({ username, password, jsessionid });
+        let cookie = await getEventHubCookie({ username, password, jsessionid });
 
         if (!cookie) {
             return NextResponse.json({ error: "Failed to authenticate with Event Hub. Please check your credentials." }, { status: 401 });
@@ -62,12 +62,57 @@ export async function POST(req: Request) {
             throw new Error(`Failed to load Event Hub profile: ${profileRes.status}`);
         }
 
-        const html = await profileRes.text();
-        const $ = cheerio.load(html);
+        let html = await profileRes.text();
+        let $ = cheerio.load(html);
 
-        // If the profile page has a login form, our login failed
-        if ($('form[action="/EventHub/mainDashboard"]').length > 0) {
-            return NextResponse.json({ error: "Event Hub authentication failed. Please check your credentials." }, { status: 401 });
+        /*
+         * A cached session can expire server-side with no signal to the client,
+         * and EventHub answers an expired session with the LOGIN page rather than
+         * a 403. The old code read that as bad credentials, so an expired cache
+         * produced a 401 telling the user to check a password that was perfectly
+         * fine.
+         *
+         * So distinguish the two, and when credentials were supplied, spend one
+         * login proving it. The frontend does not send them today (it re-logs-in
+         * client-side instead, which is the cheaper fix) but this makes the route
+         * self-sufficient and correct if that ever changes.
+         */
+        if (looksLikeLoginPage(html)) {
+            if (username && password) {
+                const fresh = await getEventHubCookie({ username, password });
+                if (fresh) {
+                    const retry = await fetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
+                        method: 'GET',
+                        headers: { 'Cookie': fresh, 'User-Agent': 'Mozilla/5.0' }
+                    });
+                    if (retry.ok) {
+                        const retryHtml = await retry.text();
+                        if (!looksLikeLoginPage(retryHtml)) {
+                            cookie = fresh;
+                            html = retryHtml;
+                            $ = cheerio.load(html);
+                        }
+                    }
+                }
+            }
+
+            if (looksLikeLoginPage(html)) {
+                // Still the login page. If we never held a session, this is a
+                // credentials problem; if we did, the session simply expired.
+                const expired = Boolean(jsessionid);
+                return NextResponse.json(
+                    {
+                        error: expired
+                            ? "Event Hub session expired. Log in again to refresh it."
+                            : "Event Hub authentication failed. Please check your credentials.",
+                        reason: expired ? "session_expired" : "invalid_credentials",
+                        // Tells the client to discard its cached session rather
+                        // than retrying the same dead one.
+                        reauthenticate: expired,
+                    },
+                    { status: 401 }
+                );
+            }
         }
 
         const registeredEvents: unknown[] = [];

@@ -49,9 +49,21 @@ export async function POST(req: Request) {
         const cookie = await getEventHubCookie({ username, password, jsessionid });
 
         if (!cookie) {
-            return NextResponse.json({ error: "Failed to authenticate with Event Hub. Invalid credentials?" }, { status: 401 });
+            // Distinguish "we hold no credentials" from "these credentials were
+            // rejected". An expired cached session never reaches here (it builds
+            // a cookie fine and fails later on the login page), so this is a real
+            // credentials problem, but the message should still say which.
+            const noCreds = !username && !password;
+            return NextResponse.json(
+                {
+                    error: noCreds
+                        ? "No Event Hub credentials were supplied."
+                        : "Event Hub authentication failed. Please check your credentials.",
+                    reason: noCreds ? "missing_credentials" : "invalid_credentials",
+                },
+                { status: 401 }
+            );
         }
-
         // Step 2: Fetch Event Preview to grab hidden tokens
         const previewParams = new URLSearchParams({ eid: String(eid) });
         const previewRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
@@ -67,9 +79,21 @@ export async function POST(req: Request) {
         const html = await previewRes.text();
         const $ = cheerio.load(html);
 
-        // If the preview page has a login form, our login failed
+        // A login form here means the session was rejected, not that the
+        // password is wrong. An expired cached session still builds a valid
+        // `Cookie` header, so it gets this far and only then fails.
         if ($('form[action="/EventHub/mainDashboard"]').length > 0) {
-            return NextResponse.json({ error: "Event Hub authentication failed. Please check your credentials." }, { status: 401 });
+            const expired = Boolean(jsessionid);
+            return NextResponse.json(
+                {
+                    error: expired
+                        ? "Event Hub session expired. Log in again to refresh it."
+                        : "Event Hub authentication failed. Please check your credentials.",
+                    reason: expired ? "session_expired" : "invalid_credentials",
+                    reauthenticate: expired,
+                },
+                { status: 401 }
+            );
         }
 
         // Check if Already Registered (the Register button disappears)

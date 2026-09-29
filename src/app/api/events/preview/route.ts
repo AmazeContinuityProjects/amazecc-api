@@ -49,9 +49,21 @@ export async function POST(req: Request) {
         const cookie = await getEventHubCookie({ username, password, jsessionid });
 
         if (!cookie) {
-            return NextResponse.json({ error: "Failed to authenticate with Event Hub. Invalid credentials?" }, { status: 401 });
+            // Distinguish "we hold no credentials" from "these credentials were
+            // rejected". An expired cached session never reaches here (it builds
+            // a cookie fine and fails later on the login page), so this is a real
+            // credentials problem, but the message should still say which.
+            const noCreds = !username && !password;
+            return NextResponse.json(
+                {
+                    error: noCreds
+                        ? "No Event Hub credentials were supplied."
+                        : "Event Hub authentication failed. Please check your credentials.",
+                    reason: noCreds ? "missing_credentials" : "invalid_credentials",
+                },
+                { status: 401 }
+            );
         }
-
         // Fetch Event Preview
         const previewParams = new URLSearchParams({ eid: String(eid) });
         const previewRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
