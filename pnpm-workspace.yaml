@@ -7,5 +7,6 @@ allowBuilds:
   tree-sitter: false
   tree-sitter-json: false
   unrs-resolver: true
+  workerd: true
 minimumReleaseAgeExclude:
   - '@amazecontinuityprojects/amazeui@1.6.1'
