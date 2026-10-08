@@ -54,13 +54,15 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1
 
 # Runtime shared libraries for canvas. The -dev packages above are build-only.
+# NB: Debian names the librsvg runtime `librsvg2-2`; `librsvg2-6` is Ubuntu's
+# name and does not exist in bookworm.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libcairo2 \
         libpango-1.0-0 \
         libjpeg62-turbo \
         libgif7 \
-        librsvg2-6 \
+        librsvg2-2 \
         fontconfig \
         fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
