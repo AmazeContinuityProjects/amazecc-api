@@ -37,6 +37,7 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
+import { eventHubUrl } from "@/lib/upstreamUrl";
 
 export async function POST(req: Request) {
     try {
@@ -139,7 +140,14 @@ export async function POST(req: Request) {
                 // The user is redirected to the Terms and Conditions page. 
                 // Since the frontend browser doesn't have the JSESSIONID, they can't submit the form there.
                 // We must fetch it, agree to T&C, and submit it to get the final BillDesk payload!
-                const tcUrl = location.startsWith('http') ? location : `https://eventhubcc.vit.ac.in${location.startsWith('/') ? location : '/' + location}`;
+                // The redirect target is externally supplied, so pin it to
+                // Event Hub before we fetch it or hand it to the client.
+                let tcUrl: string;
+                try {
+                    tcUrl = eventHubUrl(location);
+                } catch {
+                    return NextResponse.json({ error: "Unexpected payment redirect target" }, { status: 502 });
+                }
                 const tcRes = await fetch(tcUrl, {
                     headers: { 'Cookie': cookie },
                     redirect: 'manual'
@@ -159,7 +167,14 @@ export async function POST(req: Request) {
                     // Emulate checking the T&C checkbox
                     if (!payData.has('checkbox')) payData.append('checkbox', 'on');
                     
-                    const payUrl = tcFormAction.startsWith('http') ? tcFormAction : `https://eventhubcc.vit.ac.in${tcFormAction.startsWith('/') ? tcFormAction : '/' + tcFormAction}`;
+                    // The form action is parsed out of fetched HTML, so it is
+                    // externally supplied as well.
+                    let payUrl: string;
+                    try {
+                        payUrl = eventHubUrl(tcFormAction);
+                    } catch {
+                        return NextResponse.json({ error: "Unexpected payment form target" }, { status: 502 });
+                    }
                     
                     const finalPayRes = await fetch(payUrl, {
                         method: 'POST',
@@ -182,15 +197,19 @@ export async function POST(req: Request) {
             }
 
             // It could be a redirect to payment, or success page
+            let finalUrl: string;
+            try {
+                finalUrl = eventHubUrl(location);
+            } catch {
+                return NextResponse.json({ error: "Unexpected payment redirect target" }, { status: 502 });
+            }
             if (location.includes("payment") || location.includes("billdesk") || location.includes("paytm") || location.includes("razorpay")) {
-                const finalUrl = location.startsWith('http') ? location : `https://eventhubcc.vit.ac.in${location.startsWith('/') ? location : '/' + location}`;
                 return NextResponse.json({ status: "payment_required", url: finalUrl }, { status: 200 });
             } else if (location.includes("success") || location.includes("goBackToEventList")) {
                 return NextResponse.json({ status: "success", message: "Successfully registered!" }, { status: 200 });
             }
             // Generic fallback
-            const fallbackUrl = location.startsWith('http') ? location : `https://eventhubcc.vit.ac.in${location.startsWith('/') ? location : '/' + location}`;
-            return NextResponse.json({ status: "redirect", url: fallbackUrl }, { status: 200 });
+            return NextResponse.json({ status: "redirect", url: finalUrl }, { status: 200 });
         } else if (status === 200) {
             // Rendered a page directly. It might be an auto-submitting payment form, or success/error text.
             const bodyText = await registerRes.text();

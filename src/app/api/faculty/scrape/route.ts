@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import * as cheerio from 'cheerio';
+import { vitUrl } from '@/lib/upstreamUrl';
 import https from 'https';
 
 export const dynamic = 'force-dynamic';
@@ -22,10 +23,22 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
       reject(new Error('Too many redirects'));
       return;
     }
-    const req = https.get(url, { rejectUnauthorized: false, timeout: 8000 }, (res) => {
+
+    // The entry URL comes from the database and each hop can be aimed
+    // elsewhere by a Location header, so re-check every request against the
+    // VIT allow-list rather than only the first one.
+    let safeUrl: string;
+    try {
+      safeUrl = vitUrl(url);
+    } catch (err: unknown) {
+      reject(err instanceof Error ? err : new Error(String(err)));
+      return;
+    }
+
+    const req = https.get(safeUrl, { rejectUnauthorized: false, timeout: 8000 }, (res) => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
-        const next = new URL(res.headers.location, url).toString();
+        const next = new URL(res.headers.location, safeUrl).toString();
         fetchHtml(next, redirects + 1).then(resolve, reject);
         return;
       }
