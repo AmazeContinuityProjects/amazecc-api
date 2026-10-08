@@ -1,0 +1,33 @@
+# Keep the build context small and make sure host artefacts never leak into the
+# image. `node_modules` matters most: the builder stage copies the Linux install
+# from the deps stage, and a Windows `node_modules` from the host would break it.
+
+node_modules
+.next
+out
+build
+coverage
+
+.git
+.github
+.gitignore
+
+# Never bake local secrets into a layer. Runtime/build secrets come from the
+# platform's environment settings, not from a committed file.
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+*.log
+dev-server.log
+*.tsbuildinfo
+
+# Local-only artifacts
+vtop-probe-findings.json
+Eventhub_scrapper_modals

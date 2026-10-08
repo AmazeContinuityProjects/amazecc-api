@@ -78,16 +78,35 @@ export async function POST(req: Request) {
         const $$ = cheerio.load(gradeRes.data);
         const effectiveGrades: EffectiveGrade[] = [];
 
+        // VTOP nests an embedded course's theory/lab breakdown as sub-tables
+        // inside this one, and each of those sub-tables repeats its own header
+        // row as `tr.tableContent`. Those headers are not courses. Unfiltered,
+        // they arrive as eight rows whose `creditsEarned` is the literal string
+        // "Credits" and whose `grade` is "Grade" — which is worse than dropping
+        // them, because a consumer summing credits treats "Credits" as NaN at
+        // best and as a row at worst.
+        //
+        // A real course has a numeric credit value AND a letter on the 10-point
+        // scale. Verified against a real capture (14 real rows, 8 headers) that
+        // the two conditions select an identical set, so requiring both is
+        // belt-and-braces rather than a judgement call between them.
+        const CREDITS_NUMERIC = /^\d+(?:\.\d+)?$/;
+        const GRADE_LETTER = /^[SABCDEF]$/i;
+
         $$("#fixedTableContainer table")
             .eq(1)
             .find("tr.tableContent")
             .each((_, el) => {
                 const tds = $$(el).find("td");
+                const credits = $$(tds[4]).text().trim();
+                const grade = $$(tds[5]).text().trim();
+                if (!CREDITS_NUMERIC.test(credits) || !GRADE_LETTER.test(grade)) return;
+
                 effectiveGrades.push({
                     basketTitle: $$(tds[2]).text().trim(),
                     courseType: $$(tds[3]).text().trim(),
-                    creditsEarned: $$(tds[4]).text().trim(),
-                    grade: $$(tds[5]).text().trim(),
+                    creditsEarned: credits,
+                    grade,
                     distributionType: $$(tds[8]).text().trim(),
                 });
             });
@@ -123,15 +142,34 @@ export async function POST(req: Request) {
 
         if (cgpaRow.length) {
             const tds = cgpaRow.find("td");
+            // Cells 0-2 are Credits Registered, Credits Earned and CGPA. The
+            // parser used to read only 3-10, throwing away the figure it had
+            // just downloaded — so `/api/grades` served a grade *distribution*
+            // and no CGPA at all, leaving the app to source its only CGPA from
+            // the unrelated `marks` route.
+            const cell = (i: number) => $$(tds[i]).text().trim();
+
+            const creditsRegistered = cell(0);
+            const creditsEarned = cell(1);
+            const published = cell(2);
+
+            // Kept as the strings VTOP sends, like every other figure here. The
+            // app decides what counts as a usable number; a parser that quietly
+            // turned "" into 0 would make "VTOP said nothing" indistinguishable
+            // from "VTOP said zero", and those mean opposite things for CGPA.
+            if (CREDITS_NUMERIC.test(creditsRegistered)) cgpa.creditsRegistered = creditsRegistered;
+            if (CREDITS_NUMERIC.test(creditsEarned)) cgpa.creditsEarned = creditsEarned;
+            if (CREDITS_NUMERIC.test(published)) cgpa.cgpa = published;
+
             cgpa.grades = {
-                S: parseInt($$(tds[3]).text().trim()),
-                A: parseInt($$(tds[4]).text().trim()),
-                B: parseInt($$(tds[5]).text().trim()),
-                C: parseInt($$(tds[6]).text().trim()),
-                D: parseInt($$(tds[7]).text().trim()),
-                E: parseInt($$(tds[8]).text().trim()),
-                F: parseInt($$(tds[9]).text().trim()),
-                N: parseInt($$(tds[10]).text().trim()),
+                S: parseInt(cell(3)),
+                A: parseInt(cell(4)),
+                B: parseInt(cell(5)),
+                C: parseInt(cell(6)),
+                D: parseInt(cell(7)),
+                E: parseInt(cell(8)),
+                F: parseInt(cell(9)),
+                N: parseInt(cell(10)),
             };
         }
 
