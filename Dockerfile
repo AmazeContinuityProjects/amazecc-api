@@ -8,7 +8,7 @@
 ARG NODE_VERSION=22-bookworm-slim
 
 # ----------------------------------------------------------------- base ------
-# pnpm lives here so every build stage can run the package.json scripts.
+# pnpm lives here so both build stages can run the package.json scripts.
 # Version is pinned to match CI and the `packageManager` field.
 FROM node:${NODE_VERSION} AS base
 RUN npm install -g pnpm@11.24.0
@@ -67,22 +67,28 @@ RUN apt-get update \
         fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
-# pnpm in the runner too, so the platform Start Command (`pnpm run start`) works.
-RUN npm install -g pnpm@11.24.0
+# No package manager in the runtime image, deliberately. pnpm verifies
+# node_modules against the storeDir recorded at install time before every
+# `pnpm run`; that install ran as root (/root/.local/share/pnpm) while this
+# stage runs as `node` (/home/node/...), so the check fails and pnpm tries to
+# purge node_modules -- which aborts on a container with no TTY. Invoking the
+# Next binary directly sidesteps that entirely.
 
-COPY --from=deps    /app/node_modules ./node_modules
-COPY --from=builder /app/.next        ./.next
-COPY --from=builder /app/public       ./public
-COPY --from=builder /app/next.config.ts ./next.config.ts
-COPY --from=builder /app/package.json   ./package.json
+# --chown on COPY instead of a recursive `chown -R /app`, which took 151s over
+# the pnpm store.
+COPY --chown=node:node --from=deps    /app/node_modules   ./node_modules
+COPY --chown=node:node --from=builder /app/.next          ./.next
+COPY --chown=node:node --from=builder /app/public         ./public
+COPY --chown=node:node --from=builder /app/next.config.ts ./next.config.ts
+COPY --chown=node:node --from=builder /app/package.json   ./package.json
 
 # `next start` already binds 0.0.0.0 by default and reads the port from the
 # PORT environment variable, which is where the platform supplies it. No PORT
 # is baked in here on purpose -- hardcoding one would shadow it.
 
-RUN chown -R node:node /app
 USER node
 
 EXPOSE 3000
 
-CMD ["pnpm", "run", "start"]
+# Keep this in sync with the platform's Start Command setting.
+CMD ["/app/node_modules/.bin/next", "start"]
