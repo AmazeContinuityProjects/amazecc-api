@@ -82,6 +82,12 @@ COPY --chown=node:node --from=builder /app/public         ./public
 COPY --chown=node:node --from=builder /app/next.config.ts ./next.config.ts
 COPY --chown=node:node --from=builder /app/package.json   ./package.json
 
+# GET /api/docs builds the OpenAPI document on the fly: swagger-jsdoc globs
+# ./src/app/api/**\/*.ts relative to the working directory and parses the JSDoc
+# blocks it finds. Without src/ present that glob matches nothing and the docs
+# page renders with zero endpoints, so the source has to ship in the image.
+COPY --chown=node:node --from=builder /app/src ./src
+
 # `next start` already binds 0.0.0.0 by default and reads the port from the
 # PORT environment variable, which is where the platform supplies it. No PORT
 # is baked in here on purpose -- hardcoding one would shadow it.

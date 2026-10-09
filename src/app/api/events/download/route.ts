@@ -36,6 +36,7 @@
 
 import { NextResponse } from "next/server";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
+import { eventHubUrl } from "@/lib/upstreamUrl";
 
 export async function POST(req: Request) {
     try {
@@ -66,8 +67,16 @@ export async function POST(req: Request) {
                 { status: 401 }
             );
         }
-        // Fetch the file
-        const fileUrl = url.startsWith('http') ? url : `https://eventhubcc.vit.ac.in${url.startsWith('/') ? url : '/' + url}`;
+        // Fetch the file. The caller supplies `url`, so it must be pinned to
+        // Event Hub: otherwise this becomes an SSRF proxy that also hands our
+        // session cookie to a host of the caller's choosing.
+        let fileUrl: string;
+        try {
+            fileUrl = eventHubUrl(url);
+        } catch {
+            return NextResponse.json({ error: "Invalid url" }, { status: 400 });
+        }
+
         const fileRes = await fetch(fileUrl, {
             headers: { 'Cookie': cookie, 'User-Agent': 'Mozilla/5.0' },
             redirect: 'follow'

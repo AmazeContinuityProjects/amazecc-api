@@ -518,7 +518,8 @@ export default function ApiDocs() {
                 </div>
               ) : (
                 <div className="h-full">
-                  <EndpointTester 
+                  <EndpointTester
+                    key={selectedEndpointKey}
                     path={currentEndpoint.path} 
                     method={currentEndpoint.method} 
                     details={currentEndpoint.details as Record<string, unknown>} 

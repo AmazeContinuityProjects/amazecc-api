@@ -35,6 +35,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { eventHubUrl } from "@/lib/upstreamUrl";
 
 export async function POST(req: Request) {
     try {
@@ -46,7 +47,14 @@ export async function POST(req: Request) {
 
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-        const tcUrl = url.startsWith('http') ? url : `https://eventhubcc.vit.ac.in${url.startsWith('/') ? url : '/' + url}`;
+        // Pin the caller-supplied target to Event Hub before echoing it back
+        // to the client, so it cannot be used to bounce users elsewhere.
+        let tcUrl: string;
+        try {
+            tcUrl = eventHubUrl(url);
+        } catch {
+            return NextResponse.json({ error: "Invalid url" }, { status: 400 });
+        }
 
         // Instead of fetching and parsing the T&C page, we generate an HTML page 
         // that logs the user into Event Hub via a hidden iframe, then redirects to the T&C page.
