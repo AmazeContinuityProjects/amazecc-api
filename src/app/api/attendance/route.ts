@@ -6,7 +6,12 @@ import fetchTimetable from "@/lib/fetchTimeTable";
 import { attendanceItem, courseItem } from "@/types/data/attendance";
 
 import { getMarks } from "@/lib/marks";
-import { fetchClassStatistics } from "@/lib/addClassData";
+import { parseStudentProfile } from "@/lib/parsers/student-profile";
+import {
+    ensureSchema,
+    ownerKeyFor,
+    recordEnrollment,
+} from "@/lib/marksStats";
 
 async function batchAll<T, R>(
   items: T[],
@@ -193,6 +198,48 @@ export async function POST(req: Request) {
             courseCreditMap
         );
 
+        // Record which classes this caller is enrolled in, from the class list this
+        // fetch itself just returned under their own cookies.
+        //
+        // This is what lets the cohort-statistics read verify each requested class:
+        // the list came back from VTOP, so a caller cannot enroll into a class they
+        // are not in. Best-effort — a failure here must not take the attendance or
+        // marks payload down with it, and the statistics read degrades to empty.
+        try {
+            if (marksRes && typeof marksRes !== "string") {
+                const identityRes = await client.post(
+                    "/vtop/studentsRecord/StudentProfileAllView",
+                    new URLSearchParams({
+                        verifyMenu: "true",
+                        authorizedID: String(authorizedID),
+                        _csrf: String(csrf),
+                        nocache: Date.now().toString(),
+                    }).toString(),
+                    { headers: { Cookie: cookieHeader, "Content-Type": "application/x-www-form-urlencoded" } }
+                );
+                const profile = parseStudentProfile(identityRes.data);
+                const regNumber = profile.registerNo || profile.applicationNumber;
+
+                if (!regNumber) {
+                    console.warn("attendance: no REGISTER NO in profile response — enrollment skipped");
+                } else {
+                    const ownerKey = ownerKeyFor(regNumber);
+                    const classIds = (marksRes.courses ?? [])
+                        .map((c) => c.classNbr)
+                        .filter((id): id is string => typeof id === "string" && id.length > 0);
+
+                    await ensureSchema();
+                    await recordEnrollment(ownerKey, classIds, Date.now());
+                    console.log(`attendance: enrollment recorded for ${classIds.length} classes`);
+                }
+            }
+        } catch (enrollErr: unknown) {
+            console.error(
+                "attendance: enrollment unavailable:",
+                enrollErr instanceof Error ? enrollErr.message : String(enrollErr)
+            );
+        }
+
         const $$$ = cheerio.load(ttRes.data);
         const attendance: attendanceItem[] = [];
 
@@ -280,23 +327,10 @@ export async function POST(req: Request) {
             mergedAttendance, fetchDetail, 3
         );
 
-        return NextResponse.json({ attRes: { semester: semesterId, attendance: detailedAttendance }, marksRes: marksRes }, { status: 200 });
-    } catch (err: unknown) {
-        console.error(err);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    }
-}
-
-export async function GET(req: Request) {
-    try {
-        const searchParams = new URL(req.url).searchParams;
-    const classId = searchParams.get("classId") || "";
-        const stats = await fetchClassStatistics(classId);
-        
-        if (!stats || stats.mean === undefined) {
-            return NextResponse.json({ error: "Class statistics not found" }, { status: 404 });
-        }
-        return NextResponse.json(stats, { status: 200 });
+        return NextResponse.json(
+            { attRes: { semester: semesterId, attendance: detailedAttendance }, marksRes: marksRes },
+            { status: 200 }
+        );
     } catch (err: unknown) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
