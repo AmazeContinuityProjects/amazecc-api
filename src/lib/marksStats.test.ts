@@ -422,9 +422,48 @@ describe("legacy reconciliation", () => {
   });
 });
 
+// ── token listing and legacy association ─────────────────────────────────────
+// These exercise the real `tokensForOwner` / `legacyAssociations` through the mocked
+// pool below (extended with the two queries they issue).
+
+describe("tokensForOwner and legacyAssociations", () => {
+  it("returns the stored tokens verbatim", async () => {
+    const { tokensForOwner } = await import("./marksStats");
+    const rows = await tokensForOwner("__test-owner-tokens__");
+    expect(rows).toEqual([
+      {
+        classId: "C1",
+        scope: "assessment",
+        assessmentKey: "k1",
+        token: "tok1",
+        updatedAt: 1700000000000,
+      },
+    ]);
+  });
+
+  it("returns legacy classes only when the login ID matches the register number", async () => {
+    const { legacyAssociations } = await import("./marksStats");
+    // "21BCE1234" is stored (as its hash) for C1; the verified regNo matches.
+    expect(await legacyAssociations("21BCE1234", "21bce1234")).toEqual(["C1"]);
+    // Mismatched identity: nothing is returned, even though C2 has a legacy row
+    // for somebody else.
+    expect(await legacyAssociations("21BCE1234", "21BCE0000")).toEqual([]);
+    // Empty login ID: nothing.
+    expect(await legacyAssociations("", "21BCE1234")).toEqual([]);
+  });
+});
+
 // ── read path ────────────────────────────────────────────────────────────────
 
 vi.mock("@/lib/db", () => {
+  // Plain SHA-256, matching what the old browser client stored. Inlined here because
+  // `vi.mock` factories are hoisted and cannot close over test-file variables.
+  const oldHash = (u: string): string => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createHash } = require("node:crypto") as typeof import("node:crypto");
+    return createHash("sha256").update(u, "utf8").digest("hex");
+  };
+  const oldHashForTest = oldHash;
   const store = {
     overall: [
       { class_id: "C1", count: 25, mean: 53.36, m2: 4922.4 },
@@ -433,10 +472,44 @@ vi.mock("@/lib/db", () => {
     assessments: [
       { class_id: "C1", assessment_key: "abc123", count: 7, mean: 79.13, m2: -32.5757 },
     ],
+    tokens: [
+      {
+        class_id: "C1",
+        scope: "assessment",
+        assessment_key: "k1",
+        value_token: "tok1",
+        updated_at: 1700000000000,
+        user_key: "__test-owner-tokens__",
+      },
+    ],
+    // `${class_id}|${user_hash}`, mirroring the legacy table's PK.
+    legacy: new Map<string, true>([
+      [`C1|${oldHashForTest("21BCE1234")}`, true],
+      [`C2|${oldHashForTest("21BCE9999")}`, true],
+    ]),
   };
   return {
     getDbPool: () => ({
       async query(sql: string, params: unknown[] = []) {
+        if (sql.includes("FROM class_user_marks")) {
+          const userKey = params[0] as string;
+          return {
+            rows: store.tokens
+              .filter((r) => r.user_key === userKey)
+              .map(({ user_key: _dropped, ...rest }) => rest),
+          };
+        }
+        if (sql.includes("FROM class_user_hashes_legacy")) {
+          const hashes = new Set(params[0] as string[]);
+          const hits = new Set<string>();
+          for (const key of store.legacy.keys()) {
+            const sep = key.indexOf("|");
+            const cid = key.slice(0, sep);
+            const uh = key.slice(sep + 1);
+            if (hashes.has(uh)) hits.add(cid);
+          }
+          return { rows: [...hits].map((class_id) => ({ class_id })) };
+        }
         if (sql.includes("class_overall_stats")) {
           const ids = params[0] as string[];
           return { rows: store.overall.filter((r) => ids.includes(r.class_id)) };

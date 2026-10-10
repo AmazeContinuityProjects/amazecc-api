@@ -383,8 +383,7 @@ export async function recordContribution(
  * `class_user_marks` — that table only holds a row once someone has *contributed* a
  * mark, so a student who has never synced would be unable to read any cohort at all,
  * including the 1,918 classes collected before it existed.
- */
-export async function recordEnrollment(
+ */export async function recordEnrollment(
   ownerKey: string,
   classIds: string[],
   now: number
@@ -419,6 +418,91 @@ export async function enrolledSubset(
     `SELECT class_id FROM class_enrollment
       WHERE owner_key = $1 AND class_id = ANY($2)`,
     [ownerKey, classIds]
+  );
+  return rows.map((r: { class_id: string }) => r.class_id);
+}
+
+export type TokenRecord = {
+  classId: string;
+  scope: Scope;
+  assessmentKey: string;
+  token: string;
+  updatedAt: number;
+};
+
+/**
+ * Every HMAC the server currently holds for this student.
+ *
+ * This is the "provide hmac" half of the handshake: a client that has lost its local
+ * record (cleared cache, new device) asks what state the server holds, and gets back
+ * the opaque tokens — presence and continuity, not values. What the client does with
+ * them:
+ *
+ * - **Receipt check.** After a sync that accepted writes, the tokens the server returns
+ *   must match what was just minted. A mismatch means server state moved unexpectedly
+ *   (restored backup, lost write, bug) and is worth flagging rather than silently
+ *   absorbing.
+ * - **Frozen visibility.** A token for an assessment the client has no previous mark
+ *   for is a contribution it cannot update — the client can show that instead of
+ *   pretending the row is live.
+ *
+ * What it cannot do, stated plainly: an HMAC is non-invertible by construction, so no
+ * response here can hand back a mark nobody retained. Exact resumption needs the old
+ * value, and after a wipe nobody has it — not the client, not the server (by design),
+ * not VTOP (current marks only). See the plan doc for the one design that would change
+ * that (client-encrypted backup) and why it was not built.
+ */
+export async function tokensForOwner(ownerKey: string): Promise<TokenRecord[]> {
+  const pool = getDbPool();
+  const { rows } = await pool.query(
+    `SELECT class_id, scope, assessment_key, value_token, updated_at
+       FROM class_user_marks
+      WHERE user_key = $1
+      ORDER BY class_id, scope, assessment_key`,
+    [ownerKey]
+  );
+  return rows.map(
+    (r: {
+      class_id: string;
+      scope: Scope;
+      assessment_key: string;
+      value_token: string;
+      updated_at: number;
+    }) => ({
+      classId: r.class_id,
+      scope: r.scope,
+      assessmentKey: r.assessment_key,
+      token: r.value_token,
+      updatedAt: Number(r.updated_at),
+    })
+  );
+}
+
+/**
+ * Old-scheme classes this login plausibly contributed to.
+ *
+ * `user_hash` is kept in the flow only as a lookup hint, never as identity: the caller
+ * proves who they are through the VTOP session, and the login ID is accepted as
+ * belonging to them only when it matches the verified register number. The legacy
+ * lookup then uses server-derived case variants, so a caller can only ever retrieve
+ * their *own* associations — never anyone else's.
+ *
+ * Returned rows carry no tokens (none were ever minted for them) and no values, just
+ * the class ids, so the client can label those cohorts as legacy-held.
+ */
+export async function legacyAssociations(
+  authorizedID: string,
+  regNo: string
+): Promise<string[]> {
+  const id = authorizedID.trim();
+  if (!id || id.toUpperCase() !== regNo.trim().toUpperCase()) return [];
+
+  const pool = getDbPool();
+  const variants = Array.from(new Set([id, id.toUpperCase(), id.toLowerCase()]));
+  const { rows } = await pool.query(
+    `SELECT DISTINCT class_id FROM class_user_hashes_legacy
+      WHERE user_hash = ANY($1)`,
+    [variants.map(sha256hex)]
   );
   return rows.map((r: { class_id: string }) => r.class_id);
 }

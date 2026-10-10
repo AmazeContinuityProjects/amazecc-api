@@ -5,9 +5,12 @@ import { parseStudentProfile } from "@/lib/parsers/student-profile";
 import { getClientIp, checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
 import {
+  assessmentKeyFor,
   ensureSchema,
   ownerKeyFor,
   recordContribution,
+  valueToken,
+  OVERALL_KEY,
   type Contribution,
   type ContributionOutcome,
 } from "@/lib/marksStats";
@@ -208,6 +211,7 @@ export async function POST(req: Request) {
       skipped: 0,
       rejected: 0,
     };
+    const tokens: Record<string, string> = {};
 
     try {
       await db.query("BEGIN");
@@ -216,9 +220,21 @@ export async function POST(req: Request) {
       // the server check whether this student contributed under the old scheme, and is
       // never stored or trusted for identity (that came from VTOP above).
       const reconcile = { authorizedID: body.authorizedID, regNo: regNumber };
+      // Receipts for accepted writes, keyed so the client can file each one without
+      // recomputing anything: `${classId}::${scope}::${assessmentKey}`. The token is
+      // deterministic in the accepted mark, so minting here states exactly what was
+      // stored — the client later checks these for continuity (unexpected change or
+      // disappearance means server state moved under it).
       for (const c of contributions) {
         const outcome = await recordContribution(db, ownerKey, c, now, reconcile);
         tally[outcome] += 1;
+        if (outcome === "added" || outcome === "replaced" || outcome === "reconciled") {
+          const key =
+            c.scope === "overall"
+              ? OVERALL_KEY
+              : assessmentKeyFor(c.classId, c.component ?? "", c.title ?? "");
+          tokens[`${c.classId}::${c.scope}::${key}`] = valueToken(c.mark);
+        }
       }
       await db.query("COMMIT");
     } catch (err: unknown) {
@@ -231,7 +247,7 @@ export async function POST(req: Request) {
       db.release();
     }
 
-    return NextResponse.json({ success: true, tally });
+    return NextResponse.json({ success: true, tally, tokens });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     // A VTOP session problem is an expected, recoverable state and the client needs to
