@@ -4,7 +4,13 @@
  *   post:
  *     tags:
  *       - Transport
- *     summary: Auto-generated POST endpoint for /api/transport
+ *     summary: The student's transport registration plus the live bus tracking link.
+ *     description: >
+ *       A single VTOP proxy that returns everything transport-related for the
+ *       signed-in student: the parsed transport registration page and, when a
+ *       bus route is registered, the `busUrl` returned by
+ *       `/vtop/transport/trackMyBus`. Batching the two VTOP calls into one
+ *       endpoint keeps "Track my bus" from costing a second function invocation.
  *     requestBody:
  *       required: true
  *       content:
@@ -26,12 +32,12 @@
  *             schema:
  *               type: object
  *               example:
- *                 hasRegistration: "sample_value"
- *                 busRouteId: "sample_value"
- *                 qrCode: "sample_value"
+ *                 hasRegistration: true
+ *                 busRouteId: "1316"
+ *                 busUrl: "https://gpsvtspro.vamosys.com/shareLinkForMultipleVehicles/..."
+ *                 qrCode: "data:image/jpg;base64,..."
  *                 pageCsrf: "sample_value"
  *                 success: true
- *                 data: "sample_value"
  *       400:
  *         description: Bad Request
  *       401:
@@ -44,6 +50,50 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
+
+/**
+ * Ask VTOP for the live GPS share link for a registered route.
+ *
+ * Returns `""` on any failure so a tracking-link outage can never take down the
+ * whole transport response (the registration page is the primary payload).
+ */
+async function fetchBusUrl(
+  client: ReturnType<typeof VTOPClient>,
+  cookieHeader: string | undefined,
+  authorizedID: string,
+  csrf: string,
+  busRouteId: string
+): Promise<string> {
+  try {
+    const resp = await client.post(
+      "/vtop/transport/trackMyBus",
+      new URLSearchParams({
+        authorizedID: String(authorizedID),
+        _csrf: String(csrf),
+        busRouteId: String(busRouteId),
+        x: Date.now().toString(),
+      }).toString(),
+      {
+        headers: {
+          Cookie: cookieHeader,
+          "Content-Type": "application/x-www-form-urlencoded",
+          // VTOPClient defaults to `Accept: text/html,application/xhtml+xml`, which
+          // makes VTOP answer this endpoint with an HTML "Unidentified OS or Browser"
+          // error page instead of the JSON payload. Force JSON here.
+          Accept: "application/json",
+        },
+      }
+    );
+
+    const raw = resp.data;
+    if (typeof raw === "string" && /^\s*<!doctype html/i.test(raw)) return "";
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    return parsed?.busUrl || "";
+  } catch (err) {
+    console.error("Bus tracking link unavailable:", err);
+    return "";
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -108,11 +158,18 @@ export async function POST(req: Request) {
 
     const hasRegistration = !!(busRouteId && data.routeSelected && data.paymentStatus);
 
+    // Same session, so the tracking link rides along with the registration fetch.
+    // Uses the page's own csrf (falls back to the login csrf) like the VTOP page does.
+    const busUrl = busRouteId
+      ? await fetchBusUrl(client, cookieHeader, String(authorizedID), pageCsrf, busRouteId)
+      : "";
+
     return NextResponse.json({
       success: true,
       hasRegistration,
       ...data,
       busRouteId,
+      busUrl,
       qrCode,
       pageCsrf,
     });

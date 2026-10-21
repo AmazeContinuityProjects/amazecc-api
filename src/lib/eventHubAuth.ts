@@ -56,16 +56,32 @@ export async function getEventHubCookie(
     redirect: "manual",
   });
 
-  const setCookieHeader = loginRes.headers.get("set-cookie");
-  if (!setCookieHeader) return null;
+  // EventHub sets JSESSIONID + cookiesession1 even for REJECTED credentials
+  // (HTTP 200 + login form), so a Set-Cookie header alone proves nothing.
+  // The only distinguisher is the response body: a failed login re-renders
+  // the login form (action="/EventHub/mainDashboard"), a successful one
+  // renders the dashboard.
+  const rawCookies: string[] =
+    typeof (loginRes.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie === "function"
+      ? (loginRes.headers as Headers & { getSetCookie: () => string[] }).getSetCookie()
+      : (loginRes.headers.get("set-cookie")?.split(/,(?=[^;]+=[^;]+;)/) ?? []);
 
-  const jmatch = setCookieHeader.match(/JSESSIONID=([^;,\s]+)/);
-  if (!jmatch) return null;
+  let jsessionid: string | null = null;
+  let cookiesession1: string | null = null;
+  for (const c of rawCookies) {
+    const j = c.match(/JSESSIONID=([^;,\s]+)/);
+    if (j) jsessionid = j[1];
+    const cc = c.match(/cookiesession1=([^;,\s]+)/);
+    if (cc) cookiesession1 = cc[1];
+  }
+  if (!jsessionid) return null;
 
-  const cmatch = setCookieHeader.match(/cookiesession1=([^;,\s]+)/);
-  let combinedCookie = `JSESSIONID=${jmatch[1]}`;
-  if (cmatch) {
-    combinedCookie += `; cookiesession1=${cmatch[1]}`;
+  const body = await loginRes.text();
+  if (looksLikeLoginPage(body)) return null;
+
+  let combinedCookie = `JSESSIONID=${jsessionid}`;
+  if (cookiesession1) {
+    combinedCookie += `; cookiesession1=${cookiesession1}`;
   }
 
   return combinedCookie;
