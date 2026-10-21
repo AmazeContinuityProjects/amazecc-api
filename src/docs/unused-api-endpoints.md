@@ -1,157 +1,125 @@
-# Unused API Endpoints
+# API Housekeeping
 
-Endpoints in `AmazeCC-API` with no frontend reference in `AmazeCC/src`.
-Last updated: 2026-06-25
+Cross-repo audit of `AmazeCC-API` endpoints against every consumer in
+`AmazeContinuityProjects`: `AmazeCC` (web), `AmazeCC-Dashboard`,
+`AmazeCC-Club-Hub`, `AmazeCC-Kotlin`, `GoRobo`, `Cashew`, `FFCS`, `fkvit`, `UniCC`.
 
----
-
-## Other / Uncategorized
-
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `achievements` | — | Student achievements |
-| `biometric` | — | Biometric attendance data |
-| `book-recommendation` | — | Book recommendations |
-| `capstone` | — | Capstone project info |
-| `class-messages` | — | Class messages/notices |
-| `extra-curricular` | — | Extra-curricular activities |
-| `hod-dean` | — | HOD/Dean details |
-| `login-history` | — | VTOP login history |
-| `mdp` | — | Management Development Program |
-| `monthly-report` | — | Monthly reports |
-| `proctor-messages` | — | Proctor messages |
-| `vitol-data` | Moodle (Vitol) | Fetches Moodle assignments/quizzes calendar (see below) |
-
-### `vitol-data` — How it works
-
-Scrapes VIT's Moodle instance (Vitol) for upcoming assignments, quizzes, and exams. Uses **separate credentials** (not VTOP):
-
-1. Logs into `https://vitolcc.vit.ac.in/login/index.php` (or alternative site) with username/password
-2. Extracts Moodle `sesskey` from the dashboard HTML
-3. Fetches current + next month's calendar via Moodle's AJAX API (`core_calendar_get_calendar_monthly_view`)
-4. Iterates over each calendar event, visits the event page, and extracts:
-   - Course code + name (from breadcrumb)
-   - Assignment/quiz name
-   - Open date
-   - Completion status (whether quiz attempt is finished)
-5. Returns `Assignment[]` array
-
-Has a frontend component (`VitolDisplay.tsx`) but it's **commented out** in `ScheduleSubTab.tsx:11-15`, so it's currently unused.
+Last updated: 2026-10-21
 
 ---
 
-## Academic / Student
+## Summary
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `bonafide` | — | Bonafide certificate requests |
-| `certificate` | — | Certificate generation |
-| `convocation` | — | Convocation details |
-| `course-withdraw` | — | Course withdrawal |
-| `course-withdraw-view` | — | View course withdrawals |
-| `coursework-reg` | — | Coursework registration |
-| `eca-upload` | — | ECA (Extra-Curricular Activity) upload |
-| `graduated-info` | — | Graduated student info |
-| `programme-migration` | — | Programme/branch migration |
-| `reexam` | — | Re-exam details |
-| `registration-status` | — | Registration status |
-| `student-withdraw` | — | Student withdrawal |
-| `transcript` | — | Transcript generation |
-| `update-loginid` | — | Update VTOP login ID |
+- **48 unused endpoints removed** — routes with zero code references across all
+  consumer repos (scanned `.ts`/`.tsx`/`.kt`/`.js`/`.jsx`/`.sql`).
+- **VTOP proxy sweep batched** — 12 near-identical proxy endpoints now share one
+  implementation (`src/lib/vtop-proxy.ts`) and can run inside a **single**
+  function invocation via `POST /api/bulk`.
+- Every remaining endpoint has **at least one real consumer**.
 
 ---
 
-## Exams / Grades
+## Batching: `src/lib/vtop-proxy.ts` + `POST /api/bulk`
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `outcome-set` | — | Outcome set mapping |
-| `paper-see-rev` | — | Paper revaluation |
-| `qcm` | — | QCM (Quiz/Test) |
-| `qcm-view` | `/vtop/academics/common/QCMStudentLogin` | **Quality Circle Meeting** for regular UG students. Form with semester selector → calls `getStudentLoginForQcm`. No backend endpoint exists yet — current `meeting-info` is for research scholars only, this is different |
-| `question-preview` | — | Question paper preview |
-| `receipt-download` | — | Payment receipt download |
+The VTOP sync sweep used to fire one HTTP request (one serverless function
+invocation) per module. Most of those endpoints were the same shape: one POST to
+a VTOP page, then a parser turning the HTML into JSON.
 
----
+`src/lib/vtop-proxy.ts` is now the single source of truth for those proxies.
+Two consumers:
 
-## Research / PhD
+1. The individual routes (`/api/bank-info`, `/api/credentials`, …) are thin
+   wrappers around `runVtopProxy(name, body)` — unchanged URLs, so the Kotlin app
+   and any other consumer keep working.
+2. `POST /api/bulk` accepts `{ endpoints: [...] }`, runs each against the
+   caller's VTOP session **concurrently**, and returns `{ results: { name: data } }`.
+   Unknown names are dropped (whitelisted), and a single failing endpoint is
+   reported in its own result object without failing the batch.
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `ir-outbound` | — | IR outbound |
-| `outgoing-report` | — | Outgoing student report |
-| `research-attendance` | — | Research attendance |
-| `research-award` | — | Research awards |
-| `research-docs` | — | Research documents |
-| `research-letters` | — | Research letters |
-| `research-profile` | — | Research profile |
-| `research-templates` | — | Research templates |
-| `sap-info` | — | SAP info |
-| `sap-project` | — | SAP project |
-| `thesis-status` | — | Thesis status |
-| `thesis-submission` | — | Thesis submission |
+The batched names (mirrored by `BATCHABLE_BULK_ENDPOINTS` in
+`AmazeCC/src/lib/sync-engine/operations.ts`):
 
----
+```
+bank-info  dayboarder  wallet  credentials  payments  payment-receipts
+library-due  hostel-counselling  registration-schedule  ept-schedule
+acknowledgement  exc-registration  course-completion
+```
 
-## Hostel
+`minor-honour` is **not** batched — it cascades over nested `<select>`s with a
+different flow — so it is still fetched on its own.
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `hostel-attendance` | — | Hostel attendance |
-| `hostel-leave` | — | Hostel leave management |
-| `mess-feedback` | — | Mess feedback |
-| `mess-selection` | — | Mess menu selection |
-| `late-hour` | — | Late hour entry |
+**Effect:** the `bulk` + `fresher` sync ops go from **13 requests → 2**
+(one `/api/bulk` + one `minor-honour`). The frontend falls back to per-endpoint
+fetches if `/api/bulk` ever fails.
 
 ---
 
-## Library
+## Removed endpoints (2026-10-21)
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `library-keys` | — | Library keys management |
-| `library-scanning` | — | Library scanning |
+48 routes deleted — zero references in any consumer repo. All were either
+auto-generated stubs or VTOP scrapers for features never wired into a UI.
 
----
+```
+achievements            admin/audit-logs      caterer-change
+class-messages          convocation           course-withdraw-view
+facility-reg            faq                   fdp-certificate
+fdp-registration        fees-intimation       fine-upload
+graduated-info          hod-dean              ir-outbound
+library-keys            library-scanning      login-history
+mdp                     mess-feedback         mess-selection
+monthly-report          mooc-registration     mooc-upload
+online-exam-attempt     outgoing-report       pat-reg
+proctor-messages        question-preview      receipt-download
+registration-status     research-attendance   research-award
+research-docs           research-letters      research-profile
+research-templates      sap-info              sap-project
+scholar-leave           scholar-verification  swf-attendance
+swf-registration        swf-requisition       thesis-status
+thesis-submission       transcript            wishlist-registration
+```
 
-## Registrations / Applications
-
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `caterer-change` | — | Caterer change request |
-| `club-enrollment` | — | Club enrollment |
-| `fees-intimation` | — | Fees intimation |
-| `fine-upload` | — | Fine upload |
-| `facility-reg` | — | Facility registration |
-| `fdp-certificate` | — | FDP certificate |
-| `fdp-registration` | — | FDP registration |
-| `internship` | — | Internship details |
-| `mooc-registration` | — | MOOC registration |
-| `mooc-upload` | — | MOOC upload |
-| `online-exam-attempt` | — | Online exam attempt |
-| `online-transfer` | — | Online transfer |
-| `pat-reg` | — | PAT registration |
-| `sem-request` | — | Semester request |
-| `slo-feedback` | — | SLO feedback |
-| `swf-attendance` | — | SWF attendance |
-| `swf-registration` | — | SWF registration |
-| `swf-requisition` | — | SWF requisition |
-| `wishlist-registration` | — | Wishlist course registration |
+> Need one back? It was removed only because nothing referenced it — restore the
+> `route.ts` from git history and wire it up.
 
 ---
 
-## Events / Other
+## Endpoint inventory by consumer
 
-| Endpoint | Backend VTOP URL | Notes |
-|---|---|---|
-| `regulation` | `/vtop/academics/council/CouncilRegulationView/new` | Council regulations view |
-| `university-day` | `/vtop/event/uday/certificates` | University Day certificates |
-| `meeting-info` | `/vtop/research/scholarsMeetingView` | **Research scholars** meeting view (Quarterly Committee Meeting for PhD scholars). NOT the same as UG `qcm-view` |
-| `scholar-leave` | — | Scholar leave |
-| `scholar-verification` | — | Scholar verification |
+Every one of the 178 remaining routes is referenced by at least one consumer.
+Breakdown (a route may serve several):
+
+| Consumer | Routes referenced |
+|---|---|
+| `AmazeCC` (web) | 144 |
+| `AmazeCC-Kotlin` | 120 |
+| `AmazeCC-Dashboard` | 91 |
+| `UniCC` | 64 |
+| `FFCS` | 52 |
+| `GoRobo` | 32 |
+| `AmazeCC-Club-Hub` | 25 |
+| `fkvit` | 12 |
+| `Cashew` | 11 |
+
+Endpoints used **only** by the AmazeCC web frontend (not by any other app):
+
+```
+/api/cabshare/waitlist   /api/club-enrollment   /api/faculty-info
+/api/hostel-attendance   /api/hostel-leave      /api/koha/patron
+/api/qcm-view
+```
+
+> Note: `/api/admin/*` serves `AmazeCC-Dashboard`, `/api/club-admin/*` serves
+> `AmazeCC-Club-Hub`, and the Kotlin app uses a broad subset (`/api/me`,
+> `koha/*`, `qbank/*`, `faculty/*`, …). Do not prune those based on the web
+> frontend alone.
 
 ---
 
-## Previously considered but confirmed used (48 endpoints)
+## How this was audited
 
-`acknowledgement`, `additional-learning`, `all-grades`, `apaarid`, `attendance`, `bank-info`, `buses`, `calendar`, `change-password`, `circulars`, `course-completion`, `course-page`, `credentials`, `curriculum`, `dayboarder`, `ept-schedule`, `events`, `exc-registration`, `faculty-info`, `feedback-status`, `grades`, `hostel`, `hostel-counselling`, `library-due`, `lms-data`, `login`, `marks`, `minor-honour`, `payment-receipts`, `payments`, `proctor`, `profile-images`, `registration-schedule`, `schedule`, `student`, `timetable`, `transport`, `wallet`, `wishlist`
+A cross-repo reference scan walks every sibling project's source files
+(excluding `node_modules`, `.next`, `build`, `dist`, `target`, the API's own
+route files, and docs) and matches each route by its full path and its
+leaf segment. A route with **zero** matches across all consumers is dead.
+
+Re-run it after adding or removing routes to keep this doc honest.

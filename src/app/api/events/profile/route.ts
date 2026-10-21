@@ -117,95 +117,145 @@ export async function POST(req: Request) {
 
         const registeredEvents: unknown[] = [];
 
-        // Parse the tables in the profile page
-        // Usually, the registered events table is the one with headers "S.No", "Event Name", "Order Id" etc.
-        $('table').each((_, table) => {
-            const headers = $(table).find('tr').first().text().trim().toLowerCase();
-            if (headers.includes('event') && (headers.includes('order') || headers.includes('payment') || headers.includes('receipt'))) {
-                $(table).find('tr').each((i, row) => {
-                    if (i === 0) return; // Skip header row
+        // EventHub profile layout (verified Oct 2026 against live HTML):
+        // #regTable has 9 columns:
+        //   0 S.No | 1 Event Name | 2 Order Id | 3 Event Date | 4 Event Venue |
+        //   5 Event Time | 6 Payment Status (either plain text "Paid"/"Free Event"
+        //   or a "Pay Now" <a href="/EventHub/showPaymentTC/<orderId>">) |
+        //   7 Receipt (<a href="/EventHub/receipt/<orderId>"> or "Free Event") |
+        //   8 Certificate (<a href="/EventHub/conf/getCertificate/<certId>"> or "---")
+        // Past/closed registrations render plain links, but still-live
+        // registrations sometimes render the old-style action buttons with the
+        // event id (eid) in `onclick` handlers, so `eid` is extracted on a
+        // best-effort basis and is null only when the page carries no eid.
+        const ABS = "https://eventhubcc.vit.ac.in";
+        const absolutize = (href: string | undefined): string | null => {
+            if (!href || href === "#") return null;
+            if (/^https?:\/\//i.test(href)) return href;
+            if (href.startsWith("/")) return `${ABS}${href}`;
+            return `${ABS}/EventHub/${href}`;
+        };
 
-                    const cols = $(row).find('td');
-                    if (cols.length >= 8) {
-                        const eventName = $(cols[1]).text().trim();
-                        const orderId = $(cols[2]).text().trim();
-                        const eventDate = $(cols[3]).text().trim();
-                        const eventVenue = $(cols[4]).text().trim();
-                        const eventTime = $(cols[5]).text().trim();
-                        const paymentStatus = $(cols[6]).text().trim();
-                        
-                        // Extract receipt/certificate/payment links
-                        let receiptLink = null;
-                        let certificateLink = null;
-                        let payNowLink = null;
-                        let payLaterLink = null;
-                        let eid = '';
+        // Best-effort eid extraction. Covers the legacy onclick patterns
+        // (still rendered for live registrations) plus generic carriers
+        // (eid query param, name="eid" inputs/buttons, data-eid).
+        const extractEid = ($row: any): string | null => {
+            let eid: string | null = null;
+            $row.find("button, a, input").each((_: number, el: any) => {
+                if (eid) return;
+                const onclick = $(el).attr("onclick") || "";
+                const href = $(el).attr("href") || "";
+                const formaction = $(el).attr("formaction") || "";
+                const name = $(el).attr("name") || "";
+                const value = ($(el).attr("value") ?? "").toString();
 
-                        $(row).find('td').slice(7).find('button, a, input').each((_, el) => {
-                            const text = $(el).text().trim().toLowerCase() || $(el).attr('value')?.toLowerCase() || '';
-                            const onclick = $(el).attr('onclick') || '';
-                            const href = $(el).attr('href') || '';
-                            
-                            // Extract eid from onclick/href patterns
-                            const eidMatch = onclick.match(/getRecepit\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
-                            if (eidMatch) {
-                                eid = eidMatch[1];
-                            }
-                            if (!eid) {
-                                const hrefMatch = href.match(/studentRecepit\/([^/]+)/);
-                                if (hrefMatch) eid = hrefMatch[1];
-                            }
-                            if (!eid) {
-                                const payMatch = onclick.match(/paynow\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
-                                if (payMatch) eid = payMatch[1];
-                            }
-                            
-                            if (text.includes('receipt')) {
-                                if (href && href !== '#') {
-                                    receiptLink = href;
-                                } else if (onclick.includes('getRecepit')) {
-                                    const match = onclick.match(/getRecepit\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i);
-                                    if (match) receiptLink = `/EventHub/studentRecepit/${match[1]}/`;
-                                }
-                            }
-                            
-                            if (text.includes('certificate') || text.includes('download')) {
-                                const action = href || $(el).attr('formaction') || '';
-                                if (action && action !== '#') certificateLink = action;
-                            }
+                const legacy =
+                    onclick.match(/getRecepit\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i)?.[1] ??
+                    href.match(/studentRecepit\/([^/]+)/)?.[1] ??
+                    onclick.match(/paynow\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/i)?.[1];
+                if (legacy) {
+                    eid = legacy;
+                    return;
+                }
+                const generic =
+                    href.match(/[?&]eid=([^&#\s]+)/i)?.[1] ??
+                    formaction.match(/[?&]eid=([^&#\s]+)/i)?.[1] ??
+                    onclick.match(/[?&]eid=([^&#'"\s]+)/i)?.[1];
+                if (generic) {
+                    eid = generic;
+                    return;
+                }
+                if (name.toLowerCase() === "eid" && value) {
+                    eid = value;
+                    return;
+                }
+            });
+            return eid;
+        };
 
-                            if (text.includes('pay now') || onclick.toLowerCase().includes('paynow')) {
-                                const action = href || $(el).attr('formaction') || '';
-                                if (action && action !== '#') payNowLink = action;
-                                else {
-                                    const match = onclick.match(/window\.location\.href\s*=\s*['"]([^'"]+)['"]/);
-                                    if (match) payNowLink = match[1];
-                                }
-                            }
+        const parseRegTable = ($table: any) => {
+            $table.find("tr").each((i: number, row: any) => {
+                if (i === 0) return; // Skip header row
 
-                            if (text.includes('pay later')) {
-                                const action = href || $(el).attr('formaction') || '';
-                                if (action && action !== '#') payLaterLink = action;
-                            }
-                        });
+                const cols = $(row).find("td");
+                if (cols.length < 7) return;
 
-                        registeredEvents.push({
-                            name: eventName,
-                            eid,
-                            orderId,
-                            date: eventDate,
-                            time: eventTime,
-                            venue: eventVenue,
-                            paymentStatus,
-                            receiptLink,
-                            certificateLink,
-                            payNowLink,
-                            payLaterLink
-                        });
-                    }
+                const eventName = $(cols[1]).text().trim();
+                const orderId = $(cols[2]).text().trim();
+                if (!eventName || !orderId) return;
+
+                const eventDate = $(cols[3]).text().trim();
+                const eventVenue = $(cols[4]).text().trim();
+                const eventTime = $(cols[5]).text().trim();
+
+                // Payment cell (col 6): text or Pay Now link.
+                const paymentCell = $(cols[6]);
+                const payAnchor =
+                    paymentCell.find('a[href*="showPaymentTC"]').first().length
+                        ? paymentCell.find('a[href*="showPaymentTC"]').first()
+                        : $(row).find('a[href*="showPaymentTC"]').first();
+                const payHref = payAnchor.length ? payAnchor.attr("href") : undefined;
+                const payNowUrl = absolutize(payHref ?? undefined);
+                const paymentStatus = payNowUrl
+                    ? "Pay Now"
+                    : paymentCell.text().trim().replace(/\s+/g, " ");
+
+                // Receipt cell (col 7): /EventHub/receipt/<orderId> or "Free Event".
+                const receiptCell = cols.length > 7 ? $(cols[7]) : null;
+                const receiptAnchor = receiptCell?.find('a[href*="/receipt/"]').first();
+                const receiptHref = receiptAnchor?.length ? receiptAnchor.attr("href") : undefined;
+                const receiptUrl = absolutize(receiptHref ?? undefined);
+                const receiptId = receiptHref
+                    ? (receiptHref.match(/\/receipt\/([^/?#]+)/)?.[1] ?? null)
+                    : null;
+
+                // Certificate cell (col 8): /EventHub/conf/getCertificate/<certId> or "---".
+                const certCell = cols.length > 8 ? $(cols[8]) : null;
+                const certAnchor = certCell?.find('a[href*="getCertificate"]').first();
+                const certHref = certAnchor?.length ? certAnchor.attr("href") : undefined;
+                const certificateUrl = absolutize(certHref ?? undefined);
+                const certificateId = certHref
+                    ? (certHref.match(/getCertificate\/([^/?#]+)/)?.[1] ?? null)
+                    : null;
+
+                registeredEvents.push({
+                    name: eventName,
+                    // The event id is only rendered for still-live
+                    // registrations (old-style action buttons); past/closed
+                    // rows carry no eid, so this is null for those.
+                    eid: extractEid($(row)),
+                    orderId,
+                    date: eventDate,
+                    time: eventTime,
+                    venue: eventVenue,
+                    paymentStatus,
+                    receiptId,
+                    certificateId,
+                    receiptUrl,
+                    certificateUrl,
+                    payNowUrl,
+                    payLaterLink: null,
+                    // Legacy aliases (now absolute URLs, or null).
+                    receiptLink: receiptUrl,
+                    certificateLink: certificateUrl,
+                    payNowLink: payNowUrl,
                 });
-            }
-        });
+            });
+        };
+
+        const regTable = $("#regTable");
+        if (regTable.length) {
+            parseRegTable(regTable);
+        } else {
+            // Fallback for any future markup: any table whose header mentions
+            // event + order/payment/receipt.
+            $("table").each((_, table) => {
+                const headers = $(table).find("tr").first().text().trim().toLowerCase();
+                if (headers.includes("event") && (headers.includes("order") || headers.includes("payment") || headers.includes("receipt"))) {
+                    parseRegTable($(table));
+                }
+            });
+        }
 
         return NextResponse.json({ events: registeredEvents }, { status: 200 });
 

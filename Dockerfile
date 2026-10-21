@@ -88,13 +88,25 @@ COPY --chown=node:node --from=builder /app/package.json   ./package.json
 # page renders with zero endpoints, so the source has to ship in the image.
 COPY --chown=node:node --from=builder /app/src ./src
 
-# `next start` already binds 0.0.0.0 by default and reads the port from the
-# PORT environment variable, which is where the platform supplies it. No PORT
-# is baked in here on purpose -- hardcoding one would shadow it.
+# The platform injects the port via the PORT environment variable. The default
+# below only applies to a local `docker run` without `-e PORT`; the platform's
+# value always takes precedence at runtime because the CMD expands $PORT via
+# the shell (exec-form CMD cannot expand variables, so implicit reliance on
+# `next start`'s PORT handling is replaced with an explicit `-p` flag).
+ENV PORT=3000
+
+# Puts `next` on PATH so the platform's Start Command can be `next start`
+# (or `npm start`, which resolves the same binary via package.json).
+# NOTE: do NOT use `pnpm start` as the Start Command -- this stage
+# deliberately ships without pnpm (see above).
+ENV PATH="/app/node_modules/.bin:${PATH}"
 
 USER node
 
 EXPOSE 3000
 
-# Keep this in sync with the platform's Start Command setting.
-CMD ["/app/node_modules/.bin/next", "start"]
+# Keep this in sync with the platform's Start Command setting: either leave
+# the platform Start Command empty (this CMD runs) or set it to `npm start`
+# / `next start`. Shell form is required so $PORT expands; `exec` preserves
+# signal handling for graceful shutdown.
+CMD ["sh", "-c", "echo \"Starting Next.js on 0.0.0.0:${PORT:-3000}\" && exec /app/node_modules/.bin/next start -H 0.0.0.0 -p \"${PORT:-3000}\""]

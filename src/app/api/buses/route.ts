@@ -8,7 +8,13 @@ import defaultBuses from '@/data/dayscholar_buses.json';
  *   get:
  *     tags:
  *       - Buses
- *     summary: GET endpoint for /api/buses
+ *     summary: Every transport record we hold in our database.
+ *     description: >
+ *       The single read endpoint for transport data owned by AmazeCC: bus routes
+ *       (with stops and vehicle placements) plus the published transport rules.
+ *       Consolidates the old `/api/transport/routes`, `/api/transport/placements`
+ *       and `/api/transport/rules` reads so the client makes one request instead
+ *       of four.
  *     responses:
  *       200:
  *         description: Successful response
@@ -16,6 +22,13 @@ import defaultBuses from '@/data/dayscholar_buses.json';
  *           application/json:
  *             schema:
  *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 buses:
+ *                   type: array
+ *                 rules:
+ *                   type: array
  *       400:
  *         description: Bad Request
  *       401:
@@ -26,13 +39,25 @@ import defaultBuses from '@/data/dayscholar_buses.json';
 
 export const dynamic = 'force-dynamic';
 
+/** Transport rules are tiny and change rarely; never let their absence break the routes. */
+async function getTransportRules(pool: ReturnType<typeof getDbPool>): Promise<unknown[]> {
+  try {
+    const { rows } = await pool.query('SELECT * FROM transport_rules ORDER BY rule_number');
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
 export async function GET() {
   const fallbackBuses = (defaultBuses as unknown as Record<string, unknown>).default || defaultBuses;
   try {
     const pool = getDbPool();
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ success: true, buses: fallbackBuses });
+      return NextResponse.json({ success: true, buses: fallbackBuses, rules: [] });
     }
+
+    const rules = await getTransportRules(pool);
 
     // Try consolidated buses_v2 table first (stops + placements as JSONB)
     try {
@@ -62,7 +87,7 @@ export async function GET() {
           stops: b.stops || [],
           placements: b.placements || [],
         }));
-        return NextResponse.json({ success: true, buses });
+        return NextResponse.json({ success: true, buses, rules });
       }
     } catch {
       // buses_v2 doesn't exist yet, fall through
@@ -91,7 +116,7 @@ export async function GET() {
 
       if (rows.length > 0) {
         const buses = rows.map(b => ({ ...b, stops: [] }));
-        return NextResponse.json({ success: true, buses });
+        return NextResponse.json({ success: true, buses, rules });
       }
     } catch {
       // bus_routes doesn't exist either, fall through
@@ -113,12 +138,12 @@ export async function GET() {
     }));
 
     if (buses.length === 0) {
-      return NextResponse.json({ success: true, buses: fallbackBuses });
+      return NextResponse.json({ success: true, buses: fallbackBuses, rules });
     }
 
-    return NextResponse.json({ success: true, buses });
+    return NextResponse.json({ success: true, buses, rules });
   } catch (error: unknown) {
     console.error('Failed to fetch buses:', error);
-    return NextResponse.json({ success: true, buses: fallbackBuses, error: "Internal server error" });
+    return NextResponse.json({ success: true, buses: fallbackBuses, rules: [], error: "Internal server error" });
   }
 }
