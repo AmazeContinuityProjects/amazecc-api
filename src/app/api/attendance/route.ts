@@ -12,6 +12,11 @@ import {
     ownerKeyFor,
     recordEnrollment,
 } from "@/lib/marksStats";
+import {
+    alreadyContributed,
+    deriveClassDetails,
+    recordClassDetails,
+} from "@/lib/classDetails";
 
 async function batchAll<T, R>(
   items: T[],
@@ -198,32 +203,45 @@ export async function POST(req: Request) {
             courseCreditMap
         );
 
-        // Record which classes this caller is enrolled in, from the class list this
-        // fetch itself just returned under their own cookies.
+        // The caller's identity, resolved from VTOP's own response and never from
+        // the request body, and the two things that hang off it.
         //
-        // This is what lets the cohort-statistics read verify each requested class:
-        // the list came back from VTOP, so a caller cannot enroll into a class they
-        // are not in. Best-effort — a failure here must not take the attendance or
-        // marks payload down with it, and the statistics read degrades to empty.
+        // 1. Which classes this caller is enrolled in, from the class list the
+        //    marks fetch itself just returned under their own cookies. That is
+        //    what lets the cohort-statistics read verify each requested class:
+        //    the list came back from VTOP, so a caller cannot enroll into a class
+        //    they are not in.
+        //
+        // 2. The class details this caller contributes: the rooms, faculty and
+        //    slots of their own classes. No single student sees the campus
+        //    timetable, but every student who syncs sees their part of it, and
+        //    the union is what the free-room finder is built on. The timetable
+        //    this route has already fetched is the source, so this costs no
+        //    extra VTOP call.
+        //
+        // Both writes are best-effort — a failure here must not take the
+        // attendance or marks payload down with it, and the statistics read
+        // degrades to empty.
         try {
-            if (marksRes && typeof marksRes !== "string") {
-                const identityRes = await client.post(
-                    "/vtop/studentsRecord/StudentProfileAllView",
-                    new URLSearchParams({
-                        verifyMenu: "true",
-                        authorizedID: String(authorizedID),
-                        _csrf: String(csrf),
-                        nocache: Date.now().toString(),
-                    }).toString(),
-                    { headers: { Cookie: cookieHeader, "Content-Type": "application/x-www-form-urlencoded" } }
-                );
-                const profile = parseStudentProfile(identityRes.data);
-                const regNumber = profile.registerNo || profile.applicationNumber;
+            const identityRes = await client.post(
+                "/vtop/studentsRecord/StudentProfileAllView",
+                new URLSearchParams({
+                    verifyMenu: "true",
+                    authorizedID: String(authorizedID),
+                    _csrf: String(csrf),
+                    nocache: Date.now().toString(),
+                }).toString(),
+                { headers: { Cookie: cookieHeader, "Content-Type": "application/x-www-form-urlencoded" } }
+            );
+            const profile = parseStudentProfile(identityRes.data);
+            const regNumber = profile.registerNo || profile.applicationNumber;
 
-                if (!regNumber) {
-                    console.warn("attendance: no REGISTER NO in profile response — enrollment skipped");
-                } else {
-                    const ownerKey = ownerKeyFor(regNumber);
+            if (!regNumber) {
+                console.warn("attendance: no REGISTER NO in profile response — enrollment skipped");
+            } else {
+                const ownerKey = ownerKeyFor(regNumber);
+
+                if (marksRes && typeof marksRes !== "string") {
                     const classIds = (marksRes.courses ?? [])
                         .map((c) => c.classNbr)
                         .filter((id): id is string => typeof id === "string" && id.length > 0);
@@ -232,11 +250,32 @@ export async function POST(req: Request) {
                     await recordEnrollment(ownerKey, classIds, Date.now());
                     console.log(`attendance: enrollment recorded for ${classIds.length} classes`);
                 }
+
+                // One contribution per student per semester. The gate is a row in
+                // `class_sync_state` holding this student's hashed identity: the
+                // timetable barely changes once it is set, so the second sync of
+                // the term is a no-op rather than a rewrite. The next semester is
+                // a new semester id, and therefore a fresh contribution, with
+                // nothing to reinitiate.
+                if (semesterId && !(await alreadyContributed(ownerKey, String(semesterId)))) {
+                    const details = deriveClassDetails(courseInfo);
+                    const outcome = await recordClassDetails(
+                        ownerKey,
+                        String(semesterId),
+                        details,
+                        Date.now()
+                    );
+                    console.log(
+                        outcome.skipped
+                            ? "attendance: class details already contributed for this semester"
+                            : `attendance: class details recorded for ${outcome.classes} classes`
+                    );
+                }
             }
-        } catch (enrollErr: unknown) {
+        } catch (contribErr: unknown) {
             console.error(
-                "attendance: enrollment unavailable:",
-                enrollErr instanceof Error ? enrollErr.message : String(enrollErr)
+                "attendance: enrollment/class details unavailable:",
+                contribErr instanceof Error ? contribErr.message : String(contribErr)
             );
         }
 

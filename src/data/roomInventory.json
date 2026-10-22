@@ -1,0 +1,1197 @@
+[
+  {
+    "venue": "1",
+    "block": "Other",
+    "kind": "lab"
+  },
+  {
+    "venue": "2",
+    "block": "Other",
+    "kind": "lab"
+  },
+  {
+    "venue": "3",
+    "block": "Other",
+    "kind": "lab"
+  },
+  {
+    "venue": "4",
+    "block": "Other",
+    "kind": "lab"
+  },
+  {
+    "venue": "5",
+    "block": "Other",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-002",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-003",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-004",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-006",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-007",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-206",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-207",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-208",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-209",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-210",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-301",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-302",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-306",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-307",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-307A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-308",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-309",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-311",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-313",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-402",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-404 A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-404B",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-405",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-406B",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-406C",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-408",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-409",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-410",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-411",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-505",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-505A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-506A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-507B",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-513",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-514",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-603",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-603A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-605A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-605B",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-606A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-607",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-607B",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-608",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-609",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-610",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-611",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-613",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-702",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-703",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-706",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-707",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-707B",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-708",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-709",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-710",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-711",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-801",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-802",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-803A",
+    "block": "AB1",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB1-808",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-809",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-811",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB1-812",
+    "block": "AB1",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-003",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-014",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-016",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-201",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-202",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-203",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-204",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-301",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-301 / AB1-005",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-302",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-302 / AB1-005",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-303",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-303 / AB1-005",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-304",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-305",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-306",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-307",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-401",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-402",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-403",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-404",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-405",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-406",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-407",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-408",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-604",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-605",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-606",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-607",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-608",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-701",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-701A",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB2-702",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-703",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-704",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-705",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-706",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-707",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-708",
+    "block": "AB2",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB2-G02",
+    "block": "AB2",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3 - 402",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3 - 412",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-102",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-103",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-104",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-105",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-106",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-107",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-108",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-109",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-202",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-203",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-204",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-205",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-206",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-207",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-208",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-209",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-211",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-302",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-303",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-304",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-305",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-306",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-307",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-308",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-309",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-310",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-311",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-312",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-313",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-403",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-404",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-405",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-406",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-407",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-408",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-409",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-410",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-413",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-503",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-504",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-505",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-506",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-507",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-508",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-509",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-511",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-513",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-602",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-603",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-604",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-605",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-606",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-607",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-608",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-609",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-611",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-612",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB3-613",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-703",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-704",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-705",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-706",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-707",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-708",
+    "block": "AB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB3-710",
+    "block": "AB3",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB4-201",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-407",
+    "block": "AB4",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB4-409",
+    "block": "AB4",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB4-410",
+    "block": "AB4",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB4-411",
+    "block": "AB4",
+    "kind": "lab"
+  },
+  {
+    "venue": "AB4-501",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-502",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-503",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-504",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-505",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-506",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-512",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-513",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-514",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-516",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-517",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-518",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB4-519",
+    "block": "AB4",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-108",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-203",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-204",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-205",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-206",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-207",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-208",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-302",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-303",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-304",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-305",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-306",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-307",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-401",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-402",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-403",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-404",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-405",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-406",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "AB5-407",
+    "block": "AB5",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB - 404",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "ADB - 801",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "ADB - 802",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "ADB-403",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-601",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "ADB-602",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "ADB-701",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-702",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-703",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-704",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-705",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-706",
+    "block": "ADB",
+    "kind": "theory"
+  },
+  {
+    "venue": "ADB-805",
+    "block": "ADB",
+    "kind": "lab"
+  },
+  {
+    "venue": "MAB3-101",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-102",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-103",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-201",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-202",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-203",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-301",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-302",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-303",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-401",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-402",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB3-403",
+    "block": "MAB3",
+    "kind": "theory"
+  },
+  {
+    "venue": "MAB4-101",
+    "block": "MAB4",
+    "kind": "theory"
+  }
+]
