@@ -184,6 +184,14 @@ export async function POST(req: Request) {
             csrf,
             (semesterId as string)
         );
+        // Record faculty enrollments snapshot for verified student reviews
+        try {
+            const { recordEnrollmentSnapshot } = await import("@/lib/reviews/recordEnrollments");
+            await recordEnrollmentSnapshot(String(authorizedID), courseInfo, String(semesterId || "FALL2026-27"));
+        } catch (enrErr) {
+            console.warn("attendance: faculty review enrollment snapshot record failed:", enrErr);
+        }
+
         const courseCreditMap: Record<string, number> = {};
         courseInfo.forEach(course => {
             courseCreditMap[course.courseCode.trim()] = parseFloat(course.LTPJC?.split(" ")[4] || "0");

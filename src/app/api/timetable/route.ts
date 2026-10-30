@@ -56,6 +56,12 @@ export async function POST(req: Request) {
 
     if (semesterId) {
       const courseInfo = await fetchTimetable(cookieHeader, authorizedID, csrf, semesterId);
+      try {
+        const { recordEnrollmentSnapshot } = await import("@/lib/reviews/recordEnrollments");
+        await recordEnrollmentSnapshot(String(authorizedID), courseInfo, String(semesterId));
+      } catch (enrErr) {
+        console.warn("timetable: faculty review enrollment snapshot record failed:", enrErr);
+      }
       return NextResponse.json({ success: true, semesterId, courseInfo });
     }
 

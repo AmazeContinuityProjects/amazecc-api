@@ -9,21 +9,24 @@ export function proxy(request: NextRequest) {
   // dynamically instead of using the wildcard "*".
   const allowedOrigin = origin || "*";
 
+  const allowedHeaders =
+    "Content-Type, Authorization, x-authorized-id, x-signature, x-timestamp, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version, X-Club-Id";
+
   if (request.method === "OPTIONS") {
     const preflightHeaders = new Headers();
     preflightHeaders.set("Access-Control-Allow-Origin", allowedOrigin);
     preflightHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-    preflightHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version, X-Club-Id");
+    preflightHeaders.set("Access-Control-Allow-Headers", allowedHeaders);
     preflightHeaders.set("Access-Control-Allow-Credentials", "true");
     preflightHeaders.set("Access-Control-Max-Age", "86400");
-    return new NextResponse(null, { status: 200, headers: preflightHeaders });
+    return new NextResponse(null, { status: 204, headers: preflightHeaders });
   }
 
   const response = NextResponse.next();
 
   response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version, X-Club-Id");
+  response.headers.set("Access-Control-Allow-Headers", allowedHeaders);
   response.headers.set("Access-Control-Allow-Credentials", "true");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
