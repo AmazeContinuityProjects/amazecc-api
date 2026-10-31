@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { isReviewsEnabled, reviewsDisabledResponse } from "@/lib/reviews/featureFlag";
 
 export const dynamic = "force-dynamic";
 
@@ -7,6 +8,8 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!isReviewsEnabled()) return reviewsDisabledResponse();
+
   const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: "Missing faculty ID" }, { status: 400 });

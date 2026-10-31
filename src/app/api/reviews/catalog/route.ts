@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { isReviewsEnabled, reviewsDisabledResponse } from "@/lib/reviews/featureFlag";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  if (!isReviewsEnabled()) return reviewsDisabledResponse();
+
   const workerBase = process.env.REVIEWS_WORKER_URL || "http://localhost:8787";
   const ifNoneMatch = req.headers.get("if-none-match");
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 import { signIngestPayload } from "@/lib/reviews/reviewAuth";
+import { requireAdminAuth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,12 @@ function cleanSchool(dept?: string | null) {
 }
 
 export async function POST(req: Request) {
+  // Admin-only: this fetches an upstream roster, upserts faculty and triggers a
+  // recompute. It must never be reachable anonymously. Intentionally NOT gated
+  // by the feature flag so the catalog can be populated before launch.
+  const auth = await requireAdminAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const res = await fetch("https://vitfac.amazecc.com/faculty");
     if (!res.ok) {

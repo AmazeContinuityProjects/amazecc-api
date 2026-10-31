@@ -3,6 +3,7 @@ import { getDbPool } from "@/lib/db";
 import { extractAuthorizedID, getStudentReviewHash } from "@/lib/reviews/reviewAuth";
 import { REVIEWS_CONFIG } from "@/config/reviewQuestions";
 import { getSemesterReviewStatus } from "@/lib/reviews/semesterTiming";
+import { isReviewsEnabled, reviewsDisabledResponse } from "@/lib/reviews/featureFlag";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,8 @@ export async function OPTIONS() {
 }
 
 export async function GET(req: Request) {
+  if (!isReviewsEnabled()) return reviewsDisabledResponse();
+
   const authorizedID = extractAuthorizedID(req);
   if (!authorizedID) {
     return NextResponse.json({ error: "Unauthorized: Missing authorizedID" }, { status: 401 });
