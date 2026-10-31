@@ -6,7 +6,7 @@ describe("Faculty Reviews API & Validation (Deliverable 4)", () => {
   const validUuid = "11111111-1111-4111-a111-111111111111";
 
   const validTeachingReview = {
-    authorizedID: "25BCE1399",
+    authorizedID: "25TEST0001",
     faculty_id: validUuid,
     track: "teaching",
     course_code: "BCSE101E",
@@ -161,9 +161,9 @@ describe("Faculty Reviews API & Validation (Deliverable 4)", () => {
 
   it("hashes student registration numbers with dedicated secret, never storing raw IDs", () => {
     process.env.REVIEW_HASH_SECRET = "test_review_secret_key_12345";
-    const regNo = "25BCE1399";
+    const regNo = "25TEST0001";
     const hash1 = getStudentReviewHash(regNo);
-    const hash2 = getStudentReviewHash("25bce1399"); // Case insensitive
+    const hash2 = getStudentReviewHash("25test0001"); // Case insensitive
     expect(hash1).toBe(hash2);
     expect(hash1).not.toContain(regNo);
     expect(hash1.length).toBe(64); // SHA-256 hex

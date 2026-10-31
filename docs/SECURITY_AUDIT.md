@@ -47,7 +47,7 @@ expose an aggregate-by-student endpoint that could de-anonymize reviewers.
 | ID | Finding | Fix |
 | --- | --- | --- |
 | C1 | `extractAuthorizedID` also read `req.query` — identity leaked into URLs/logs | Headers/body only (removed) |
-| C2 | `normalizeAuthorizedId` translated person-specific identifiers (e.g. `20635113`/`CALEBEJ3510` → `25BCE1399`) — one student's identifiers could file **verified** reviews attributed to another | Mapping table deleted; translation only canonicalizes case/whitespace |
+| C2 | `normalizeAuthorizedId` translated two specific developer identifiers into a third real student's registration number — one student's identifiers could file **verified** reviews attributed to another | Mapping table deleted; translation only canonicalizes case/whitespace |
 
 ### High (fixed)
 - **H1** — Dual-secret rotation for `REVIEWS_INGEST_SECRET` was missing; a
