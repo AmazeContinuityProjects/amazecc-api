@@ -59,7 +59,7 @@ export async function recordEnrollmentSnapshot(
   let unmatchedCount = 0;
 
   for (const item of courses) {
-    let rawCourseCode = String(item.courseCode || item.code || "").trim().toUpperCase();
+    const rawCourseCode = String(item.courseCode || item.code || "").trim().toUpperCase();
     // Normalize e.g. "BCSE101E(T)" -> "BCSE101E" or keep
     const cleanCourseCode = rawCourseCode.replace(/\([LTJ]\)$/i, "").trim() || rawCourseCode;
     const semester = String(item.semester || item.semesterId || defaultSemester).trim().toUpperCase();

@@ -1,5 +1,4 @@
 import {
-  REVIEWS_CONFIG,
   TEACHING_CONFIG,
   PROJECT_CONFIG,
   type ReviewTrack,
@@ -39,6 +38,32 @@ export interface ValidationResult {
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+// Identifier-shaped values only (codes, not prose).
+const COURSE_CODE_REGEX = /^[A-Z0-9][A-Z0-9()\- ]{1,24}$/;
+const SEMESTER_REGEX = /^[A-Z0-9][A-Z0-9\-]{2,24}$/;
+
+/** The ONLY top-level keys a submission may contain. Anything else is rejected. */
+const ALLOWED_TOP_LEVEL_KEYS: ReadonlySet<string> = new Set([
+  "authorizedID",
+  "faculty_id",
+  "track",
+  "course_code",
+  "semester",
+  "project_term",
+  "answers",
+  "tags_green",
+  "tags_red",
+  "context",
+  "grade_bucket",
+]);
+const ALLOWED_CONTEXT_KEYS: ReadonlySet<string> = new Set([
+  "component",
+  "project_type",
+  "team_size",
+  "how_assigned",
+  "outcomes",
+]);
+
 export function validateReviewSubmission(input: unknown): ValidationResult {
   if (!input || typeof input !== "object") {
     return { valid: false, error: "Invalid payload: must be a JSON object" };
@@ -69,6 +94,23 @@ export function validateReviewSubmission(input: unknown): ValidationResult {
         valid: false,
         error: `Free-text fields are strictly forbidden. Found illegal field: '${field}'`,
       };
+    }
+  }
+
+  // 1b. Unknown fields are rejected outright (nothing unvalidated reaches storage)
+  for (const key of Object.keys(data)) {
+    if (!ALLOWED_TOP_LEVEL_KEYS.has(key)) {
+      return { valid: false, error: `Unknown field '${key}'` };
+    }
+  }
+  if (data.context !== undefined && data.context !== null) {
+    if (typeof data.context !== "object" || Array.isArray(data.context)) {
+      return { valid: false, error: "context must be an object" };
+    }
+    for (const key of Object.keys(data.context as Record<string, unknown>)) {
+      if (!ALLOWED_CONTEXT_KEYS.has(key)) {
+        return { valid: false, error: `Unknown context field '${key}'` };
+      }
     }
   }
 
@@ -105,9 +147,27 @@ export function validateReviewSubmission(input: unknown): ValidationResult {
     }
     course_code = data.course_code.trim().toUpperCase();
     semester = data.semester.trim().toUpperCase();
+    if (!COURSE_CODE_REGEX.test(course_code)) {
+      return { valid: false, error: "Invalid course_code format" };
+    }
+    if (!SEMESTER_REGEX.test(semester)) {
+      return { valid: false, error: "Invalid semester format" };
+    }
   } else {
-    if (typeof data.project_term === "string" && data.project_term.trim()) {
-      project_term = data.project_term.trim();
+    if (data.project_term !== undefined && data.project_term !== null && data.project_term !== "") {
+      // Shape is "<SEMESTER> <approved project type>" and nothing else, so it
+      // cannot carry free text.
+      const rawTerm = typeof data.project_term === "string" ? data.project_term.trim() : "";
+      const projectTypes = PROJECT_CONFIG.contextFields.projectTypes ?? [];
+      const matchedType = projectTypes.find((t) => rawTerm.endsWith(` ${t}`));
+      const prefix = matchedType ? rawTerm.slice(0, rawTerm.length - matchedType.length - 1).trim() : "";
+      if (!matchedType || !SEMESTER_REGEX.test(prefix.toUpperCase())) {
+        return {
+          valid: false,
+          error: "Invalid project_term: must be '<semester> <approved project type>'",
+        };
+      }
+      project_term = `${prefix.toUpperCase()} ${matchedType}`;
     }
   }
 
@@ -228,17 +288,37 @@ export function validateReviewSubmission(input: unknown): ValidationResult {
     if (rawContext.component && ["Theory", "Lab", "Embedded"].includes(String(rawContext.component))) {
       sanitizedContext.component = rawContext.component;
     }
-    if (rawContext.project_type && typeof rawContext.project_type === "string") {
-      sanitizedContext.project_type = rawContext.project_type;
-    }
-    if (rawContext.team_size && typeof rawContext.team_size === "string") {
-      sanitizedContext.team_size = rawContext.team_size;
-    }
-    if (rawContext.how_assigned && typeof rawContext.how_assigned === "string") {
-      sanitizedContext.how_assigned = rawContext.how_assigned;
-    }
-    if (Array.isArray(rawContext.outcomes)) {
-      sanitizedContext.outcomes = rawContext.outcomes.filter((o) => typeof o === "string");
+    // Project context values must come from the approved option lists; a
+    // value outside them is an error, never stored.
+    const ctxConfig = PROJECT_CONFIG.contextFields;
+    const checkOption = (
+      key: "project_type" | "team_size" | "how_assigned",
+      allowed: readonly string[] | undefined
+    ): string | null => {
+      const v = rawContext[key];
+      if (v === undefined || v === null || v === "") return null;
+      if (typeof v !== "string" || !(allowed ?? []).includes(v)) {
+        return `Invalid context.${key}: must be one of the approved options`;
+      }
+      sanitizedContext[key] = v;
+      return null;
+    };
+    const ctxError =
+      checkOption("project_type", ctxConfig.projectTypes) ||
+      checkOption("team_size", ctxConfig.teamSizes) ||
+      checkOption("how_assigned", ctxConfig.howAssigned);
+    if (ctxError) return { valid: false, error: ctxError };
+
+    if (rawContext.outcomes !== undefined && rawContext.outcomes !== null) {
+      const allowedOutcomes = ctxConfig.outcomes ?? [];
+      if (
+        !Array.isArray(rawContext.outcomes) ||
+        rawContext.outcomes.length > allowedOutcomes.length ||
+        rawContext.outcomes.some((o) => typeof o !== "string" || !allowedOutcomes.includes(o))
+      ) {
+        return { valid: false, error: "Invalid context.outcomes: must be approved options" };
+      }
+      sanitizedContext.outcomes = Array.from(new Set(rawContext.outcomes as string[]));
     }
   }
 

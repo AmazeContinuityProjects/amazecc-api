@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { extractAuthorizedID } from "@/lib/reviews/reviewAuth";
 import { recordEnrollmentSnapshot } from "@/lib/reviews/recordEnrollments";
+import { isReviewsEnabled, reviewsDisabledResponse } from "@/lib/reviews/featureFlag";
+import { sanitizeSemester, sanitizeTimetableCourses } from "@/lib/reviews/enrollmentInput";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +19,8 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
+  if (!isReviewsEnabled()) return reviewsDisabledResponse();
+
   let body: any;
   try {
     body = await req.json();
@@ -28,7 +33,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized: Missing authorizedID" }, { status: 401 });
   }
 
-  const courses = Array.isArray(body?.courses) ? body.courses : [];
+  const limit = checkRateLimit(`reviews_enrollment:${authorizedID}`, 6, 10 * 60 * 1000);
+  if (!limit.allowed) {
+    return rateLimitResponse(limit.retryAfterMs);
+  }
+
+  const courses = sanitizeTimetableCourses(body?.courses);
   if (courses.length === 0) {
     return NextResponse.json({ success: true, recorded: 0, unmatched: 0 });
   }
@@ -37,7 +47,7 @@ export async function POST(req: Request) {
     const { recordedCount, unmatchedCount } = await recordEnrollmentSnapshot(
       authorizedID,
       courses,
-      body.semester || "FALL2026-27"
+      sanitizeSemester(body?.semester, "FALL2026-27")
     );
 
     return NextResponse.json({
