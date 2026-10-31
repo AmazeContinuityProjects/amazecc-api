@@ -106,3 +106,20 @@ Contributions are welcome! Feel free to fork the repo and submit a pull request.
 ## License
 
 This project is for educational purposes. No official license.
+
+## Faculty Reviews API (feature flag, off by default)
+
+Review routes are disabled unless `ENABLE_AMAZE_REVIEWS=true` (default off). They
+validate and store reviews in Postgres and forward a signed copy to the
+Cloudflare Worker, which lives in the `AmazeCC` repo under `faculty-review/`
+(see its `docs/DEPLOYMENT.md`, `docs/RUNBOOK.md` and `docs/ROLLOUT.md`).
+
+- **Env vars** (see `.env.example`): `ENABLE_AMAZE_REVIEWS`, `REVIEWS_WORKER_URL`
+  (Worker base URL, per environment), `REVIEWS_INGEST_SECRET` (must equal the
+  Worker's), `REVIEW_HASH_SECRET` (distinct from every other secret; do not
+  rotate casually).
+- **Migration:** run `migrate_reviews.sql` once in Supabase (idempotent).
+- **Contract:** `src/config/reviewQuestions.ts` is the source of truth for the
+  question config; copies and the sync step are in the Worker's
+  `docs/CONTRACTS.md`.
+- **Docs:** `docs/SECURITY_AUDIT.md`, `docs/CODE_REVIEW.md`.

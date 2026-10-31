@@ -1,104 +1,106 @@
-# Security Audit — Faculty Reviews feature (AmazeCC-api)
+# Security audit: Faculty Reviews (AmazeCC-api)
 
-Scope: `src/app/api/reviews/*`, `src/app/api/admin/reviews/*`,
-`src/lib/reviews/*`, `src/lib/reviews/reviewAuth.ts`, and the deployment
-environment variables. Audit date: 2026-10-31. Branch: `feature/faculty-reviews`.
+Scope: `src/app/api/reviews/*`, `src/app/api/admin/reviews/*`, `src/lib/reviews/*`,
+`src/config/reviewQuestions.ts`, `migrate_reviews.sql`, and the review environment
+variables. Audit date 2026-10-31, branch `feature/faculty-reviews`. The frontend and
+Worker side is in `AmazeCC/docs/faculty-reviews/SECURITY_AUDIT.md` (the two are meant
+to be read together).
 
-Out of scope (never touched in this handover): Supabase schema/RLS/seed beyond
-the additive idempotent migration, `vitfac.amazecc.com`, root `.env` values.
+Out of scope and unchanged: Supabase schema, RLS and seed data (only the additive,
+idempotent `migrate_reviews.sql` is committed), `vitfac.amazecc.com`, any `.env`.
+No secret values appear in this document.
 
----
-
-## 1) Data flow and trust boundaries
+## 1. Data flow
 
 ```
-Browser (student) ── x-authorized-id header ──► /api/reviews/eligibility|submit  ──► Postgres (RLS)
-Browser (student) ────────────────────────────► /api/reviews/catalog (public aggregates)
-AmazeCC-api ── HMAC-signed POST /internal/ingest ──► Cloudflare Worker (then queue → Supabase)
-Admin (student)  ── x-authorized-id header ──► /api/admin/reviews/* (RBAC-checked)
+Browser ── x-authorized-id ──► /api/reviews/eligibility | submit | enrollment-snapshot ──► Postgres
+Browser ───────────────────► /api/reviews/catalog | faculty/[id]   (proxy to Worker, degraded Postgres fallback)
+API ── HMAC-signed POST ──► Worker /internal/ingest ──► queue ──► Postgres (insert, ignore-duplicates)
+Admin ── admin token ──► /api/admin/reviews/*  (requireAdminAuth)
 ```
 
-Student identity NEVER travels in URL query parameters (URLs are captured by
-proxies/CDN/browser history). It is read from `x-authorized-id`, `Authorization:
-Bearer`, or the JSON POST body only (`reviewAuth.ts:extractAuthorizedID`).
+Identity is read from the `x-authorized-id` header, an `Authorization: Bearer` header,
+or the JSON body. **Never the URL query.**
 
-Course/faculty aggregates are served from the Worker edge; the API does not
-expose an aggregate-by-student endpoint that could de-anonymize reviewers.
+## 2. Findings
 
-## 2) Controls implemented (verified)
+### Critical (fixed)
 
-| # | Control | Where | Verified by |
-| --- | --- | --- | --- |
-| A1 | Student IDs hashed with `HMAC-SHA256(REVIEW_HASH_SECRET)` before storage/lookup — raw authorizedID is never a DB key | `reviewAuth.ts:getStudentReviewHash` | unit tests; prod DB contains hashes only |
-| A2 | Secret presence is enforced with a thrown error (no silent fallback to ""→ deterministic hash) | `getReviewHashSecret` | unit tests |
-| A3 | Identity extraction: headers/body only, canonicalized (trim+uppercase), no query string, no per-person translation table | `extractAuthorizedID`, `normalizeAuthorizedId` | tests |
-| A4 | Worker ingest messages signed `HMAC-SHA256(ts.body)`, constant-time comparison (`crypto.timingSafeEqual` after length precheck) | `verifyIngestPayload` | tests |
-| A5 | Replay window ±5 min on ingest signatures | `verifyIngestPayload` | tests |
-| A6 | Both `REVIEW_HASH_SECRET` and legacy secret names map to the canonical `SUPABASE_SERVICE_ROLE_KEY` naming; keys are read from env only, never logged | env handling | secret-scan CI job |
-| A7 | Reviews are **structured-only**: any free-text field is rejected outright (12+ forbidden field names), answers constrained to rating bounds, tags limited to 3 green/3 red from a pre-approved allowlist; parameterized SQL everywhere (`pool.query($1…)`) | `lib/reviews/validation.ts` | tests |
-| A8 | Rate limiting of submission endpoints is enforced upstream (serverless platform), not in-repo | deployment docs | see §3 R4 |
-| A9 | Eligibility re-verified server-side on every submit (enrollment + existing-review checks); the 14-day lock is enforced, not just UI-suggested | `eligibility`, `submit` routes | tests |
-| A10 | Admin RBAC: every `/api/admin/reviews/*` call re-checks the caller against the server-side admin list; client-side allowlist is UX only | admin routes | tests |
-| A11 | Secret scan in CI (private keys / 64-hex tokens) | `.github/workflows/CI.yml` | CI run |
-
-## 3) Findings register
-
-### Critical (fixed in this handover)
 | ID | Finding | Fix |
 | --- | --- | --- |
-| C1 | `extractAuthorizedID` also read `req.query` — identity leaked into URLs/logs | Headers/body only (removed) |
-| C2 | `normalizeAuthorizedId` translated two specific developer identifiers into a third real student's registration number — one student's identifiers could file **verified** reviews attributed to another | Mapping table deleted; translation only canonicalizes case/whitespace |
+| C1 | `extractAuthorizedID` also read the query string, leaking identity into logs and history | removed (header or body only) |
+| C2 | `normalizeAuthorizedId` mapped two developer-specific ids onto a third student's registration number, so those users could file verified reviews as that student | mapping deleted; normalisation is trim and uppercase only |
 
 ### High (fixed)
-- **H1** — Dual-secret rotation for `REVIEWS_INGEST_SECRET` was missing; a
-  secret rotate would drop every in-flight publish. Fixed with
-  `REVIEWS_INGEST_SECRET_PREVIOUS` accepted during a rotation window on the
-  Worker side; API signs with the current secret only.
 
-### High (reported — maintainer decision required)
-- **R1** — `x-authorized-id` is client-supplied. Any client that knows another
-  student's registration number can send it and file verified reviews on their
-  behalf (identity is *known*, not *proven*). Fix direction: bind a
-  short-lived, session-bound token at login (server-issued JWT/session cookie
-  whose subject is hashed into `student_hash`), or accept VTOP SSO directly.
-  This is a product/architecture call — it touches the app-wide auth surface,
-  not just reviews. Existing behavior is *not worse than* the status quo
-  (current verified checks rely on enrollment data, which is still
-  server-verified), so we did not block the feature on it.
+| ID | Finding | Fix |
+| --- | --- | --- |
+| H1 | `ENABLE_AMAZE_REVIEWS` was documented as default off but **no API code read it**: every review route was live on merge | `src/lib/reviews/featureFlag.ts`; submit, eligibility, enrollment-snapshot, catalog and faculty/[id] return 503 unless the value is exactly `true`; covered by `hardening.test.ts` |
+| H2 | `POST /api/reviews/sync-catalog` was **anonymous**: it fetched an upstream roster, upserted faculty and triggered a Worker recompute | `requireAdminAuth` |
+| H3 | Project-guide reviews were stored `verified` from a client-supplied `context.verified_context`, letting anyone self-award full weight | always `verified = false` for the project track (`submit/route.ts`) |
+| H4 | Every successful submit also called the Worker's full `/internal/recompute` (reads every faculty and review row): a cost-exhaustion vector | removed; the Worker cron and the admin route recompute |
+| H5 | Unknown top-level fields and unvalidated `context` and `project_term` values reached the database (a deny-list of 12 field names was the only guard) | allow-list of keys; `context` values and `project_term` must come from the approved lists; identifier patterns for `course_code` and `semester` |
+| H6 | `enrollment-snapshot` accepted unbounded, unvalidated client text that is written to the public faculty catalog (auto-provisioning) | cap of 60 courses, character and length limits, per-student rate limit (`enrollmentInput.ts`) |
+| H7 | Dual-secret rotation for `REVIEWS_INGEST_SECRET` was missing | accepted on the Worker side via `REVIEWS_INGEST_SECRET_PREVIOUS` |
 
-### Medium (reported; planner optional)
-- **R2** — Intro song / other app flows log `authorizedID` at info level
-  (pre-existing, out of reviews scope). Recommend dropping to a hashed ID.
-- **R3** — No in-repo rate limiter on `/api/reviews/submit`; relies on
-  platform-level limits. Acceptable on Vercel/Worker path (the Worker adds a
-  dashboard-configurable WAF rule), listed for visibility.
-- **R4** — No automated DB-level uniqueness assertion in tests for the
-  "one verified review per student/faculty/term" rule beyond the idempotent
-  upsert tests (RLS + unique indexes in Supabase cover it in production).
+### High (open, maintainer decision)
+
+| ID | Finding | Why it is not fixed here | Suggested fix |
+| --- | --- | --- | --- |
+| R1 | **Identity is client-asserted** (`x-authorized-id`). Anyone who knows a registration number can act as that student | app-wide authentication design | server-issued session or signed token at VTOP login; hash that subject |
+| R2 | **Enrollments are client-asserted**, so Teaching "verified" can be self-granted | needs server-side VTOP verification | derive enrollments server-side, or weight client-sourced rows as unverified |
+| R3 | **Small samples de-anonymise reviewers**: grades and per-question data publish from `n = 1` (`REVIEWS_CONFIG.aggregation.minReviewsToShowGrade = 1`) | product decision plus a three-repo config change | publish detail only at `n >= 3`; raise the minimum |
+
+### Medium (reported)
+
+| ID | Finding | Location | Suggested fix |
+| --- | --- | --- | --- |
+| M1 | In-memory rate limiter is per server instance | `src/lib/rateLimit.ts`, used in `submit/route.ts:36` | WAF rate rules (Worker DEPLOYMENT.md section 5) or a shared store |
+| M2 | `OPTIONS` answers `Access-Control-Allow-Origin: *` on review routes | `eligibility`, `submit`, `enrollment-snapshot` routes line 14-16 | reuse an origin allowlist (identity is a header, not a cookie, so not credentialed) |
+| M3 | Faculty auto-provisioned from client timetable text | `recordEnrollments.ts:142` | route unknown faculty to `unmatched_faculty` for admin review |
+| M4 | Hardcoded `FALL2026-27` default semester | `recordEnrollments.ts:49`, `enrollment-snapshot/route.ts:50` | derive from `semesterTiming` |
+| M5 | Hardcoded Supabase project host in image URLs | `sync-catalog/route.ts:62` | config value |
+| M6 | `sync-catalog` takes the vitfac URL from code, fetches without timeout | `sync-catalog/route.ts` | add `AbortController` timeout |
+| M7 | No automated assertion for the "one verified review per student per faculty per term" rule beyond the upsert test | tests | add an integration test against a test database |
+| M8 | Vulnerable production dependencies (22 advisories: 7 high in `undici` and `follow-redirects`, 12 moderate, 3 low) | `pnpm-workspace.yaml` overrides pin `undici` at `7.29.1` (patched is `7.30.1`) | bump overrides and run `pnpm up` |
 
 ### Low
-- **L1** — Contract tests mock clocks; ±5 min replay window itself is tested
-  only at boundaries (59s, 5m01s), which is adequate.
-- **L2** — `normalizeAuthorizedId` uppercases; legacy IDs stored with different
-  casing in `enrollments` would need the same canonicalization at write time
-  (enrollment ingestion already canonicalizes — verified).
 
-## 4) Secrets inventory (names only — values never in this repo)
+- L1: `introSong` and other pre-existing flows log `authorizedID` (outside reviews).
+- L2: `normalizeAuthorizedId` uppercases; ids stored by other flows with different casing need the same canonicalisation at write time (enrollment ingestion does it).
+- L3: `lint` fails on one pre-existing error in `src/lib/marksStats.test.ts:315` (`require()` import), identical to `main`.
+
+## 3. Controls verified
+
+| Control | Where | Test |
+| --- | --- | --- |
+| Reviewer hash `HMAC-SHA256(REVIEW_HASH_SECRET, id)`; throws if the secret is unset | `reviewAuth.ts` | `reviews.test.ts` |
+| Strict structured input, no free text anywhere | `validation.ts` | `reviews.test.ts`, `hardening.test.ts` |
+| Ingest signature `HMAC(secret, "<ts>.<body>")`, +/- 5 min, constant-time compare | `reviewAuth.ts` | `contract.test.ts` |
+| Parameterised SQL everywhere | all routes | review |
+| Flag default off, strict opt-in | `featureFlag.ts` | `hardening.test.ts` |
+| Admin routes behind RBAC | `/api/admin/reviews/*` all call `requireAdminAuth` | review |
+| Eligibility and edit window re-checked on every submit | `submit/route.ts` | review |
+
+## 4. Secrets inventory (names only)
 
 | Name | Used by | Notes |
 | --- | --- | --- |
-| `REVIEW_HASH_SECRET` | api | HMACs student IDs. Rotate ⇒ re-hash all enrollments (migration script required). |
-| `REVIEWS_INGEST_SECRET` | api + worker | Shared HMAC secret for ingest signatures. Zero-downtime rotation via `_PREVIOUS` (see worker RUNBOOK §5). |
-| `SUPABASE_SERVICE_ROLE_KEY` (canonical; legacy names accepted) | worker | Service-role only on the edge worker; api uses pooled Postgres credentials. |
-| `ENABLE_AMAZE_REVIEWS` | api + worker + frontend | Default **OFF** everywhere; strict opt-in (`"true"`). |
+| `REVIEW_HASH_SECRET` | API | keys every reviewer hash; must differ from every other secret; do not rotate casually |
+| `REVIEWS_INGEST_SECRET` | API and Worker | identical on both; dual-secret rotation (Worker RUNBOOK section 5) |
+| `ENABLE_AMAZE_REVIEWS` | API, Worker, frontend | default off |
+| `REVIEWS_WORKER_URL` | API | Worker base URL per environment (not secret) |
 
-No secrets are committed; `.env` is git-ignored; `.env.example` documents
-generation (`openssl rand -hex 32`) and never contains real values.
+No secret is committed. History scan results (no real secrets in any of the three
+repos; two placeholder-only matches in this repo's `.env.example`) are in the AmazeCC
+audit, section 2. A real registration number used as a test fixture was replaced; it
+remains in earlier local commits of this unpushed branch (history was not rewritten).
 
-## 5) Pen-test checklist for go-live
+## 5. Go-live checks
 
-1. `/api/reviews/eligibility` with an unknown ID → 200 with empty eligibility (no enumeration error).
-2. Submit with another student's ID → accepted if enrolled (documented R1) — **verify enrollment source is server-trusted only**.
-3. `POST /internal/ingest` unsigned → 401; wrong secret → 401; replayed header >5 min → 401.
-4. Flag OFF: submit → 503/disabled; eligibility → disabled; admin → 403.
-5. Fuzz: any free-text field (`comments`, `review`, `notes`, …) → 400 "Free-text fields are strictly forbidden"; rating `NaN`/`11`, `project_term` mismatch, tags >3 or non-approved, duplicate submission ⇒ all 400/409, never 500 with a stack trace.
+1. Flag unset: `POST /api/reviews/submit` returns 503 JSON; `GET /api/reviews/catalog` returns 503.
+2. `POST /api/reviews/sync-catalog` without an admin token returns 401/403.
+3. `POST /internal/ingest` on the Worker unsigned returns 401; wrong secret 401; stale timestamp 401.
+4. Fuzz `submit` (flag on, staging): unknown field, free-text `context`, rating 0/6/NaN, tags over 3
+   all return 400, never 500.
+5. Project review: stored `verified = false` whatever the client sends.
