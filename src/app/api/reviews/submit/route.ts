@@ -5,6 +5,7 @@ import { extractAuthorizedID, getStudentReviewHash, signIngestPayload } from "@/
 import { validateReviewSubmission } from "@/lib/reviews/validation";
 import { REVIEWS_CONFIG } from "@/config/reviewQuestions";
 import { getSemesterReviewStatus } from "@/lib/reviews/semesterTiming";
+import { isReviewsEnabled, reviewsDisabledResponse } from "@/lib/reviews/featureFlag";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
+  if (!isReviewsEnabled()) return reviewsDisabledResponse();
+
   let body: any;
   try {
     body = await req.json();
@@ -113,7 +116,10 @@ export async function POST(req: Request) {
           { status: 403 }
         );
       }
-      verified = Boolean(context.verified_context);
+      // There is no server-side proof of a project-guide relationship, so a
+      // project review is never "verified". Trusting a client-supplied flag here
+      // would let anyone self-award full aggregation weight.
+      verified = false;
     }
 
     // 5. Check Edit Window for Existing Review
@@ -211,19 +217,9 @@ export async function POST(req: Request) {
       console.warn("[reviews/submit] Worker ingest warning:", workerErr);
     }
 
-    try {
-      const { timestamp, signature } = signIngestPayload("");
-      const recomputeUrl = `${workerBase}/internal/recompute`;
-      await fetch(recomputeUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-signature": signature,
-          "x-timestamp": timestamp,
-        },
-        body: "",
-      }).catch((e) => console.warn("[submit] Recompute call warning:", e));
-    } catch {}
+    // No per-submit recompute: every recompute reads the whole faculty and
+    // review tables, so triggering it per request is a cost-exhaustion vector.
+    // The Worker's cron (and the admin recompute route) publish new snapshots.
 
     return NextResponse.json(
       {
