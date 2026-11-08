@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createHash } from "node:crypto";
 import {
   assessmentKeyFor,
   valueToken,
@@ -312,7 +313,6 @@ describe("recordContribution", () => {
 
 describe("legacy reconciliation", () => {
   // What the old browser client stored: plain SHA-256 of the login ID as typed.
-  const { createHash } = require("node:crypto") as typeof import("node:crypto");
   const oldHash = (username: string) =>
     createHash("sha256").update(username, "utf8").digest("hex");
 
