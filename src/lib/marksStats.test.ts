@@ -78,12 +78,17 @@ describe("standardDeviation", () => {
     expect(standardDeviation({ count: 1, mean: 80, m2: 0 })).toBe(0);
   });
 
-  it("derives the population standard deviation", () => {
-    // 70, 80, 90 → mean 80, m2 200, sd sqrt(200/3).
-    expect(standardDeviation({ count: 3, mean: 80, m2: 200 })).toBeCloseTo(
-      Math.sqrt(200 / 3),
-      9
-    );
+  it("derives the sample (n − 1) standard deviation", () => {
+    // 70, 80, 90 → mean 80, m2 200, sd sqrt(200/2) = 10.
+    expect(standardDeviation({ count: 3, mean: 80, m2: 200 })).toBeCloseTo(10, 9);
+  });
+
+  it("matches a direct two-pass computation after Welford adds and removes", () => {
+    const xs = [37, 52.5, 61, 64, 70, 70, 73.25, 81, 88, 94, 100];
+    const n = xs.length;
+    const mean = xs.reduce((a, b) => a + b, 0) / n;
+    const m2 = xs.reduce((a, x) => a + (x - mean) ** 2, 0);
+    expect(standardDeviation({ count: n, mean, m2 })).toBeCloseTo(Math.sqrt(m2 / (n - 1)), 9);
   });
 
   it("never returns NaN for a negative m2", () => {
@@ -468,9 +473,12 @@ vi.mock("@/lib/db", () => {
     overall: [
       { class_id: "C1", count: 25, mean: 53.36, m2: 4922.4 },
       { class_id: "C2", count: 1, mean: 84, m2: 0 },
+      { class_id: "C3", count: 4, mean: 70, m2: 300 },
+      { class_id: "C4", count: 5, mean: 70, m2: 300 },
     ],
     assessments: [
       { class_id: "C1", assessment_key: "abc123", count: 7, mean: 79.13, m2: -32.5757 },
+      { class_id: "C1", assessment_key: "few", count: 3, mean: 66, m2: 50 },
     ],
     tokens: [
       {
@@ -528,9 +536,18 @@ describe("statsForClasses", () => {
   it("returns overall plus per-assessment statistics keyed by class", async () => {
     const stats = await statsForClasses(["C1", "C2", "C9"]);
     expect(stats.C1).toMatchObject({ count: 25, mean: 53.36 });
-    expect(stats.C1.sd).toBeCloseTo(14.03, 1);
+    expect(stats.C1.sd).toBeCloseTo(Math.sqrt(4922.4 / 24), 9);
     expect(stats.C1.assessments.abc123).toMatchObject({ count: 7, mean: 79.13 });
-    expect(stats.C2).toMatchObject({ count: 1, sd: 0 });
+    // One contributor: the mean would *be* their mark, so only the count is shown.
+    expect(stats.C2).toMatchObject({ count: 1, mean: 0, sd: 0 });
+  });
+
+  it("publishes only the count below 5 contributors", async () => {
+    const stats = await statsForClasses(["C1", "C3", "C4"]);
+    expect(stats.C3).toMatchObject({ count: 4, mean: 0, sd: 0 });
+    expect(stats.C4).toMatchObject({ count: 5, mean: 70 });
+    expect(stats.C4.sd).toBeCloseTo(Math.sqrt(300 / 4), 9);
+    expect(stats.C1.assessments.few).toEqual({ count: 3, mean: 0, sd: 0 });
   });
 
   it("clamps a negative m2 instead of returning NaN", async () => {
