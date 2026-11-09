@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireCabshareUser } from "@/lib/cabshareAuth";
 
 export async function POST(req: Request) {
+    const caller = await requireCabshareUser(req);
+    if (caller instanceof NextResponse) return caller;
     try {
         const body = await req.json().catch(() => ({}));
-        const { reg_number, hub_id, travel_date } = body;
+        const { hub_id, travel_date } = body;
 
-        if (!reg_number || !hub_id || !travel_date) {
-            return NextResponse.json({ success: false, error: "Missing reg_number, hub_id, or travel_date" }, { status: 400 });
+        if (!hub_id || !travel_date) {
+            return NextResponse.json({ success: false, error: "Missing hub_id or travel_date" }, { status: 400 });
         }
 
         const pool = getDbPool();
-        const userRes = await pool.query("SELECT user_id FROM cabshare_users WHERE reg_number = $1", [reg_number]);
-        if (userRes.rows.length === 0) {
-            return NextResponse.json({ success: false, error: "User not found" }, { status: 401 });
-        }
-        const user_id = userRes.rows[0].user_id;
+        const user_id = caller.user_id;
 
         await pool.query(
             "INSERT INTO cabshare_waitlist (user_id, hub_id, travel_date) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
@@ -25,6 +24,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, message: "Added to waitlist" });
     } catch (err: unknown) {
         console.error("CabShare Waitlist POST Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

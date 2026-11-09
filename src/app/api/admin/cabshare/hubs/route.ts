@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireAdminAuth, hasAdminPermission } from "@/lib/auth";
 
 export async function POST(req: Request) {
+    const admin = await requireAdminAuth(req);
+    if (admin instanceof NextResponse) return admin;
+    if (!hasAdminPermission(admin, 'cabshare')) {
+        return NextResponse.json({ success: false, error: 'Permission denied: cabshare permission required' }, { status: 403 });
+    }
     try {
         const body = await req.json().catch(() => ({}));
         const { hub_name, city } = body;
@@ -14,11 +20,16 @@ export async function POST(req: Request) {
         );
         return NextResponse.json({ success: true, hub: rows[0] });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
 
 export async function DELETE(req: Request) {
+    const admin = await requireAdminAuth(req);
+    if (admin instanceof NextResponse) return admin;
+    if (!hasAdminPermission(admin, 'cabshare')) {
+        return NextResponse.json({ success: false, error: 'Permission denied: cabshare permission required' }, { status: 403 });
+    }
     try {
         const { searchParams } = new URL(req.url);
         const hub_id = searchParams.get("hub_id");
@@ -28,6 +39,6 @@ export async function DELETE(req: Request) {
         await pool.query("DELETE FROM cabshare_hubs WHERE hub_id = $1", [hub_id]);
         return NextResponse.json({ success: true, message: "Hub deleted successfully" });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

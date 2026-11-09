@@ -25,9 +25,17 @@ export interface ClubTokenPayload {
 /**
  * Generates an HMAC SHA-256 signature for the given payload.
  */
+// Admin and club tokens share ADMIN_SECRET, so each type signs with its own
+// derived key. Without this, a club token verified as an admin token.
+const TOKEN_TYPE = 'club';
+
+function signingKey(): Buffer {
+    return crypto.createHmac('sha256', getSecret()).update(`amazecc-token:${TOKEN_TYPE}`).digest();
+}
+
 function generateSignature(payload: string): string {
     return crypto
-        .createHmac('sha256', getSecret())
+        .createHmac('sha256', signingKey())
         .update(payload)
         .digest('hex');
 }
@@ -38,6 +46,7 @@ function generateSignature(payload: string): string {
  */
 export function signClubToken(vtop_id: string, clubs: ClubRole[]): string {
     const payloadObj = {
+        typ: TOKEN_TYPE,
         vtop_id,
         clubs,
         club_id: clubs[0]?.club_id || '',
@@ -72,7 +81,9 @@ export function verifyClubToken(token: string): ClubTokenPayload | null {
         
         const payloadObj = JSON.parse(Buffer.from(payloadStr, 'base64').toString('utf8'));
         
-        if (Date.now() > payloadObj.exp) {
+        if (payloadObj.typ !== TOKEN_TYPE) return null;
+
+        if (typeof payloadObj.exp !== 'number' || Date.now() > payloadObj.exp) {
             return null;
         }
         

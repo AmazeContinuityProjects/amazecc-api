@@ -1,28 +1,35 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireCabshareUser } from "@/lib/cabshareAuth";
 
 export async function POST(req: Request) {
+    const caller = await requireCabshareUser(req);
+    if (caller instanceof NextResponse) return caller;
     try {
         const body = await req.json().catch(() => ({}));
         // action can be: 'request', 'accept', 'reject', 'withdraw'
-        const { reg_number, trip_id, action, match_id } = body;
+        const { trip_id, action, match_id } = body;
 
-        if (!reg_number || !action) {
-            return NextResponse.json({ success: false, error: "Missing reg_number or action" }, { status: 400 });
+        if (!action) {
+            return NextResponse.json({ success: false, error: "Missing action" }, { status: 400 });
         }
 
         const pool = getDbPool();
-        const userRes = await pool.query("SELECT user_id FROM cabshare_users WHERE reg_number = $1", [reg_number]);
-        if (userRes.rows.length === 0) {
-            return NextResponse.json({ success: false, error: "User not found" }, { status: 401 });
-        }
-        const user_id = userRes.rows[0].user_id;
+        const user_id = caller.user_id;
 
         if (action === 'request') {
             // Find trip owner
             const tripRes = await pool.query("SELECT user_id FROM cabshare_trips WHERE trip_id = $1", [trip_id]);
             if (tripRes.rows.length === 0) return NextResponse.json({ success: false, error: "Trip not found" }, { status: 404 });
             const owner_id = tripRes.rows[0].user_id;
+
+            const blocked = await pool.query(
+                "SELECT 1 FROM cabshare_blocks WHERE (blocker_id = $1 AND blocked_id = $2) OR (blocker_id = $2 AND blocked_id = $1) LIMIT 1",
+                [owner_id, user_id]
+            );
+            if (blocked.rows.length > 0) {
+                return NextResponse.json({ success: false, error: "Cannot request this trip" }, { status: 403 });
+            }
 
             if (owner_id === user_id) {
                 return NextResponse.json({ success: false, error: "Cannot request your own trip" }, { status: 400 });
@@ -45,7 +52,9 @@ export async function POST(req: Request) {
                 return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
             }
 
-            await pool.query("UPDATE cabshare_match_events SET status = $1 WHERE id = $2", [action, match_id]);
+            // Frontend expects "accepted"/"rejected"; older rows may hold "accept".
+            const newStatus = action === "accept" ? "accepted" : "rejected";
+            await pool.query("UPDATE cabshare_match_events SET status = $1 WHERE id = $2", [newStatus, match_id]);
             return NextResponse.json({ success: true, message: `Request ${action}ed` });
         }
         else if (action === 'withdraw') {
@@ -62,6 +71,6 @@ export async function POST(req: Request) {
 
     } catch (err: unknown) {
         console.error("CabShare Match POST Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

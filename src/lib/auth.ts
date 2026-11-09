@@ -19,9 +19,17 @@ export interface AdminTokenPayload {
 /**
  * Generates an HMAC SHA-256 signature for the given payload.
  */
+// Admin and club tokens share ADMIN_SECRET, so each type signs with its own
+// derived key. Without this, a club token verified as an admin token.
+const TOKEN_TYPE = 'admin';
+
+function signingKey(): Buffer {
+    return crypto.createHmac('sha256', getSecret()).update(`amazecc-token:${TOKEN_TYPE}`).digest();
+}
+
 function generateSignature(payload: string): string {
     return crypto
-        .createHmac('sha256', getSecret())
+        .createHmac('sha256', signingKey())
         .update(payload)
         .digest('hex');
 }
@@ -32,6 +40,7 @@ function generateSignature(payload: string): string {
  */
 export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'users', 'transport', 'gorobo']): string {
     const payloadObj = {
+        typ: TOKEN_TYPE,
         username,
         role,
         permissions,
@@ -69,7 +78,9 @@ export function verifyAdminToken(token: string): AdminTokenPayload | null {
         const payloadObj = JSON.parse(Buffer.from(payloadStr, 'base64').toString('utf8'));
         
         // Check expiration
-        if (Date.now() > payloadObj.exp) {
+        if (payloadObj.typ !== TOKEN_TYPE) return null;
+
+        if (typeof payloadObj.exp !== 'number' || Date.now() > payloadObj.exp) {
             return null; // Token expired
         }
         
