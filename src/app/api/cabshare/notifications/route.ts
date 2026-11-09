@@ -18,6 +18,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ success: true, notifications: rows });
     } catch (err: unknown) {
+        console.error("cabshare/notifications error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
@@ -40,6 +41,7 @@ export async function PATCH(req: Request) {
 
         return NextResponse.json({ success: true, message: "Marked as read" });
     } catch (err: unknown) {
+        console.error("cabshare/notifications error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

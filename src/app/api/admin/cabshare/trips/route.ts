@@ -32,6 +32,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({ success: true, trips: rows });
     } catch (err: unknown) {
+        console.error("admin/cabshare/trips error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
@@ -51,6 +52,7 @@ export async function DELETE(req: Request) {
         await pool.query("DELETE FROM cabshare_trips WHERE trip_id = $1", [trip_id]);
         return NextResponse.json({ success: true, message: "Trip deleted successfully" });
     } catch (err: unknown) {
+        console.error("admin/cabshare/trips error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

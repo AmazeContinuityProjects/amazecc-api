@@ -23,6 +23,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, message: "User blocked successfully" });
     } catch (err: unknown) {
+        console.error("cabshare/blocks error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
@@ -45,6 +46,7 @@ export async function DELETE(req: Request) {
 
         return NextResponse.json({ success: true, message: "User unblocked successfully" });
     } catch (err: unknown) {
+        console.error("cabshare/blocks error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
