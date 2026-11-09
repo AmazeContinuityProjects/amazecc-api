@@ -1,0 +1,60 @@
+name: VTOP canary
+
+# Logs in to VTOP through the deployed API with a test account and checks that
+# the main scrapers still return data. A failed run means VTOP (or our parsing
+# of it) broke; GitHub emails the workflow's watchers, and CANARY_WEBHOOK_URL
+# (optional) gets a message too.
+#
+# Repository secrets:
+#   CANARY_VTOP_USERNAME, CANARY_VTOP_PASSWORD  a dedicated test account
+#   CANARY_WEBHOOK_URL                           optional Discord/Slack webhook
+# Repository variables (optional):
+#   CANARY_API_BASE, CANARY_SEMESTER_ID
+
+on:
+  schedule:
+    # Every 6 hours, off the hour to avoid the scheduler's busiest minute.
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vtop-canary
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check configuration
+        id: config
+        env:
+          USERNAME: ${{ secrets.CANARY_VTOP_USERNAME }}
+        run: |
+          if [ -z "$USERNAME" ]; then
+            echo "CANARY_VTOP_USERNAME is not set; skipping the canary."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.config.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.config.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run canary
+        if: steps.config.outputs.skip != 'true'
+        env:
+          CANARY_VTOP_USERNAME: ${{ secrets.CANARY_VTOP_USERNAME }}
+          CANARY_VTOP_PASSWORD: ${{ secrets.CANARY_VTOP_PASSWORD }}
+          CANARY_WEBHOOK_URL: ${{ secrets.CANARY_WEBHOOK_URL }}
+          CANARY_API_BASE: ${{ vars.CANARY_API_BASE }}
+          CANARY_SEMESTER_ID: ${{ vars.CANARY_SEMESTER_ID }}
+        run: node tools/vtop-canary.mjs
