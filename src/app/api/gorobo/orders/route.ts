@@ -90,7 +90,7 @@ function normalizePhone(raw: unknown): string | null {
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const limit = checkRateLimit(`gorobo-order:${ip}`, 5, 60_000);
+  const limit = await checkRateLimit(`gorobo-order:${ip}`, 5, 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfterMs);
 
   let body: Record<string, unknown>;

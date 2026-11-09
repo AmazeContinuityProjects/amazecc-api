@@ -66,7 +66,7 @@ export async function POST(req: Request) {
   if (authResult instanceof NextResponse) return authResult;
 
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`migrate:${ip}`, 3, 300000);
+  const rl = await checkRateLimit(`migrate:${ip}`, 3, 300000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   try {

@@ -3,6 +3,11 @@ import type { AxiosResponse } from "axios";
 import { syncClubsBackground } from "@/lib/syncClubs";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
+import { maskUserID } from "@/lib/mask";
+
+/** At most 8 login attempts per account per 15 minutes, across all IPs. */
+const LOGIN_PER_ACCOUNT_MAX = 8;
+const LOGIN_PER_ACCOUNT_WINDOW_MS = 15 * 60_000;
 
 import { getDbPool } from "@/lib/db";
 import { signClubToken } from "@/lib/clubAuth";
@@ -70,11 +75,24 @@ function withDeadline<T>(work: Promise<T>, ms: number, message: string): Promise
 
 export async function POST(req: Request) {
     const ip = getClientIp(req);
-    const rl = checkRateLimit(`login:${ip}`, 5, 60000);
+    const rl = await checkRateLimit(`login:${ip}`, 5, 60000);
     if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
     try {
         const {  username, password  } = await req.json().catch(()=>({}));
+
+        // Per-account limit on top of the per-IP one. Students on campus share a
+        // handful of NAT IPs, so the IP limit alone cannot stop repeated bad
+        // passwords from locking a VTOP account. The key is the masked
+        // registration number, so no plaintext ID is stored.
+        if (typeof username === "string" && username.trim()) {
+            const userRl = await checkRateLimit(
+                `login-user:${maskUserID(username.trim().toUpperCase())}`,
+                LOGIN_PER_ACCOUNT_MAX,
+                LOGIN_PER_ACCOUNT_WINDOW_MS
+            );
+            if (!userRl.allowed) return rateLimitResponse(userRl.retryAfterMs);
+        }
         const client = VTOPClient();
 
         const { allCookies, dashboardHtml } = await withDeadline(
