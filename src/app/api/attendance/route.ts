@@ -113,7 +113,7 @@ function mergeAttendanceWithTimetable(attendance: attendanceItem[], timetable: c
  *   post:
  *     tags:
  *       - Attendance
- *     summary: POST endpoint for /api/attendance
+ *     summary: Attendance for a semester, with day-wise detail per course
  *     parameters:
  *       - name: classId
  *         in: query
@@ -125,23 +125,20 @@ function mergeAttendanceWithTimetable(attendance: attendanceItem[], timetable: c
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               cookies:
- *                 type: string
- *               authorizedID:
- *                 type: string
- *               csrf:
- *                 type: string
- *               semesterId:
- *                 type: string
+ *             allOf:
+ *               - $ref: '#/components/schemas/VtopSession'
+ *               - type: object
+ *                 properties:
+ *                   semesterId:
+ *                     type: string
+ *                     example: CH20262705
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: Attendance rows for the semester
  *         content:
  *           application/json:
  *             schema:
- *               type: object
+ *               $ref: '#/components/schemas/AttendanceResponse'
  *       400:
  *         description: Bad Request
  *       401:

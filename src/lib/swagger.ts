@@ -20,7 +20,8 @@ const options: swaggerJsdoc.Options = {
     ],
   },
   // Scan all API routes in the app folder for JSDoc comments
-  apis: ['./src/app/api/**/*.ts', './src/app/api/**/*.js'],
+  // plus the shared components in src/lib/openapi.
+  apis: ['./src/app/api/**/*.ts', './src/app/api/**/*.js', './src/lib/openapi/*.ts'],
 };
 
 export const getApiDocs = () => {
