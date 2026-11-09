@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function GET() {
     try {
@@ -9,6 +10,6 @@ export async function GET() {
         return NextResponse.json({ success: true, hubs: rows });
     } catch (err: unknown) {
         console.error("CabShare Hubs Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
     }
 }

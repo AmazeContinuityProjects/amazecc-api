@@ -45,6 +45,7 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
 import fetchTimetable from "@/lib/fetchTimeTable";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
   try {
@@ -76,6 +77,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, ...parseVtopHtml(resp.data) });
   } catch (err: unknown) {
     console.error("timetable error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

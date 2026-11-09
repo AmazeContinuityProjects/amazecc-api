@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publicErrorMessage } from "@/lib/publicError";
 
 function looksLikeLoginPage(html: string): boolean {
   return /action=["']\/EventHub\/mainDashboard["']/i.test(html);
@@ -66,6 +67,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, jsessionid }, { status: 200 });
   } catch (err: unknown) {
     console.error(err);
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

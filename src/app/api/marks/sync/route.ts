@@ -4,6 +4,7 @@ import VTOPClient, { getVtopReferer } from "@/lib/clients/VTOPClient";
 import { parseStudentProfile } from "@/lib/parsers/student-profile";
 import { getClientIp, checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { getDbPool, getDbErrorStatus, getDbErrorMessage } from "@/lib/db";
+import { publicErrorMessage } from "@/lib/publicError";
 import {
   assessmentKeyFor,
   ensureSchema,
@@ -256,6 +257,6 @@ export async function POST(req: Request) {
       return fail(401, "vtop_session_expired", { detail: message });
     }
     console.error("marks/sync error:", message);
-    return fail(502, "vtop_unavailable", { detail: message });
+    return fail(502, "vtop_unavailable", { detail: publicErrorMessage(err, "VTOP request failed") });
   }
 }

@@ -44,12 +44,33 @@ export function rateLimitResponse(retryAfterMs: number): NextResponse {
   );
 }
 
+/**
+ * Client IP for rate limiting. The FIRST X-Forwarded-For entry is whatever the
+ * client sent, so trusting it let anyone dodge every limit by rotating a fake
+ * header.
+ *  - TRUSTED_IP_HEADER (env) names a header your edge sets itself, e.g.
+ *    "cf-connecting-ip" behind Cloudflare. Used first when set.
+ *  - On Vercel, x-vercel-forwarded-for / x-real-ip are set by the platform.
+ *  - Otherwise use the LAST X-Forwarded-For entry: the one appended by the
+ *    proxy directly in front of us, not by the client.
+ */
 export function getClientIp(req: Request): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("x-real-ip") ||
-    "unknown"
-  );
+  const h = req.headers;
+  const trusted = process.env.TRUSTED_IP_HEADER;
+  if (trusted) {
+    const v = h.get(trusted)?.split(",")[0]?.trim();
+    if (v) return v;
+  }
+  if (process.env.VERCEL) {
+    const v = h.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip")?.trim();
+    if (v) return v;
+  }
+  const xff = h.get("x-forwarded-for");
+  if (xff) {
+    const parts = xff.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length) return parts[parts.length - 1];
+  }
+  return h.get("x-real-ip")?.trim() || "unknown";
 }
 
 if (typeof setInterval !== 'undefined') {

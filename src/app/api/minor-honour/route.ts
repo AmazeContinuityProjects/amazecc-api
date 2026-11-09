@@ -42,6 +42,7 @@ import type { AxiosInstance } from "axios";
 import { URLSearchParams } from "url";
 import * as cheerio from "cheerio";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { publicErrorMessage } from "@/lib/publicError";
 
 async function processCascade(
   client: AxiosInstance,
@@ -163,6 +164,6 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ success: true, semesters });
   } catch (err: unknown) {
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

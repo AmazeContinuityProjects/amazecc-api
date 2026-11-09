@@ -32,6 +32,7 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function GET() {
     try {
@@ -116,6 +117,6 @@ export async function GET() {
         return NextResponse.json(extractedEvents, { status: 200 });
     } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: publicErrorMessage(err) }, { status: 500 });
     }
 }

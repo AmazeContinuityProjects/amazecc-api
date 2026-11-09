@@ -34,12 +34,16 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import https from "https";
+import { vitHttpsAgent } from "@/lib/vitTls";
+import { publicErrorMessage } from "@/lib/publicError";
+
+const vitAgent = vitHttpsAgent();
 
 const KOHA_API = "https://webopaccc.vit.ac.in/api/v1";
 
 function fetchJson(url: string): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
-    https.get(url, { agent: new https.Agent({ rejectUnauthorized: false }), headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" } }, (res) => {
+    https.get(url, { agent: vitAgent, headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" } }, (res) => {
       let data = "";
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
@@ -98,6 +102,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, items: itemsMap });
   } catch (err: unknown) {
     console.error("koha/availability error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

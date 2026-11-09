@@ -35,6 +35,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
   try {
@@ -90,6 +91,6 @@ export async function POST(req: Request) {
     });
   } catch (err: unknown) {
     console.error("curriculum download error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

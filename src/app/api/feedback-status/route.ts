@@ -44,6 +44,7 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
 import { parseFeedbackStatus } from "@/lib/parsers/feedback-status";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
   try {
@@ -90,6 +91,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, ...data });
   } catch (err: unknown) {
     console.error("feedback-status error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

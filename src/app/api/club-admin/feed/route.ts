@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireClubAuth } from '@/lib/clubAuth';
-import crypto from 'crypto';
+import { migrateLegacyPromotions } from '@/lib/promoteHash';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,22 +10,22 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const club_id = searchParams.get('club_id');
     const vtop_id = searchParams.get('vtop_id');
-    let user_hash = '';
-    if (vtop_id) {
-        user_hash = crypto.createHash('sha256').update(vtop_id).digest('hex');
-    }
-
     const pool = getDbPool();
+    const user_hash = vtop_id && /^[0-9A-Za-z]{6,15}$/.test(vtop_id.trim())
+      ? await migrateLegacyPromotions(pool, vtop_id)
+      : '';
+
+    // $1 = user_hash ('' matches nothing, so has_promoted is false for anonymous callers)
     let query = `
       SELECT f.*, 
-             (SELECT COUNT(*) FROM post_promotions p WHERE p.post_id = f.id) as promote_count
-             ${user_hash ? `, (SELECT COUNT(*) > 0 FROM post_promotions p WHERE p.post_id = f.id AND p.user_hash = '${user_hash}') as has_promoted` : ', false as has_promoted'}
+             (SELECT COUNT(*) FROM post_promotions p WHERE p.post_id = f.id) as promote_count,
+             (SELECT COUNT(*) > 0 FROM post_promotions p WHERE p.post_id = f.id AND p.user_hash = $1) as has_promoted
       FROM club_feed f
     `;
-    const params: unknown[] = [];
+    const params: unknown[] = [user_hash];
 
     if (club_id) {
-      query += ' WHERE f.club_id = $1';
+      query += ' WHERE f.club_id = $2';
       params.push(club_id);
     }
     

@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
+import { getDbPool } from '@/lib/db';
 
 function getSecret(): string {
     const secret = process.env.ADMIN_SECRET;
@@ -38,7 +39,9 @@ function generateSignature(payload: string): string {
  * Signs a username to create a secure admin token.
  * Format: base64(payload).signature
  */
-export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'users', 'transport', 'gorobo']): string {
+export const SUPERADMIN_PERMISSIONS = ['dashboard', 'qbank', 'buses', 'push', 'fresher-resources', 'faculty-directories', 'faculty-directory', 'users', 'transport', 'gorobo'];
+
+export function signAdminToken(username: string, role: 'superadmin' | 'admin' = 'superadmin', permissions: string[] = SUPERADMIN_PERMISSIONS): string {
     const payloadObj = {
         typ: TOKEN_TYPE,
         username,
@@ -112,7 +115,48 @@ export async function requireAdminAuth(req: Promise<Request> | Request): Promise
     if (!payload) {
         return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
-    return { username: payload.username, role: payload.role, permissions: payload.permissions || [] };
+    const current = await currentAdminGrant(payload.username);
+    if (!current) {
+        return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+    return { username: payload.username, ...current };
+}
+
+/**
+ * Tokens are valid for 7 days, so the signature alone can't reflect a
+ * deactivation or a permission change made after login. Re-read the grant on
+ * every admin request (admin traffic is tiny). Env superadmins (ADMIN_VTOP_IDS)
+ * stay valid without the DB, matching /api/admin/auth; everyone else fails
+ * closed if the row is missing, inactive, or the DB can't be reached.
+ */
+async function currentAdminGrant(
+    username: string
+): Promise<{ role: 'superadmin' | 'admin'; permissions: string[] } | null> {
+    const normalized = String(username || '').toUpperCase().trim();
+    const envSuperadmins = (process.env.ADMIN_VTOP_IDS || '')
+        .split(',')
+        .map((id) => id.trim().toUpperCase())
+        .filter(Boolean);
+    if (envSuperadmins.includes(normalized)) {
+        return { role: 'superadmin', permissions: SUPERADMIN_PERMISSIONS };
+    }
+    try {
+        const { rows } = await getDbPool().query(
+            'SELECT role, permissions, is_active FROM admin_users WHERE username = $1',
+            [normalized]
+        );
+        const row = rows[0];
+        if (!row || !row.is_active) return null;
+        const perms = Array.isArray(row.permissions)
+            ? row.permissions
+            : typeof row.permissions === 'string'
+              ? JSON.parse(row.permissions)
+              : [];
+        return { role: row.role === 'superadmin' ? 'superadmin' : 'admin', permissions: perms };
+    } catch (err) {
+        console.error('[auth] admin grant lookup failed:', err);
+        return null;
+    }
 }
 
 /**

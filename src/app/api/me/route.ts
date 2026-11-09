@@ -8,6 +8,7 @@ import { parseCredentials } from "@/lib/parsers/credentials";
 import { parseBankInfo } from "@/lib/parsers/bank-info";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 import { buildIdentity } from "@/lib/identity";
+import { publicErrorMessage } from "@/lib/publicError";
 
 /**
  * @openapi
@@ -96,6 +97,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, identity });
   } catch (err: unknown) {
     console.error("me error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

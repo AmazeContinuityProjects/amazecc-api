@@ -45,12 +45,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 import https from "https";
+import { vitHttpsAgent } from "@/lib/vitTls";
+import { publicErrorMessage } from "@/lib/publicError";
+
+const vitAgent = vitHttpsAgent();
 
 const KOHA_OPAC = "https://webopaccc.vit.ac.in/cgi-bin/koha";
 
 function fetchText(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    https.get(url, { agent: new https.Agent({ rejectUnauthorized: false }), headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" } }, (res) => {
+    https.get(url, { agent: vitAgent, headers: { "User-Agent": "Mozilla/5.0 (compatible; AmazeCC/1.0)" } }, (res) => {
       let data = "";
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
@@ -119,6 +123,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, books, total, query: q, offset, count });
   } catch (err: unknown) {
     console.error("koha/search error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

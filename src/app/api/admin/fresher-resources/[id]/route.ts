@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +65,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     return NextResponse.json({ success: true, resource: rows[0] });
   } catch (error: unknown) {
     console.error('admin fresher-resources PATCH error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -106,6 +107,6 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error('admin fresher-resources DELETE error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }

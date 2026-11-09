@@ -4,6 +4,7 @@ import { requireAdminAuth } from '@/lib/auth';
 import { s3 } from '@/lib/clients/s3';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import axios from 'axios';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -101,6 +102,6 @@ export async function POST(req: Request) {
     });
   } catch (error: unknown) {
     console.error('Import to storage error:', error);
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
