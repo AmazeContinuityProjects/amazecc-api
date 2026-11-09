@@ -20,29 +20,28 @@ import * as cheerio from "cheerio";
  *   post:
  *     tags:
  *       - Login
- *     summary: POST endpoint for /api/login
+ *     summary: Log in to VTOP (solves the captcha) and return a session
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: Logged in. Send cookies, csrf and authorizedID to the VTOP-backed routes.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *       400:
- *         description: Bad Request
+ *               $ref: '#/components/schemas/LoginSuccess'
  *       401:
- *         description: Unauthorized
+ *         description: Invalid captcha, wrong username or password, or an unknown login failure.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorMessage'
+ *       429:
+ *         description: Too many attempts from this IP.
  *       500:
  *         description: Internal Server Error
  */
