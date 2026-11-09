@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   // A peer list of 200 with a naive client would otherwise be 200 reads per
   // render.
-  const rl = checkRateLimit(`social-read:${ip}`, 120, 60_000);
+  const rl = await checkRateLimit(`social-read:${ip}`, 120, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = await readBody(req);

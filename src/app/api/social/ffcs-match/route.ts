@@ -199,7 +199,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`ffcs-match:${ip}`, 30, 60_000);
+  const rl = await checkRateLimit(`ffcs-match:${ip}`, 30, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = await readBody(req);

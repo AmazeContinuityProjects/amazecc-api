@@ -9,7 +9,7 @@ import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit"
 import { signCabshareToken } from "@/lib/cabshareAuth";
 
 export async function POST(req: Request) {
-    const rl = checkRateLimit(`cabshare-auth:${getClientIp(req)}`, 5, 60000);
+    const rl = await checkRateLimit(`cabshare-auth:${getClientIp(req)}`, 5, 60000);
     if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
     try {

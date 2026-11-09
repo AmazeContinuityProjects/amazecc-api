@@ -128,7 +128,7 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   // Every request costs one VTOP round trip for the identity check, so this is tighter
   // than a plain read — the same reasoning `social/identity/sync` uses.
-  const rl = checkRateLimit(`marks-sync:${ip}`, 20, 60_000);
+  const rl = await checkRateLimit(`marks-sync:${ip}`, 20, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = (await req.json().catch(() => ({}))) as {

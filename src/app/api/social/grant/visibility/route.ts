@@ -24,7 +24,7 @@ import type { SocialVisibility } from "@/lib/socialTypes";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`social-grant:${ip}`, 60, 60_000);
+  const rl = await checkRateLimit(`social-grant:${ip}`, 60, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = await readBody(req);

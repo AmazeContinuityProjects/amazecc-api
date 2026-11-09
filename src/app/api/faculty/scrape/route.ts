@@ -205,7 +205,7 @@ function findFacultySubpage(pageUrl: string, html: string): string | null {
 export async function POST(req: Request) {
   // Unauthenticated (the app's faculty tab falls back to it), and each call
   // makes up to two outbound fetches, so cap it per IP.
-  const rl = checkRateLimit(`faculty-scrape:${getClientIp(req)}`, 10, 60000);
+  const rl = await checkRateLimit(`faculty-scrape:${getClientIp(req)}`, 10, 60000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   try {

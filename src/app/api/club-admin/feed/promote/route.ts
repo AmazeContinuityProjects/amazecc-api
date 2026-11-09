@@ -6,7 +6,7 @@ import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit'
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  const rl = checkRateLimit(`promote:${getClientIp(req)}`, 30, 60000);
+  const rl = await checkRateLimit(`promote:${getClientIp(req)}`, 30, 60000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   try {
