@@ -57,6 +57,7 @@ export function normaliseClassIds(ids: readonly string[]): string[] {
   return [...new Set(ids.map((id) => id.trim().toUpperCase()))].sort();
 }
 
+// Planned publishing is disabled at the route; these rules remain the spec of a valid plan.
 export function validatePlan(
   input: unknown,
   semesterId: string,
@@ -137,17 +138,19 @@ export function validatePlan(
 export type MatchCandidate = {
   handle: string;
   name: string;
+  regNo: string;
   source: MatchSource;
   classIds: readonly string[];
   updatedAt: string;
 };
 
-/** What the caller may see about another person: nothing that identifies them beyond the name. */
-export type MatchPerson = { handle: string; name: string; source: MatchSource };
+/** What the caller may see about another person: name, handle, register number and source. */
+export type MatchPerson = { handle: string; name: string; regNo: string; source: MatchSource };
 
 export type SectionMatch = {
   classId: string;
   offering: FfcsOffering | null;
+  registerNos: string[];
   people: MatchPerson[];
 };
 
@@ -180,12 +183,18 @@ export function computeMatches(
     const theirs = normaliseClassIds(c.classIds);
     const shared = theirs.filter((id) => mySet.has(id));
     if (!shared.length) continue;
-    const person: MatchPerson = { handle: c.handle, name: c.name, source: c.source };
+    const person: MatchPerson = { handle: c.handle, name: c.name, regNo: c.regNo, source: c.source };
     for (const id of shared) byClass.get(id)!.push(person);
 
     const identical = shared.length === myIds.length && theirs.length === myIds.length;
     if (shared.length >= 2 || identical) {
-      overlaps.push({ ...person, shared: shared.length, sharedClassIds: shared, identical, updatedAt: c.updatedAt });
+      overlaps.push({
+        ...person,
+        shared: shared.length,
+        sharedClassIds: shared,
+        identical,
+        updatedAt: c.updatedAt,
+      });
     }
   }
 
@@ -195,11 +204,15 @@ export function computeMatches(
   );
 
   return {
-    sections: myIds.map((classId) => ({
-      classId,
-      offering: offerings.get(classId) ?? null,
-      people: byClass.get(classId)!.sort(byName),
-    })),
+    sections: myIds.map((classId) => {
+      const people = byClass.get(classId)!.sort(byName);
+      return {
+        classId,
+        offering: offerings.get(classId) ?? null,
+        registerNos: people.map((p) => p.regNo).filter(Boolean),
+        people,
+      };
+    }),
     overlaps: overlaps.slice(0, MAX_OVERLAPS),
   };
 }

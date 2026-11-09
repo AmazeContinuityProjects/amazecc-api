@@ -274,13 +274,16 @@ export async function POST(req: Request) {
 
     // ── 4. persist ───────────────────────────────────────────────────
     await ensureSchema();
-    const person = await upsertPerson(ownerKey, displayName);
+    const person = await upsertPerson(ownerKey, displayName, regNumber);
     const stored = await upsertTimetable(
       ownerKey,
       resolution.semesterId,
       parsed.busyMap,
       parsed.courses,
-      SLOTMAP_VERSION
+      SLOTMAP_VERSION,
+      null,
+      regNumber,
+      displayName
     );
     await cacheCurrentSemester({
       semesterId: resolution.semesterId,

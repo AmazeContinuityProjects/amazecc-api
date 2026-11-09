@@ -11,7 +11,9 @@ import type { BusyMap, SocialCourse } from "./socialTypes";
  * the schema only exists in production once a route has actually been hit.
  *
  * `owner_key` is `maskUserID(registerNo)`: a keyed, one-way pseudonym, so no
- * plaintext registration number is stored in any table this feature creates.
+ * plaintext registration number is stored in any table this feature creates
+ * (the friend finder's `ffcs_match_entries.register_no` is the documented exception,
+ * shared only with reciprocal overlap sharers).
  */
 
 export const PERSON_TABLE = "social_people";
@@ -31,9 +33,15 @@ export async function ensureSchema(): Promise<void> {
       owner_key     TEXT PRIMARY KEY,
       handle        TEXT UNIQUE NOT NULL,
       display_name  TEXT,
+      register_no   TEXT NOT NULL DEFAULT '',
       created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE ${PERSON_TABLE}
+      ADD COLUMN IF NOT EXISTS register_no TEXT NOT NULL DEFAULT '';
   `);
 
   await pool.query(`
@@ -44,10 +52,18 @@ export async function ensureSchema(): Promise<void> {
       busy_map          JSONB NOT NULL DEFAULT '{}'::jsonb,
       courses           JSONB NOT NULL DEFAULT '[]'::jsonb,
       slotmap_version   TEXT NOT NULL,
+      register_no       TEXT NOT NULL DEFAULT '',
+      display_name      TEXT NOT NULL DEFAULT '',
       published_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       client_updated_at TIMESTAMPTZ,
       PRIMARY KEY (owner_key, semester_id)
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE ${TIMETABLE_TABLE}
+      ADD COLUMN IF NOT EXISTS register_no TEXT NOT NULL DEFAULT '',
+      ADD COLUMN IF NOT EXISTS display_name TEXT NOT NULL DEFAULT '';
   `);
 }
 
@@ -75,20 +91,22 @@ function randomHandle(): string {
  */
 export async function upsertPerson(
   ownerKey: string,
-  displayName: string
+  displayName: string,
+  registerNo: string = ""
 ): Promise<{ handle: string; created: boolean }> {
   const pool = getDbPool();
 
   for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO ${PERSON_TABLE} (owner_key, handle, display_name)
-         VALUES ($1, $2, $3)
+        `INSERT INTO ${PERSON_TABLE} (owner_key, handle, display_name, register_no)
+         VALUES ($1, $2, $3, $4)
          ON CONFLICT (owner_key) DO UPDATE
            SET display_name = EXCLUDED.display_name,
+               register_no = CASE WHEN EXCLUDED.register_no <> '' THEN EXCLUDED.register_no ELSE ${PERSON_TABLE}.register_no END,
                updated_at = NOW()
          RETURNING handle, (created_at = updated_at) AS fresh`,
-        [ownerKey, randomHandle(), displayName]
+        [ownerKey, randomHandle(), displayName, registerNo]
       );
       return { handle: rows[0].handle as string, created: Boolean(rows[0].fresh) };
     } catch (err: unknown) {
@@ -104,14 +122,19 @@ export async function upsertPerson(
 export async function getPerson(ownerKey: string): Promise<{
   handle: string;
   displayName: string | null;
+  registerNo?: string;
 } | null> {
   const pool = getDbPool();
   const { rows } = await pool.query(
-    `SELECT handle, display_name FROM ${PERSON_TABLE} WHERE owner_key = $1`,
+    `SELECT handle, display_name, register_no FROM ${PERSON_TABLE} WHERE owner_key = $1`,
     [ownerKey]
   );
   if (!rows.length) return null;
-  return { handle: rows[0].handle as string, displayName: rows[0].display_name ?? null };
+  return {
+    handle: rows[0].handle as string,
+    displayName: rows[0].display_name ?? null,
+    registerNo: (rows[0].register_no as string) || undefined,
+  };
 }
 
 export type StoredTimetable = {
@@ -121,6 +144,8 @@ export type StoredTimetable = {
   courses: SocialCourse[];
   slotmapVersion: string;
   publishedAt: string;
+  registerNo?: string;
+  displayName?: string;
 };
 
 /**
@@ -136,18 +161,22 @@ export async function upsertTimetable(
   busyMap: BusyMap,
   courses: SocialCourse[],
   slotmapVersion: string,
-  clientUpdatedAt?: string | null
+  clientUpdatedAt?: string | null,
+  registerNo: string = "",
+  displayName: string = ""
 ): Promise<{ version: number; publishedAt: string }> {
   const pool = getDbPool();
   const { rows } = await pool.query(
     `INSERT INTO ${TIMETABLE_TABLE}
-       (owner_key, semester_id, busy_map, courses, slotmap_version, client_updated_at)
-     VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6)
+       (owner_key, semester_id, busy_map, courses, slotmap_version, client_updated_at, register_no, display_name)
+     VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8)
      ON CONFLICT (owner_key, semester_id) DO UPDATE SET
        busy_map          = EXCLUDED.busy_map,
        courses           = EXCLUDED.courses,
        slotmap_version   = EXCLUDED.slotmap_version,
        client_updated_at = EXCLUDED.client_updated_at,
+       register_no       = CASE WHEN EXCLUDED.register_no <> '' THEN EXCLUDED.register_no ELSE ${TIMETABLE_TABLE}.register_no END,
+       display_name      = CASE WHEN EXCLUDED.display_name <> '' THEN EXCLUDED.display_name ELSE ${TIMETABLE_TABLE}.display_name END,
        version           = ${TIMETABLE_TABLE}.version + 1,
        published_at      = NOW()
      RETURNING version, published_at`,
@@ -158,6 +187,8 @@ export async function upsertTimetable(
       JSON.stringify(courses),
       slotmapVersion,
       clientUpdatedAt ?? null,
+      registerNo,
+      displayName,
     ]
   );
   return {

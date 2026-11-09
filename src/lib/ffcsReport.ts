@@ -39,7 +39,6 @@ export type FfcsReport = {
  * this map is also the list of semesters the friend finder supports.
  */
 export const FFCS_REPORT_FILES: Record<string, string> = {
-  CH20262701: "fall-2026-2027-final-ffcs.csv",
   CH20262705: "winter-2026-2027-final-ffcs.csv",
 };
 

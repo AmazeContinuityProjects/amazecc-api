@@ -19,6 +19,7 @@ import { ownerKeyFor } from "./socialDb";
 export type CallerIdentity = {
   ownerKey: string;
   displayName: string;
+  regNo: string;
   cookies: string;
   authorizedID: string;
   csrf: string;
@@ -84,6 +85,7 @@ export async function identifyCaller(body: {
       caller: {
         ownerKey: ownerKeyFor(regNumber),
         displayName: profile.name || "",
+        regNo: regNumber,
         cookies: cookieHeader,
         authorizedID,
         csrf,
