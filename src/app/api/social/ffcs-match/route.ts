@@ -35,18 +35,18 @@
  *                 default: get
  *               source:
  *                 type: string
- *                 enum: [planned, registered]
- *                 description: publish only
+ *                 enum: [registered]
+ *                 description: publish accepts only registered timetables
  *               classIds:
  *                 type: array
  *                 items: { type: string }
- *                 description: publish with source=planned only
+ *                 description: retired; planned publishing is disabled
  *               discoverable:
  *                 type: boolean
  *                 description: visibility (required) and publish (default true)
  *     responses:
- *       200: { description: Caller state and matches }
- *       400: { description: Missing credentials, unsupported semester, or an invalid plan }
+ *       200: { description: Caller state and matches (overlaps include regNo) }
+ *       400: { description: Missing credentials, unsupported semester, or planned sharing attempted }
  *       401: { description: VTOP session expired }
  *       404: { description: visibility on a semester the caller has not joined }
  *       422: { description: No registered classes found in VTOP for this semester }
@@ -67,7 +67,6 @@ import {
   MAX_CHANGES_PER_DAY,
   MAX_REGISTERED_CLASSES,
   normaliseClassIds,
-  validatePlan,
   type MatchSource,
 } from "@/lib/ffcsMatch";
 import {
@@ -75,14 +74,20 @@ import {
   deleteEntry,
   ensureFfcsMatchSchema,
   findCandidates,
+  getClassRosters,
   getEntry,
   publishEntry,
+  backfillRegisterNo,
+  registerStudentClasses,
+  setClassRegistrationsDiscoverable,
   setDiscoverable,
+  syncClassesFromReport,
+  unregisterStudentClasses,
   type FfcsMatchEntry,
 } from "@/lib/ffcsMatchDb";
 
-type Op = "get" | "publish" | "visibility" | "leave";
-const OPS: readonly Op[] = ["get", "publish", "visibility", "leave"];
+type Op = "get" | "publish" | "visibility" | "leave" | "classes";
+const OPS: readonly Op[] = ["get", "publish", "visibility", "leave", "classes"];
 
 function fail(status: number, error: string, extra?: Record<string, unknown>) {
   return NextResponse.json({ success: false, error, ...extra }, { status });
@@ -164,6 +169,34 @@ async function buildState(
   };
 }
 
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const semesterId = (url.searchParams.get("semesterId") ?? "").trim().toUpperCase();
+  if (!isSupportedSemester(semesterId)) {
+    return fail(400, "semester_not_supported", { detail: "No registration report for this semester" });
+  }
+
+  const classIdsParam = url.searchParams.get("classIds");
+  const classIds = classIdsParam
+    ? normaliseClassIds(classIdsParam.split(",").map((s) => s.trim()).filter(Boolean))
+    : [];
+
+  try {
+    const [report] = await Promise.all([getReport(semesterId), ensureSocialSchema(), ensureFfcsMatchSchema()]);
+    await syncClassesFromReport(semesterId, report.offerings);
+    const classes = await getClassRosters(semesterId, classIds);
+    return NextResponse.json({ success: true, semesterId, classes });
+  } catch (err: unknown) {
+    if (err instanceof ReportUnavailableError) return fail(502, "report_unavailable", { detail: err.message });
+    const message = err instanceof Error ? err.message : String(err);
+    if (/DATABASE_URL|ECONNREFUSED|connect/i.test(message)) {
+      return fail(503, "database_unavailable", { detail: "The friend finder needs the database" });
+    }
+    console.error("ffcs-match GET error:", message);
+    return fail(500, "internal_error");
+  }
+}
+
 export async function POST(req: Request) {
   const ip = getClientIp(req);
   const rl = checkRateLimit(`ffcs-match:${ip}`, 30, 60_000);
@@ -178,18 +211,46 @@ export async function POST(req: Request) {
     return fail(400, "semester_not_supported", { detail: "No registration report for this semester" });
   }
 
+  if (op === "classes") {
+    try {
+      const [report] = await Promise.all([getReport(semesterId), ensureSocialSchema(), ensureFfcsMatchSchema()]);
+      await syncClassesFromReport(semesterId, report.offerings);
+      const classIds = Array.isArray(body.classIds)
+        ? normaliseClassIds(body.classIds.map(String))
+        : [];
+      const classes = await getClassRosters(semesterId, classIds);
+      return NextResponse.json({ success: true, semesterId, classes });
+    } catch (err: unknown) {
+      if (err instanceof ReportUnavailableError) return fail(502, "report_unavailable", { detail: err.message });
+      const message = err instanceof Error ? err.message : String(err);
+      if (/DATABASE_URL|ECONNREFUSED|connect/i.test(message)) {
+        return fail(503, "database_unavailable", { detail: "The friend finder needs the database" });
+      }
+      console.error("ffcs-match classes error:", message);
+      return fail(500, "internal_error");
+    }
+  }
+
   const who = await identifyCaller(body as Parameters<typeof identifyCaller>[0]);
   if (!who.ok) return fail(who.status, who.error, who.detail);
   const caller = who.caller;
 
   try {
     const [report] = await Promise.all([getReport(semesterId), ensureSocialSchema(), ensureFfcsMatchSchema()]);
+    await syncClassesFromReport(semesterId, report.offerings);
+
     // Refreshes the display name from VTOP on every call, so a name is always
     // the one VTOP holds for this student, and mints the public handle.
-    const { handle } = await upsertPerson(caller.ownerKey, caller.displayName);
+    const { handle } = await upsertPerson(caller.ownerKey, caller.displayName, caller.regNo);
+    if (caller.regNo || caller.displayName) {
+      await backfillRegisterNo(caller.ownerKey, semesterId, caller.regNo, caller.displayName, handle);
+    }
 
     if (op === "leave") {
-      await deleteEntry(caller.ownerKey, semesterId);
+      await Promise.all([
+        deleteEntry(caller.ownerKey, semesterId),
+        unregisterStudentClasses(semesterId, caller.regNo, caller.ownerKey),
+      ]);
       return NextResponse.json(await buildState(caller, handle, semesterId, report, null));
     }
 
@@ -199,34 +260,49 @@ export async function POST(req: Request) {
       }
       const entry = await setDiscoverable(caller.ownerKey, semesterId, body.discoverable);
       if (!entry) return fail(404, "not_joined", { detail: "Publish your classes first" });
+      await setClassRegistrationsDiscoverable(semesterId, caller.regNo, caller.ownerKey, body.discoverable);
       return NextResponse.json(await buildState(caller, handle, semesterId, report, entry));
     }
 
     if (op === "publish") {
       const source = body.source as MatchSource;
-      let classIds: string[];
-      if (source === "planned") {
-        const v = validatePlan(body.classIds, semesterId, report.offerings);
-        if (!v.ok) return fail(400, v.error, { detail: v.detail, offending: v.offending });
-        classIds = v.classIds;
-      } else if (source === "registered") {
-        classIds = (await registeredClassIds(caller, semesterId)).slice(0, MAX_REGISTERED_CLASSES);
-        if (!classIds.length) {
-          return fail(422, "no_registered_classes", {
-            detail: "VTOP shows no registered classes for this semester yet",
-          });
-        }
-      } else {
-        return fail(400, "invalid_source", { detail: "source must be planned or registered" });
+      if (source !== "registered") {
+        return fail(400, "planned_sharing_disabled", {
+          detail: "Only VTOP-verified timetables can be shared",
+        });
+      }
+
+      const classIds = (await registeredClassIds(caller, semesterId)).slice(0, MAX_REGISTERED_CLASSES);
+      if (!classIds.length) {
+        return fail(422, "no_registered_classes", {
+          detail: "VTOP shows no registered classes for this semester yet",
+        });
       }
 
       const discoverable = typeof body.discoverable === "boolean" ? body.discoverable : true;
-      const entry = await publishEntry(caller.ownerKey, semesterId, classIds, source, discoverable);
+      const entry = await publishEntry(
+        caller.ownerKey,
+        semesterId,
+        classIds,
+        source,
+        discoverable,
+        caller.regNo,
+        caller.displayName
+      );
       if (!entry) {
         return fail(429, "change_limit", {
           detail: `You can change your classes ${MAX_CHANGES_PER_DAY} times a day. Try again tomorrow.`,
         });
       }
+      await registerStudentClasses(
+        semesterId,
+        classIds,
+        caller.regNo,
+        caller.displayName,
+        handle,
+        caller.ownerKey,
+        discoverable
+      );
       return NextResponse.json(await buildState(caller, handle, semesterId, report, entry));
     }
 

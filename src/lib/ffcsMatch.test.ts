@@ -51,7 +51,7 @@ describe("parseCsv / parseReport", () => {
 
   it("supports only semesters with a report", () => {
     expect(isSupportedSemester("CH20262705")).toBe(true);
-    expect(isSupportedSemester("CH20262701")).toBe(true);
+    expect(isSupportedSemester("CH20262701")).toBe(false);
     expect(isSupportedSemester("CH19990101")).toBe(false);
     expect(isSupportedSemester(42)).toBe(false);
     expect(isSupportedSemester("constructor")).toBe(false);
@@ -123,9 +123,16 @@ describe("validatePlan", () => {
 
 describe("computeMatches", () => {
   const mine = ["CH2026270501792", "CH2026270500200", "CH2026270500300"];
-  const person = (handle: string, name: string, classIds: string[], source: "planned" | "registered" = "planned"): MatchCandidate => ({
+  const person = (
+    handle: string,
+    name: string,
+    classIds: string[],
+    source: "planned" | "registered" = "planned",
+    regNo: string = "22BCE1234"
+  ): MatchCandidate => ({
     handle,
     name,
+    regNo,
     source,
     classIds,
     updatedAt: "2026-11-07T00:00:00.000Z",
@@ -168,13 +175,21 @@ describe("computeMatches", () => {
     expect(r.overlaps).toEqual([]);
   });
 
-  it("never exposes anything but handle, name and source per person", () => {
-    const r = computeMatches(mine, [person("AMZ-B", "Bala", ["CH2026270501792"])], offerings);
+  it("carries regNo into both sections[].people and overlaps", () => {
+    const r = computeMatches(
+      mine,
+      [person("AMZ-B", "Bala", ["CH2026270501792", "CH2026270500200"], "registered", "22BCE9999")],
+      offerings
+    );
     const shared = r.sections.find((s) => s.people.length)!.people[0];
-    expect(Object.keys(shared).sort()).toEqual([
-      "handle",
-      "name",
-      "source",
-    ]);
+    expect(shared.regNo).toBe("22BCE9999");
+    expect(shared.name).toBe("Bala");
+    expect(shared.handle).toBe("AMZ-B");
+
+    expect(r.overlaps).toHaveLength(1);
+    expect(r.overlaps[0].regNo).toBe("22BCE9999");
+
+    const section = r.sections.find((s) => s.classId === "CH2026270501792")!;
+    expect(section.registerNos).toEqual(["22BCE9999"]);
   });
 });
