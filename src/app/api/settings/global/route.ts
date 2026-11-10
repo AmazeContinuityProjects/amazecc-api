@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { publicErrorMessage } from "@/lib/publicError";
 
 async function ensureTable() {
     const pool = getDbPool();
@@ -23,6 +24,6 @@ export async function GET() {
         }
         return NextResponse.json({ success: true, config });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
     }
 }

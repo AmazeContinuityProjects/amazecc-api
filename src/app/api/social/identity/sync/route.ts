@@ -68,6 +68,7 @@ import {
 } from "@/lib/socialDb";
 import { listGrantsFor, otherParticipant, secretForParticipant } from "@/lib/socialGrants";
 import { getDbPool } from "@/lib/db";
+import { publicErrorMessage } from "@/lib/publicError";
 
 /** One VTOP round trip per derivation. */
 const VTOP_FORM_HEADERS = (cookieHeader: string, referer = getVtopReferer()) => ({
@@ -333,6 +334,6 @@ export async function POST(req: Request) {
       return fail(401, "vtop_session_expired", { detail: message });
     }
     console.error("social/identity/sync error:", message);
-    return fail(502, "vtop_unavailable", { detail: message });
+    return fail(502, "vtop_unavailable", { detail: publicErrorMessage(err, "VTOP request failed") });
   }
 }

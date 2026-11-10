@@ -5,8 +5,13 @@ import { getCaptcha } from "../../login/captcha";
 import { solveCaptcha } from "../../login/solveCaptcha";
 import { getDbPool } from "@/lib/db";
 import * as cheerio from "cheerio";
+import { checkRateLimit, rateLimitResponse, getClientIp } from "@/lib/rateLimit";
+import { signCabshareToken } from "@/lib/cabshareAuth";
 
 export async function POST(req: Request) {
+    const rl = checkRateLimit(`cabshare-auth:${getClientIp(req)}`, 5, 60000);
+    if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
     try {
         const body = await req.json().catch(() => ({}));
         const { username, password, phone_number } = body;
@@ -95,11 +100,12 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             user: rows[0],
-            // In a real app we'd sign a JWT here. For this implementation, the frontend will pass reg_number as auth.
+            // Send as `Authorization: Bearer <token>` on every other cab-share call.
+            token: signCabshareToken(rows[0].reg_number),
         });
 
     } catch (err: unknown) {
         console.error("CabShare Auth Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Cab-share sign-in failed" }, { status: 500 });
     }
 }

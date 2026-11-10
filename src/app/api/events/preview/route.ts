@@ -37,6 +37,7 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
     try {
@@ -121,6 +122,6 @@ export async function POST(req: Request) {
 
     } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: publicErrorMessage(err) }, { status: 500 });
     }
 }

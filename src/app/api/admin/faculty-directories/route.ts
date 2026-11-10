@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, directories: rows });
   } catch (error: unknown) {
     console.error('admin/faculty-directories GET error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'A school with this ID already exists' }, { status: 400 });
     }
     console.error('admin/faculty-directories POST error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -98,7 +99,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true, message: 'Directory updated successfully' });
   } catch (error: unknown) {
     console.error('admin/faculty-directories PUT error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -139,6 +140,6 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: true, message: 'Directory deleted successfully' });
   } catch (error: unknown) {
     console.error('admin/faculty-directories DELETE error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }

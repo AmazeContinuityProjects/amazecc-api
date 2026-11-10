@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 import { requireAdminAuth } from "@/lib/auth";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function PUT(req: Request) {
     const authResult = await requireAdminAuth(req);
@@ -31,6 +32,6 @@ export async function PUT(req: Request) {
 
         return NextResponse.json({ success: true });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
     }
 }

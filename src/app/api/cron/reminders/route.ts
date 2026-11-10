@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import webpush from 'web-push';
+import crypto from 'crypto';
+
+// Only the scheduler may trigger reminder pushes. Vercel Cron sends
+// `Authorization: Bearer $CRON_SECRET` automatically when CRON_SECRET is set;
+// external schedulers must send the same header.
+function isAuthorizedCron(req: Request): boolean {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return false;
+    const given = Buffer.from(req.headers.get('authorization') || '');
+    const expected = Buffer.from(`Bearer ${secret}`);
+    return given.length === expected.length && crypto.timingSafeEqual(given, expected);
+}
 
 
 
@@ -26,7 +38,14 @@ import webpush from 'web-push';
  *         description: Internal Server Error
  */
 
-export async function POST() {
+export async function GET(req: Request) {
+    return POST(req);
+}
+
+export async function POST(req: Request) {
+    if (!isAuthorizedCron(req)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
         const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;

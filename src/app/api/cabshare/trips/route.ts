@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireCabshareUser } from "@/lib/cabshareAuth";
 
 export async function POST(req: Request) {
+    const caller = await requireCabshareUser(req);
+    if (caller instanceof NextResponse) return caller;
     try {
         const body = await req.json().catch(() => ({}));
-        const { reg_number, hub_id, travel_date, preferred_time, tolerance_hours, seat_options, gender_preference, notes } = body;
+        const { hub_id, travel_date, preferred_time, tolerance_hours, seat_options, gender_preference, notes } = body;
 
-        if (!reg_number || !hub_id || !travel_date || !preferred_time || !seat_options || !gender_preference) {
+        if (!hub_id || !travel_date || !preferred_time || !seat_options || !gender_preference) {
             return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
         }
 
         const pool = getDbPool();
         
         // Find internal user_id
-        const userRes = await pool.query("SELECT user_id FROM cabshare_users WHERE reg_number = $1", [reg_number]);
-        if (userRes.rows.length === 0) {
-            return NextResponse.json({ success: false, error: "User not found. Please authenticate first." }, { status: 401 });
-        }
-        const user_id = userRes.rows[0].user_id;
+        const user_id = caller.user_id;
 
         const insertQuery = `
             INSERT INTO cabshare_trips (user_id, hub_id, travel_date, preferred_time, tolerance_hours, seat_options, gender_preference, notes, status)
@@ -58,16 +57,17 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, trip_id });
     } catch (err: unknown) {
         console.error("CabShare Trips POST Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
 
 export async function GET(req: Request) {
+    const caller = await requireCabshareUser(req);
+    if (caller instanceof NextResponse) return caller;
     try {
         const { searchParams } = new URL(req.url);
         const hub_id = searchParams.get("hub_id");
         const date = searchParams.get("date");
-        const reg_number = searchParams.get("reg_number"); // Exclude own trips from search
 
         const pool = getDbPool();
         let query = `
@@ -88,10 +88,9 @@ export async function GET(req: Request) {
             query += ` AND t.travel_date = $${paramIdx++}`;
             params.push(date);
         }
-        if (reg_number) {
-            query += ` AND u.reg_number != $${paramIdx++}`;
-            params.push(reg_number);
-        }
+        // Exclude the caller's own trips
+        query += ` AND t.user_id != $${paramIdx++}`;
+        params.push(caller.user_id);
 
         query += ` ORDER BY t.travel_date ASC, t.preferred_time ASC`;
 
@@ -100,6 +99,6 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: true, trips: rows });
     } catch (err: unknown) {
         console.error("CabShare Trips GET Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

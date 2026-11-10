@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireAdminAuth, hasAdminPermission } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
+    const admin = await requireAdminAuth(req);
+    if (admin instanceof NextResponse) return admin;
+    if (!hasAdminPermission(admin, 'cabshare')) {
+        return NextResponse.json({ success: false, error: 'Permission denied: cabshare permission required' }, { status: 403 });
+    }
     try {
         const pool = getDbPool();
         const { rows } = await pool.query(`
@@ -26,11 +32,17 @@ export async function GET() {
 
         return NextResponse.json({ success: true, trips: rows });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        console.error("admin/cabshare/trips error:", err);
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
 
 export async function DELETE(req: Request) {
+    const admin = await requireAdminAuth(req);
+    if (admin instanceof NextResponse) return admin;
+    if (!hasAdminPermission(admin, 'cabshare')) {
+        return NextResponse.json({ success: false, error: 'Permission denied: cabshare permission required' }, { status: 403 });
+    }
     try {
         const { searchParams } = new URL(req.url);
         const trip_id = searchParams.get("trip_id");
@@ -40,6 +52,7 @@ export async function DELETE(req: Request) {
         await pool.query("DELETE FROM cabshare_trips WHERE trip_id = $1", [trip_id]);
         return NextResponse.json({ success: true, message: "Trip deleted successfully" });
     } catch (err: unknown) {
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        console.error("admin/cabshare/trips error:", err);
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }

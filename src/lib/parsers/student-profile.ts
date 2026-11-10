@@ -1,6 +1,17 @@
 import * as cheerio from "cheerio";
 
 /**
+ * Test whether an identifier matches the standard VIT registration number format (e.g. 25BLC1081, 21BCE0001).
+ * Typically: 2 digits (admission year) + 2-5 uppercase letters (branch/school) + 3-5 digits (sequence).
+ * Purely numeric IDs (e.g. 20626703, 2025001264) are application/enrollment numbers, not registration numbers.
+ */
+export function isRegistrationNumber(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const trimmed = value.trim().toUpperCase();
+  return /^[0-9]{2}[A-Z]{2,5}[0-9]{3,5}$/.test(trimmed);
+}
+
+/**
  * Parses the VTOP StudentProfileAllView page into a flat profile object.
  * Shared by /api/student and /api/me.
  */
@@ -51,6 +62,32 @@ export interface StudentProfileData {
 export function parseStudentProfile(html: string): StudentProfileData {
   const $ = cheerio.load(html);
   const profile: StudentProfileData = {};
+
+  // 1. Primary VIT Registration Number, Email & Branch from top header card
+  const regNoHeader = $('label[for="no"]').text().trim();
+  if (regNoHeader && isRegistrationNumber(regNoHeader)) {
+    profile.registerNo = regNoHeader.toUpperCase();
+  } else {
+    // Check any label containing "REGISTER NUMBER" or "REGISTRATION NUMBER"
+    $("label").each((_, el) => {
+      const text = $(el).text().trim().toUpperCase();
+      if (text.includes("REGISTER NUMBER") || text.includes("REGISTRATION NUMBER") || text.includes("REG NO")) {
+        const candidate =
+          $(el).next("label").text().trim() ||
+          $(el).parent().find('label[for="no"]').text().trim() ||
+          $(el).parent().text().replace(text, "").trim();
+        if (candidate && isRegistrationNumber(candidate)) {
+          profile.registerNo = candidate.toUpperCase();
+        }
+      }
+    });
+  }
+
+  const vmail = $('label[for="vmail"]').text().trim();
+  if (vmail) profile.email ??= vmail;
+
+  const branchHeader = $('label[for="branchno"]').text().trim();
+  if (branchHeader) profile.branch ??= branchHeader;
 
   const parseAddress = (addressHtml: string): Record<string, string> => {
     const addr: Record<string, string> = {};
@@ -103,7 +140,16 @@ export function parseStudentProfile(html: string): StudentProfileData {
     else if (L.includes("SCHOOL NAME") || L.includes("SCHOOL/COLLEGE NAME")) profile.schoolName = value;
     else if (L.includes("MEDIUM OF STUDY")) profile.mediumOfStudy = value;
     else if (L.includes("BOARD / UNIVERSITY")) profile.boardUniversity = value;
-    else if (L.includes("REGISTER NO")) profile.registerNo = value;
+    else if (L.includes("REGISTER NO") || L.includes("REGISTRATION NO") || L.includes("ROLL NO")) {
+      if (isRegistrationNumber(value)) {
+        profile.registerNo = value.toUpperCase();
+      } else {
+        profile.schoolRollNo = value;
+        if (!profile.registerNo) {
+          profile.registerNo = value;
+        }
+      }
+    }
     else if (L.includes("CLASS OBTAINED")) profile.classObtained = value;
     else if (L.includes("YEAR OF PASSING") || L.includes("YEAR OF PASSED")) profile.yearOfPassing = value;
     else if (L.includes("MONTH OF PASSING") || L.includes("MONTH OF PASSED")) profile.monthOfPassing = value;
@@ -145,6 +191,15 @@ export function parseStudentProfile(html: string): StudentProfileData {
   const imgMatch = html.match(/src="(data:[^"]+base64,[^"]+)"/i) || html.match(/src="(data:image[^"]+)"/i);
   if (imgMatch) {
     profile.image = imgMatch[1];
+  }
+
+  // Fallback: If registerNo is still not a valid VIT registration number, look across page text
+  if (!profile.registerNo || !isRegistrationNumber(profile.registerNo)) {
+    const matches = html.match(/\b([0-9]{2}[A-Z]{2,5}[0-9]{3,5})\b/g);
+    if (matches && matches.length > 0) {
+      const found = matches.find((m) => isRegistrationNumber(m));
+      if (found) profile.registerNo = found.toUpperCase();
+    }
   }
 
   return profile;

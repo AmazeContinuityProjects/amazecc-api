@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
-import crypto from 'crypto';
+import { migrateLegacyPromotions } from '@/lib/promoteHash';
+import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  const rl = checkRateLimit(`promote:${getClientIp(req)}`, 30, 60000);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   try {
     const { post_id, vtop_id } = await req.json();
 
@@ -12,8 +16,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'post_id and vtop_id are required' }, { status: 400 });
     }
 
-    const user_hash = crypto.createHash('sha256').update(vtop_id).digest('hex');
+    if (typeof vtop_id !== 'string' || !/^[0-9A-Za-z]{6,15}$/.test(vtop_id.trim())) {
+      return NextResponse.json({ success: false, error: 'Invalid vtop_id' }, { status: 400 });
+    }
+
     const pool = getDbPool();
+    const user_hash = await migrateLegacyPromotions(pool, vtop_id);
 
     // Check if already promoted
     const { rowCount } = await pool.query(

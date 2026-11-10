@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,6 @@ export async function GET() {
     return NextResponse.json({ success: true, schools: rows });
   } catch (error: unknown) {
     console.error('faculty/schools error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, schools: [], error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, schools: [], error: publicErrorMessage(error) }, { status: 500 });
   }
 }
