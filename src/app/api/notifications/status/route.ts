@@ -11,7 +11,7 @@ import { getDbPool } from '@/lib/db';
  *       - Notifications
  *     summary: GET endpoint for /api/notifications/status
  *     parameters:
- *       - name: UserID
+ *       - name: endpoint
  *         in: query
  *         required: false
  *         schema:
@@ -33,10 +33,12 @@ import { getDbPool } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
-    const UserID = searchParams.get('UserID');
+    // Settings are looked up by the push endpoint, which only the subscribed
+    // device knows. Looking up by UserID let anyone read anyone's settings.
+    const endpoint = searchParams.get('endpoint');
 
-    if (!UserID) {
-        return NextResponse.json({ error: "Missing UserID" }, { status: 400 });
+    if (!endpoint) {
+        return NextResponse.json({ error: "Missing endpoint" }, { status: 400 });
     }
 
     try {
@@ -44,8 +46,8 @@ export async function GET(req: NextRequest) {
         const { rows } = await pool.query(
             `SELECT vitol_enabled, vitol_reminder_day, vitol_reminder_time 
              FROM push_subscriptions 
-             WHERE user_id = $1 LIMIT 1`,
-            [UserID]
+             WHERE endpoint = $1 LIMIT 1`,
+            [endpoint]
         );
 
         if (rows.length === 0) {

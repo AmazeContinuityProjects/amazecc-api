@@ -41,9 +41,11 @@ import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import https from "https";
 import querystring from "querystring";
+import { vitHttpsAgent } from "@/lib/vitTls";
+import { publicErrorMessage } from "@/lib/publicError";
 
 const KOHA_HOST = "webopaccc.vit.ac.in";
-const agent = new https.Agent({ rejectUnauthorized: false, keepAlive: false });
+const agent = vitHttpsAgent({ keepAlive: false });
 
 function kohaFetch(method: string, path: string, cookies: string, postData?: string): Promise<{ status: number; body: string; cookies: string }> {
   return new Promise((resolve, reject) => {
@@ -167,6 +169,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, data: result });
   } catch (err: unknown) {
     console.error("koha/patron error:", (err instanceof Error ? err.message : String(err)));
-    return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
   }
 }

@@ -37,6 +37,7 @@
 import { NextResponse } from "next/server";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
 import { eventHubUrl } from "@/lib/upstreamUrl";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
     try {
@@ -105,6 +106,6 @@ export async function POST(req: Request) {
 
     } catch (error: unknown) {
         console.error("Download Proxy Error:", error);
-        return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: publicErrorMessage(error) }, { status: 500 });
     }
 }

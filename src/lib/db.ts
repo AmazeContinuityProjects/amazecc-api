@@ -13,6 +13,19 @@ function getConnectionString(): string | undefined {
   );
 }
 
+/**
+ * TLS for Postgres. Set PG_CA_CERT to the provider's CA (PEM; for Supabase,
+ * download it from Project Settings -> Database -> SSL) to verify the server
+ * certificate. Without it we fall back to encrypted-but-unverified, which is
+ * open to a man-in-the-middle on the network path.
+ */
+function pgSslOptions(): { ca?: string; rejectUnauthorized: boolean } {
+  const ca = process.env.PG_CA_CERT?.replace(/\\n/g, '\n');
+  if (ca) return { ca, rejectUnauthorized: true };
+  console.warn('[db] PG_CA_CERT not set: Postgres TLS certificate is NOT verified');
+  return { rejectUnauthorized: false };
+}
+
 function createPool(): Pool {
   const connectionString = getConnectionString();
   if (!connectionString) {
@@ -22,7 +35,7 @@ function createPool(): Pool {
   }
   const p = new Pool({
     connectionString,
-    ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false },
+    ssl: connectionString.includes('localhost') ? false : pgSslOptions(),
     // Serverless-friendly tuning: keep pool small to avoid exhausting PgBouncer / Neon limits
     max: parseInt(process.env.PG_POOL_MAX || '5', 10),
     idleTimeoutMillis: 30_000,
@@ -82,10 +95,14 @@ export function getDbErrorStatus(error: unknown): number {
 }
 
 export function getDbErrorMessage(error: unknown): string {
+  // Client-facing: never echo the driver's message (table names, SQL, hosts).
+  // The full error is logged here for operators.
   if (isCircuitBreakerError(error)) {
-    return 'Database temporarily unavailable (circuit breaker: too many authentication failures). Verify DATABASE_URL credentials on Vercel and wait ~60 seconds before retrying. If the issue persists, rotate DATABASE_URL or check Supabase/Neon connection limits.';
+    console.error('[db] circuit breaker: verify DATABASE_URL credentials and wait ~60s', error);
+    return 'Database temporarily unavailable. Please try again in a minute.';
   }
-  return error instanceof Error ? error.message : 'Internal database error';
+  console.error('[db] error hidden from client:', error);
+  return 'Internal database error';
 }
 
 // For testing / graceful shutdown: allow resetting pool (e.g., after credentials rotate)

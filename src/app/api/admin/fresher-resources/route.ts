@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import { requireAdminAuth, hasAdminPermission } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, resources: rows });
   } catch (error: unknown) {
     console.error('admin fresher-resources GET error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -61,6 +62,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, resource: rows[0] });
   } catch (error: unknown) {
     console.error('admin fresher-resources POST error:', (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }

@@ -5,6 +5,7 @@ import { requireGoroboAdmin } from "@/lib/gorobo/admin-auth";
 import { ORDER_SELECT, mapOrderRow, type GoroboOrderRow, parseQuoteBody, QuoteValidationError } from "@/lib/gorobo/orders";
 import { computeQuote } from "@/lib/gorobo/quote";
 import { logAdminAction } from "@/lib/audit";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = "force-dynamic";
 
@@ -143,7 +144,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, order: mapOrderRow(rows[0]) }, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof QuoteValidationError) {
-      return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 400 });
+      return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 400 });
     }
     console.error("admin gorobo orders POST error:", (error instanceof Error ? error.message : String(error)));
     return NextResponse.json({ success: false, error: getDbErrorMessage(error) }, { status: getDbErrorStatus(error) });

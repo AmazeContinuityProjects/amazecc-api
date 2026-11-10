@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdminAuth } from '@/lib/auth';
 import { getDbPool } from '@/lib/db';
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = 'force-dynamic';
 
@@ -83,7 +84,7 @@ export async function GET(req: Request) {
     });
   } catch (error: unknown) {
     console.error('Storage stats GET error:', error);
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -114,6 +115,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
   } catch (error: unknown) {
     console.error('Storage POST error:', error);
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }

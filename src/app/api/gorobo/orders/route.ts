@@ -75,6 +75,7 @@ import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
 import { ensureGoroboSchema, type GoroboItem, type GoroboOrderLine, type GoroboOrderItem } from "@/lib/gorobo/schema";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rateLimit";
+import { publicErrorMessage } from "@/lib/publicError";
 
 export const dynamic = "force-dynamic";
 
@@ -226,6 +227,6 @@ export async function POST(req: Request) {
     );
   } catch (error: unknown) {
     console.error("gorobo orders POST error:", (error instanceof Error ? error.message : String(error)));
-    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
+    return NextResponse.json({ success: false, error: publicErrorMessage(error) }, { status: 500 });
   }
 }

@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import { getDbPool } from '@/lib/db';
 import * as cheerio from 'cheerio';
 import { vitUrl } from '@/lib/upstreamUrl';
+import { checkRateLimit, rateLimitResponse, getClientIp } from '@/lib/rateLimit';
 import https from 'https';
+import { vitHttpsAgent } from "@/lib/vitTls";
+
+const vitAgent = vitHttpsAgent();
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +39,7 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
       return;
     }
 
-    const req = https.get(safeUrl, { rejectUnauthorized: false, timeout: 8000 }, (res) => {
+    const req = https.get(safeUrl, { agent: vitAgent, timeout: 8000 }, (res) => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
         const next = new URL(res.headers.location, safeUrl).toString();
@@ -199,6 +203,11 @@ function findFacultySubpage(pageUrl: string, html: string): string | null {
 }
 
 export async function POST(req: Request) {
+  // Unauthenticated (the app's faculty tab falls back to it), and each call
+  // makes up to two outbound fetches, so cap it per IP.
+  const rl = checkRateLimit(`faculty-scrape:${getClientIp(req)}`, 10, 60000);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   try {
     const { schoolId } = await req.json();
     if (!schoolId) {
@@ -251,6 +260,6 @@ export async function POST(req: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('faculty/scrape error:', message);
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to fetch faculty list' }, { status: 500 });
   }
 }
