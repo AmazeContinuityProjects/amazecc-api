@@ -1,5 +1,5 @@
 import VTOPClient, { getVtopReferer } from "@/lib/clients/VTOPClient";
-import { parseStudentProfile } from "@/lib/parsers/student-profile";
+import { parseStudentProfile, isRegistrationNumber } from "@/lib/parsers/student-profile";
 import { URLSearchParams } from "url";
 import { ownerKeyFor } from "./socialDb";
 
@@ -66,8 +66,26 @@ export async function identifyCaller(body: {
     );
 
     const profile = parseStudentProfile(res.data);
-    // Mirrors AmazeCC-API/src/lib/identity.ts:175
-    const regNumber = profile.registerNo || profile.applicationNumber;
+    const bodyObj = body as { regNo?: string; registerNo?: string; authorizedID?: string };
+    const bodyReg = typeof bodyObj.regNo === "string"
+      ? bodyObj.regNo.trim()
+      : typeof bodyObj.registerNo === "string"
+        ? bodyObj.registerNo.trim()
+        : "";
+    const authReg = typeof bodyObj.authorizedID === "string" ? bodyObj.authorizedID.trim() : authorizedID.trim();
+
+    // Prioritize actual registration number (e.g. 25BLC1081). VTOP login's
+    // authorizedID is the student's register number in this app, so use it as a
+    // reliable fallback when profile parsing/body hints don't yield one.
+    const validReg = (profile.registerNo && isRegistrationNumber(profile.registerNo))
+      ? profile.registerNo.toUpperCase()
+      : (bodyReg && isRegistrationNumber(bodyReg))
+        ? bodyReg.toUpperCase()
+        : (authReg && isRegistrationNumber(authReg))
+          ? authReg.toUpperCase()
+          : null;
+
+    const regNumber = validReg || profile.registerNo || profile.applicationNumber;
     if (!regNumber) {
       return {
         ok: false,
@@ -80,12 +98,15 @@ export async function identifyCaller(body: {
       };
     }
 
+    const resolvedRegNo =
+      validReg || (isRegistrationNumber(regNumber) ? String(regNumber).toUpperCase() : String(regNumber));
+
     return {
       ok: true,
       caller: {
         ownerKey: ownerKeyFor(regNumber),
         displayName: profile.name || "",
-        regNo: regNumber,
+        regNo: resolvedRegNo,
         cookies: cookieHeader,
         authorizedID,
         csrf,
