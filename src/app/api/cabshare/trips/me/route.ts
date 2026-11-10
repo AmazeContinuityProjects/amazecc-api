@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/db";
+import { requireCabshareUser } from "@/lib/cabshareAuth";
 
 export async function GET(req: Request) {
+    const caller = await requireCabshareUser(req);
+    if (caller instanceof NextResponse) return caller;
     try {
-        const { searchParams } = new URL(req.url);
-        const reg_number = searchParams.get("reg_number");
-
-        if (!reg_number) {
-            return NextResponse.json({ success: false, error: "Missing reg_number" }, { status: 400 });
-        }
-
         const pool = getDbPool();
-        const userRes = await pool.query("SELECT user_id FROM cabshare_users WHERE reg_number = $1", [reg_number]);
-        if (userRes.rows.length === 0) {
-            return NextResponse.json({ success: true, my_trips: [], joined_trips: [] });
-        }
-        const user_id = userRes.rows[0].user_id;
+        const user_id = caller.user_id;
 
         // Trips created by the user
         const { rows: myTrips } = await pool.query(`
@@ -28,7 +20,8 @@ export async function GET(req: Request) {
 
         // Trips the user requested to join
         const { rows: joinedTrips } = await pool.query(`
-            SELECT t.*, h.hub_name, h.city, m.status as match_status, u.name as owner_name, u.phone_number as owner_phone
+            SELECT t.*, h.hub_name, h.city, m.status as match_status, u.name as owner_name,
+                   CASE WHEN m.status IN ('accepted', 'accept') THEN u.phone_number END as owner_phone
             FROM cabshare_match_events m
             JOIN cabshare_trips t ON m.trip_id = t.trip_id
             JOIN cabshare_hubs h ON t.hub_id = h.hub_id
@@ -40,7 +33,8 @@ export async function GET(req: Request) {
         // For myTrips, let's also fetch requests on those trips
         for (const trip of myTrips) {
             const reqs = await pool.query(`
-                SELECT m.id as match_id, m.status, u.name, u.reg_number, u.phone_number 
+                SELECT m.id as match_id, m.status, u.name, u.reg_number,
+                       CASE WHEN m.status IN ('accepted', 'accept') THEN u.phone_number END as phone_number
                 FROM cabshare_match_events m
                 JOIN cabshare_users u ON m.requester_id = u.user_id
                 WHERE m.trip_id = $1
@@ -51,6 +45,6 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: true, my_trips: myTrips, joined_trips: joinedTrips });
     } catch (err: unknown) {
         console.error("CabShare My Trips GET Error:", err);
-        return NextResponse.json({ success: false, error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
 }
