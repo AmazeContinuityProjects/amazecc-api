@@ -45,4 +45,4 @@ git-filter-repo.py
 dev-server.log
 scripts/
 vtop-probe-findings.json
-.tmp-vtop-inspect/*
+tmp-vtop-inspect/
