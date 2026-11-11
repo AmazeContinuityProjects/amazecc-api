@@ -103,7 +103,7 @@ Breakdown (a route may serve several):
 Endpoints used **only** by the AmazeCC web frontend (not by any other app):
 
 ```
-/api/cabshare/waitlist   /api/club-enrollment   /api/faculty-info
+/api/cabshare/waitlist   /api/faculty-info
 /api/hostel-attendance   /api/hostel-leave      /api/koha/patron
 /api/qcm-view
 ```
