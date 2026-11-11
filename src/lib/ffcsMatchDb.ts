@@ -72,6 +72,18 @@ export function ensureFfcsMatchSchema(): Promise<void> {
          AND NOT (a.register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$');
     `);
 
+    // Upgrade any remaining non-proper match entries if the student's authentic VIT reg exists in social_people
+    await pool.query(`
+      UPDATE ${FFCS_MATCH_TABLE} m
+         SET register_no = UPPER(p.register_no),
+             updated_at = NOW()
+        FROM ${PERSON_TABLE} p
+       WHERE UPPER(TRIM(m.display_name)) = UPPER(TRIM(p.display_name))
+         AND m.display_name <> ''
+         AND p.register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$'
+         AND NOT (m.register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$');
+    `);
+
     await pool.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS ${FFCS_MATCH_TABLE}_sem_reg_unique
         ON ${FFCS_MATCH_TABLE} (semester_id, register_no)
@@ -192,6 +204,29 @@ export async function publishEntry(
     // If caller has a proper registration number and display name, purge any stale
     // application-number / non-proper reg row for the same student in this semester
     if (isProperReg && cleanName) {
+      const staleRes = await pool.query(
+        `SELECT owner_key, register_no FROM ${FFCS_MATCH_TABLE}
+          WHERE semester_id = $1
+            AND owner_key <> $2
+            AND UPPER(TRIM(display_name)) = UPPER($3)
+            AND NOT (register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$')`,
+        [semesterId, ownerKey, cleanName]
+      );
+      for (const stale of staleRes.rows) {
+        if (stale.register_no) {
+          await pool.query(
+            `DELETE FROM ${FFCS_CLASS_REGISTRATIONS_TABLE} WHERE semester_id = $1 AND register_no = $2`,
+            [semesterId, stale.register_no]
+          );
+          await pool.query(
+            `UPDATE ${FFCS_CLASSES_TABLE}
+                SET register_nos = array_remove(register_nos, $2),
+                    updated_at = NOW()
+              WHERE semester_id = $1 AND $2 = ANY(register_nos)`,
+            [semesterId, stale.register_no]
+          );
+        }
+      }
       await pool.query(
         `DELETE FROM ${FFCS_MATCH_TABLE}
           WHERE semester_id = $1
@@ -248,6 +283,29 @@ export async function backfillRegisterNo(
     );
 
     if (isProperReg && cleanName) {
+      const staleRes = await pool.query(
+        `SELECT owner_key, register_no FROM ${FFCS_MATCH_TABLE}
+          WHERE semester_id = $1
+            AND owner_key <> $2
+            AND UPPER(TRIM(display_name)) = UPPER($3)
+            AND NOT (register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$')`,
+        [semesterId, ownerKey, cleanName]
+      );
+      for (const stale of staleRes.rows) {
+        if (stale.register_no) {
+          await pool.query(
+            `DELETE FROM ${FFCS_CLASS_REGISTRATIONS_TABLE} WHERE semester_id = $1 AND register_no = $2`,
+            [semesterId, stale.register_no]
+          );
+          await pool.query(
+            `UPDATE ${FFCS_CLASSES_TABLE}
+                SET register_nos = array_remove(register_nos, $2),
+                    updated_at = NOW()
+              WHERE semester_id = $1 AND $2 = ANY(register_nos)`,
+            [semesterId, stale.register_no]
+          );
+        }
+      }
       await pool.query(
         `DELETE FROM ${FFCS_MATCH_TABLE}
           WHERE semester_id = $1

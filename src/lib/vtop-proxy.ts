@@ -3,9 +3,6 @@ import { URLSearchParams } from "url";
 import * as cheerio from "cheerio";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
-import { parseDayboarder } from "@/lib/parsers/dayboarder";
-import { parseCredentials } from "@/lib/parsers/credentials";
-import { parseAcknowledgement } from "@/lib/parsers/acknowledgement";
 
 /**
  * Shared VTOP proxy implementations.
@@ -121,12 +118,8 @@ async function runSemesterProxy(
 type ProxyFn = (client: AxiosInstance, creds: ProxyCreds) => Promise<unknown>;
 
 export const VTOP_PROXIES: Record<string, ProxyFn> = {
-  "dayboarder": async (c, creds) => parseDayboarder(await post(c, "/vtop/admissions/dayboarderForMenu", creds)),
-  "credentials": async (c, creds) => parseCredentials(await post(c, "/vtop/proctor/viewStudentCredentials", creds)),
   "hostel-counselling": async (c, creds) => parseVtopHtml(await post(c, "/vtop/examinations/technoCrendentials", creds)),
   "registration-schedule": async (c, creds) => parseVtopHtml(await post(c, "/vtop/examinations/hostelDetails", creds)),
-  "ept-schedule": async (c, creds) => parseVtopHtml(await post(c, "/vtop/compre/eptScheduleShow", creds)),
-  "acknowledgement": async (c, creds) => parseAcknowledgement(await post(c, "/vtop/admissions/AcknowledgmentView", creds)),
   "exc-registration": (c, creds) => runSemesterProxy(c, "/vtop/academics/exc/studentRegistration", creds),
   "course-completion": (c, creds) => runSemesterProxy(c, "/vtop/others/bonafide/CourseCompleteControl", creds),
 };
