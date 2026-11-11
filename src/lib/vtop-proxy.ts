@@ -3,12 +3,8 @@ import { URLSearchParams } from "url";
 import * as cheerio from "cheerio";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
-import { parseBankInfo } from "@/lib/parsers/bank-info";
 import { parseDayboarder } from "@/lib/parsers/dayboarder";
-import { parseWallet } from "@/lib/parsers/wallet";
 import { parseCredentials } from "@/lib/parsers/credentials";
-import { parsePayments } from "@/lib/parsers/payments";
-import { parsePaymentReceipts } from "@/lib/parsers/payment-receipts";
 import { parseAcknowledgement } from "@/lib/parsers/acknowledgement";
 
 /**
@@ -125,13 +121,8 @@ async function runSemesterProxy(
 type ProxyFn = (client: AxiosInstance, creds: ProxyCreds) => Promise<unknown>;
 
 export const VTOP_PROXIES: Record<string, ProxyFn> = {
-  "bank-info": async (c, creds) => parseBankInfo(await post(c, "/vtop/studentBankInformation/BankInfoStudent", creds)),
   "dayboarder": async (c, creds) => parseDayboarder(await post(c, "/vtop/admissions/dayboarderForMenu", creds)),
-  "wallet": async (c, creds) => parseWallet(await post(c, "/vtop/finance/getStudentWallet", creds)),
   "credentials": async (c, creds) => parseCredentials(await post(c, "/vtop/proctor/viewStudentCredentials", creds)),
-  "payments": async (c, creds) => parsePayments(await post(c, "/vtop/p2p/Payments", creds)),
-  "payment-receipts": async (c, creds) => parsePaymentReceipts(await post(c, "/vtop/p2p/getReceiptsApplno", creds)),
-  "library-due": async (c, creds) => parseVtopHtml(await post(c, "/vtop/finance/libraryPayments", creds)),
   "hostel-counselling": async (c, creds) => parseVtopHtml(await post(c, "/vtop/examinations/technoCrendentials", creds)),
   "registration-schedule": async (c, creds) => parseVtopHtml(await post(c, "/vtop/examinations/hostelDetails", creds)),
   "ept-schedule": async (c, creds) => parseVtopHtml(await post(c, "/vtop/compre/eptScheduleShow", creds)),
