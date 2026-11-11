@@ -2,18 +2,81 @@ import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
 import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
-import { CGPA, CurriculumItem, EffectiveGrade, FeedbackStatus } from "@/types/data/grades";
+import { CGPA, CurriculumItem } from "@/types/data/grades";
 import { fetchAllGradesHistory } from "@/lib/grades/fetchAllGradesHistory";
+import type { GradeResultsMap } from "@/types/data/allgrades";
+
+type EffectiveCourse = {
+  courseCode: string;
+  courseTitle: string;
+  courseType: string;
+  creditsEarned: string;
+  grade: string;
+  examMonth?: string;
+  resultDeclared?: string;
+  distributionType?: string;
+};
+
+function normalizeKey(s: unknown): string {
+  return String(s ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function mergeEffectiveIntoSemesters(semesters: GradeResultsMap, effective: EffectiveCourse[]) {
+  const remaining = [...effective];
+  for (const semId of Object.keys(semesters || {})) {
+    const sem = semesters[semId];
+    if (!sem || !Array.isArray(sem.grades)) continue;
+    for (const course of sem.grades as any[]) {
+      const code = String(course.courseCode || "").trim().toUpperCase();
+      let idx = -1;
+      if (code) idx = remaining.findIndex((e) => e.courseCode.toUpperCase() === code);
+      if (idx === -1) {
+        const titleKey = normalizeKey(course.courseTitle);
+        idx = remaining.findIndex((e) => normalizeKey(e.courseTitle) === titleKey && String(e.grade).toUpperCase() === String(course.grade).toUpperCase());
+      }
+      if (idx === -1) continue;
+      const eff = remaining.splice(idx, 1)[0];
+      // Flatten effective-only fields onto the course (no duplicate code/title/grade)
+      if (eff.distributionType) course.distributionType = eff.distributionType;
+      if (eff.creditsEarned) course.creditsEarned = eff.creditsEarned;
+      if (eff.examMonth) course.examMonth = eff.examMonth;
+      if (eff.resultDeclared) course.resultDeclared = eff.resultDeclared;
+      if (eff.courseType) course.effectiveCourseType = eff.courseType; // short code like ETL/OC/TH
+    }
+  }
+  // attach any unmatched effective courses under a synthetic bucket to avoid losing data
+  if (remaining.length) {
+    (semesters as any).__unmapped_effective__ = {
+      gpa: null,
+      grades: remaining.map((eff) => ({
+        courseCode: eff.courseCode,
+        courseTitle: eff.courseTitle,
+        courseType: eff.courseType,
+        grandTotal: "",
+        grade: eff.grade,
+        courseId: null,
+        distributionType: eff.distributionType || "",
+        creditsEarned: eff.creditsEarned || "",
+        examMonth: eff.examMonth || "",
+        resultDeclared: eff.resultDeclared || "",
+        effectiveCourseType: eff.courseType || "",
+      })),
+    };
+  }
+}
 
 /**
  * Unified grades endpoint.
  *
- * Returns the summary previously served by /api/grades plus the semester-wise
- * detailed history previously served by /api/all-grades under `history`.
+ * Single shape: overall summary (cgpa, curriculum) + semester-wise courses with
+ * effective grade info merged into each course. Feedback is served by /api/ffcs.
  */
 export async function POST(req: Request) {
   try {
-    const { cookies, authorizedID, csrf, semesterId } = await req.json().catch(() => ({}));
+    const { cookies, authorizedID, csrf } = await req.json().catch(() => ({}));
 
     const cookieHeader = Array.isArray(cookies) ? cookies.join("; ") : cookies;
 
@@ -41,7 +104,7 @@ export async function POST(req: Request) {
     );
 
     const $$ = cheerio.load(gradeRes.data);
-    const effectiveGrades: EffectiveGrade[] = [];
+    const effectiveCourses: EffectiveCourse[] = [];
 
     const CREDITS_NUMERIC = /^\d+(?:\.\d+)?$/;
     const GRADE_LETTER = /^[SABCDEF]$/i;
@@ -55,11 +118,14 @@ export async function POST(req: Request) {
         const grade = $$(tds[5]).text().trim();
         if (!CREDITS_NUMERIC.test(credits) || !GRADE_LETTER.test(grade)) return;
 
-        effectiveGrades.push({
-          basketTitle: $$(tds[2]).text().trim(),
+        effectiveCourses.push({
+          courseCode: $$(tds[1]).text().trim(),
+          courseTitle: $$(tds[2]).text().trim(),
           courseType: $$(tds[3]).text().trim(),
           creditsEarned: credits,
           grade,
+          examMonth: $$(tds[6]).text().trim(),
+          resultDeclared: $$(tds[7]).text().trim(),
           distributionType: $$(tds[8]).text().trim(),
         });
       });
@@ -117,37 +183,6 @@ export async function POST(req: Request) {
       };
     }
 
-    const feedbackRes = await client.post(
-      "/vtop/processViewFeedBackStatus",
-      new URLSearchParams({
-        authorizedID: String(authorizedID),
-        semesterSubId: semesterId ?? "",
-        _csrf: String(csrf),
-        x: Date.now().toString(),
-      }).toString(),
-      {
-        headers: {
-          Cookie: cookieHeader,
-          "Content-Type": "application/x-www-form-urlencoded",
-          Referer: "https://vtopcc.vit.ac.in/vtop/open/page",
-        },
-      }
-    );
-
-    const $$$ = cheerio.load(feedbackRes.data);
-    const isGiven = (text: string) => !text.toLowerCase().includes("not");
-
-    const feedback: FeedbackStatus = {
-      MidSem: {
-        Curriculum: isGiven($$$("tbody tr").eq(0).find("td").eq(1).text()),
-        Course: isGiven($$$("tbody tr").eq(1).find("td").eq(1).text()),
-      },
-      EndSem: {
-        Curriculum: isGiven($$$("tbody tr").eq(0).find("td").eq(2).text()),
-        Course: isGiven($$$("tbody tr").eq(1).find("td").eq(2).text()),
-      },
-    };
-
     const history = await fetchAllGradesHistory({
       cookieHeader,
       authorizedID: String(authorizedID),
@@ -155,14 +190,14 @@ export async function POST(req: Request) {
       client,
     });
 
+    mergeEffectiveIntoSemesters(history, effectiveCourses);
+
     return NextResponse.json(
       {
         success: true,
         overall: {
-          effectiveGrades,
-          curriculum,
           cgpa,
-          feedback,
+          curriculum,
         },
         semesters: history,
       },

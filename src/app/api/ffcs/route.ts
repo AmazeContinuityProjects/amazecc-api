@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import VTOPClient from "@/lib/clients/VTOPClient";
+import * as cheerio from "cheerio";
 import { URLSearchParams } from "url";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 import { parseFeedbackStatus } from "@/lib/parsers/feedback-status";
@@ -15,6 +16,7 @@ function cookieHeaderOf(cookies: unknown): string {
  * Combined FFCS-related endpoint.
  * - registrationSchedule: registration schedule view (previously /api/registration-schedule)
  * - feedbackStatus: detailed feedback status (previously /api/feedback-status)
+ * - feedback: simple standalone Mid/End feedback completion status (moved from /api/grades)
  *
  * For feedback details of a specific semester, pass `semesterId`.
  * Use `section: "registration" | "feedback"` to fetch only one part.
@@ -41,6 +43,7 @@ export async function POST(req: Request) {
 
     let registrationSchedule: unknown = undefined;
     let feedbackStatus: unknown = undefined;
+    let feedback: unknown = undefined;
 
     if (wantRegistration) {
       const resp = await client.post(
@@ -63,6 +66,7 @@ export async function POST(req: Request) {
     }
 
     if (wantFeedback) {
+      // Detailed feedback status (table/semesters)
       if (semesterId) {
         const resp = await client.post(
           "/vtop/processViewFeedBackStatus",
@@ -101,9 +105,39 @@ export async function POST(req: Request) {
         );
         feedbackStatus = { success: true, ...parseFeedbackStatus(resp.data) };
       }
+
+      // Simple standalone feedback status (moved from /api/grades)
+      const simpleResp = await client.post(
+        "/vtop/processViewFeedBackStatus",
+        new URLSearchParams({
+          authorizedID: String(authorizedID),
+          semesterSubId: semesterId ?? "",
+          _csrf: String(csrf),
+          x: Date.now().toString(),
+        }).toString(),
+        {
+          headers: {
+            Cookie: cookieHeader,
+            "Content-Type": "application/x-www-form-urlencoded",
+            Referer: REFERER,
+          },
+        }
+      );
+      const $$$ = cheerio.load(simpleResp.data);
+      const isGiven = (text: string) => !text.toLowerCase().includes("not");
+      feedback = {
+        MidSem: {
+          Curriculum: isGiven($$$("tbody tr").eq(0).find("td").eq(1).text()),
+          Course: isGiven($$$("tbody tr").eq(1).find("td").eq(1).text()),
+        },
+        EndSem: {
+          Curriculum: isGiven($$$("tbody tr").eq(0).find("td").eq(2).text()),
+          Course: isGiven($$$("tbody tr").eq(1).find("td").eq(2).text()),
+        },
+      };
     }
 
-    return NextResponse.json({ success: true, registrationSchedule, feedbackStatus });
+    return NextResponse.json({ success: true, registrationSchedule, feedbackStatus, feedback });
   } catch (err: unknown) {
     console.error("ffcs error:", err instanceof Error ? err.message : String(err));
     return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
