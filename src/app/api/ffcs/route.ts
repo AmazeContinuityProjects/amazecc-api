@@ -12,14 +12,75 @@ function cookieHeaderOf(cookies: unknown): string {
   return Array.isArray(cookies) ? cookies.join("; ") : String(cookies ?? "");
 }
 
+async function fetchWishlist(client: ReturnType<typeof VTOPClient>, cookieHeader: string, authorizedID: string, csrf: string) {
+  const headers = {
+    Cookie: cookieHeader,
+    "Content-Type": "application/x-www-form-urlencoded",
+    Referer: REFERER,
+  };
+  const INIT_URL = "/vtop/academics/registration/wishlistRegPage";
+  const initResp = await client.post(
+    INIT_URL,
+    new URLSearchParams({
+      verifyMenu: "true",
+      authorizedID,
+      _csrf: csrf,
+      nocache: Date.now().toString(),
+    }).toString(),
+    { headers }
+  );
+  const $ = cheerio.load(initResp.data);
+
+  let semFieldName = "semesterSubId";
+  $("select").each((_, el) => {
+    const name = $(el).attr("name") || $(el).attr("id") || "";
+    let hasSemOption = false;
+    $(el)
+      .find("option")
+      .each((__, opt) => {
+        const txt = $(opt).text().trim().toLowerCase();
+        if (txt.includes("sem") || txt.includes("fall") || txt.includes("winter") || txt.includes("summer")) hasSemOption = true;
+      });
+    if (hasSemOption && name) semFieldName = name;
+  });
+
+  const options: { value: string; text: string }[] = [];
+  $(`select[name="${semFieldName}"] option, select[id="${semFieldName}"] option`).each((_, el) => {
+    const v = $(el).attr("value");
+    if (v && v !== "null" && v !== "") options.push({ value: v, text: $(el).text().trim() });
+  });
+
+  const semesters: Record<string, unknown> = {};
+  for (const opt of options) {
+    try {
+      const dataResp = await client.post(
+        INIT_URL,
+        new URLSearchParams({
+          authorizedID,
+          x: new Date().toUTCString(),
+          [semFieldName]: opt.value,
+          _csrf: csrf,
+        }).toString(),
+        { headers }
+      );
+      semesters[opt.text] = { ...parseVtopHtml(dataResp.data) };
+    } catch (e: unknown) {
+      semesters[opt.text] = { error: e instanceof Error ? e.message : String(e) };
+    }
+  }
+  return { success: true, semesters };
+}
+
 /**
  * Combined FFCS-related endpoint.
  * - registrationSchedule: registration schedule view (previously /api/registration-schedule)
  * - feedbackStatus: detailed feedback status (previously /api/feedback-status)
  * - feedback: simple standalone Mid/End feedback completion status (moved from /api/grades)
+ * - wishlist: wishlist registration data by semester (previously /api/wishlist)
  *
  * For feedback details of a specific semester, pass `semesterId`.
- * Use `section: "registration" | "feedback"` to fetch only one part.
+ * Use `section: "registration" | "feedback" | "wishlist"` to fetch a specific part.
+ * `section: "all"` (or omitted) fetches registration + feedback + wishlist.
  */
 export async function POST(req: Request) {
   try {
@@ -29,7 +90,7 @@ export async function POST(req: Request) {
       authorizedID?: string;
       csrf?: string;
       semesterId?: string;
-      section?: "registration" | "feedback" | "all";
+      section?: "registration" | "feedback" | "wishlist" | "all";
     };
 
     const cookieHeader = cookieHeaderOf(cookies);
@@ -40,10 +101,12 @@ export async function POST(req: Request) {
     const client = VTOPClient();
     const wantRegistration = !section || section === "all" || section === "registration";
     const wantFeedback = !section || section === "all" || section === "feedback";
+    const wantWishlist = !section || section === "all" || section === "wishlist";
 
     let registrationSchedule: unknown = undefined;
     let feedbackStatus: unknown = undefined;
     let feedback: unknown = undefined;
+    let wishlist: unknown = undefined;
 
     if (wantRegistration) {
       const resp = await client.post(
@@ -137,7 +200,11 @@ export async function POST(req: Request) {
       };
     }
 
-    return NextResponse.json({ success: true, registrationSchedule, feedbackStatus, feedback });
+    if (wantWishlist) {
+      wishlist = await fetchWishlist(client, cookieHeader, String(authorizedID), String(csrf));
+    }
+
+    return NextResponse.json({ success: true, registrationSchedule, feedbackStatus, feedback, wishlist });
   } catch (err: unknown) {
     console.error("ffcs error:", err instanceof Error ? err.message : String(err));
     return NextResponse.json({ success: false, error: publicErrorMessage(err) }, { status: 500 });
