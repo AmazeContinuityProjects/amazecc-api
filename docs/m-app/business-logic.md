@@ -1,73 +1,76 @@
-# Business logic & application behavior
+# Business logic and how the app behaves
 
-Recovered from Blutter asm (`asm/*`), `pp.txt`, in-app routes, and client behavior in `eHa`/callers.
+This explains what the VITianCC app does for a student, how its features connect, and the key rules the client follows behind the scenes.
 
-## 1. Application domains & flows
+## 1. Main features and flows
 
-### 1.1 Onboarding & access
-- **Entry:** `package:vtop/main.dart` (`::main`), splash/loading → sign-in or home based on stored session.
-- **Authentication:** credentials login to VTOP (`appLoginProcess`, encrypted), optional MPIN (6-digit) and biometric unlock, OTP for sensitive/wallet operations.
-- **Session bootstrap:** on successful auth the app resolves runtime config (`tLa`: `cvf`, `Pxf`, `Euf`) and identity (`applNo`) used for all subsequent API calls.
+### 1.1 Getting in: launch and sign-in
+- **Launch:** the app opens, shows a loading/start screen, then takes you to sign-in or straight to home depending on whether a usable session exists.
+- **Sign-in:** you authenticate against VTOP (credentials sent in an encrypted request). You can also use on-device helpers like a 6-digit MPIN, biometrics, or an OTP for certain steps.
+- **After sign-in:** the app sets up the session details it needs for every later request (the session-specific URL path, authentication header values, and your application number).
 
-### 1.2 Dashboard (`/homeScreen`, dashboard actions)
-- Aggregates entry points: academics, attendance, timetable, exams, grades, proctor, grievances, wallet, notifications/spotlight.
-- Populated via `dashboardFromAcademics`, `mainMenuPage`, `quickMenuDashboardPage`; quick actions deep-link into feature screens.
+### 1.2 Home / dashboard
+- Brings together entry points to academics, attendance, timetable, exams, grades, proctor, grievances, hostel, wallet/payments, notifications, and spotlight content.
+- Populated by dashboard/menu actions (academic dashboard, main menu, quick menu) and links into the relevant screens.
 
 ### 1.3 Academics
-- **Semester context:** `getSemesterList` returns semester identifiers/labels and timetable/feedback pattern ids. Most academic queries are **scoped to a selected semester** (`semesterId/SubId/Desc`, `timeTablePatternId`).
-- **Attendance:** calendar/slot/day views and per-course percentages/details; client presents averages and an `acadAttendanceCalculator` to project attendance impact of future classes.
-- **Timetable:** current-day and all-day/week timetable driven by semester & pattern (`allDayTimetable`, `timeTable`).
-- **Courses:** registered/offered course lists and course details; feeds marks/assignments contexts.
-- **Exams:** `examScheduleView` per semester (date/time/session).
-- **Grades/Marks/CGPA:** active semester mark view, grade/mark details by semester and course; CGPA details surfaced from server responses.
+- **Choose a semester first:** the app fetches your semester list (IDs, labels, and related pattern IDs). Most academic information is shown **for the selected semester**.
+- **Attendance:** shows a calendar/slot/day view with status (e.g. present/absent/on-duty as reported), per-course details and percentages, plus an attendance calculator to estimate how future classes affect your percentage (based on the numbers provided).
+- **Timetable:** shows today’s and the full timetable for the selected semester/pattern.
+- **Courses:** lists registered/offered courses (code, name, type, category) and feeds into exams/marks/assignments views.
+- **Exams:** shows the exam schedule for the selected semester (date, time, session).
+- **Marks, grades, and CGPA:** lets you view marks/grades per semester and per course, with CGPA/details as returned by the server.
 
-### 1.4 Proctor & faculty
-- Proctor profile, messages, semester-wise meeting lists/history.
-- Faculty directory/search, faculty detail/image, HOD/Dean info, course-faculty messages — supports lookup and communication context.
+**Rule of thumb:** pick a semester → fetch data for that semester → drill down using the IDs returned (course, exam, etc.).
 
-### 1.5 Grievance management
-- **Compose:** fetch categories (`getCategoryList`) → user fills form and may attach files → submit via multipart `postGrievanceForm` (`Hrf`).
-- **Track:** list/history (`getPostTrackingScreeenDataByStud`) and detail/remarks/status (`getPostTrackingViewDataByStud`) including `grievanceTransId`, `grievanceStatus`, `grievanceRemarks`, `trackingRemarks` (e.g. forwarded/resolved states).
+### 1.4 Proctor and faculty
+- View your proctor’s details, messages, and semester-wise meeting history.
+- Look up faculty (directory/search), view faculty details/photos, HOD/Dean info, and course-faculty messages.
 
-### 1.6 Hostel & leave
-- Hosteller profile, leave type lookup, apply leave, and view leave history/status.
+### 1.5 Grievances
+- **Raise a grievance:** load the category list → fill in the form → optionally attach files → submit (sent as a form upload). Keep the returned transaction/reference ID.
+- **Track a grievance:** view your grievance list/history, then open a specific item to see its status, remarks, and tracking updates (e.g. forwarded, resolved) as reported by the server.
 
-### 1.7 Wallet & payments
-- **VTOP wallet:** balance, history, amount entry, payment/adjustment processing (OTP-guarded where required) and receipt viewing.
-- **Payment gateway:** pending dues/list, payable windows (`paymentOpenDate/CloseDate`), amounts/status; native Paytm Assist/Easypay integration for gateway/3DS flows, event logging, and app-version/config fetch.
+### 1.6 Hostel and leave
+- View hosteller details, see available leave types, apply for leave, and check the status/history of leave requests.
 
-### 1.8 Notifications & content
-- In-app notifications, spotlight items/files, contact/help info.
+### 1.7 Wallet and payments
+- **VTOP wallet:** check balance and history, add/adjust amounts, and complete wallet steps (some steps require an OTP). View receipts for transactions.
+- **Payments/dues:** see pending payments, amounts, and payable windows (open/close dates). Completing payment may go through the integrated Paytm payment/assist flow (including 3DS verification) in addition to VTOP’s own payment records.
 
-## 2. Cross-cutting behaviors
+### 1.8 Notifications and content
+- View notifications, spotlight items/files, and contact/help information.
 
-### 2.1 Request lifecycle (client)
-1. Resolve session (`cvf`, headers, `applNo`); check connectivity.
-2. Build request per wrapper (`qrf/prf/nrf/orf/Hrf/...`), encrypt body when required (`encData`), attach auth headers.
-3. POST with timeout (~5s typical), JSON content-type.
-4. On success: decrypt/parse, update UI, and **cache** response in local DB (`jHa`/`gGa` keyed with timestamps).
-5. On failure: show contextual errors (network/timeout/server/bad request); on session-invalid trigger **re-auth navigation** to `/sign_in_page`.
+## 2. How the app behaves behind the scenes
 
-### 2.2 Caching & offline behavior
-- Responses cached in encrypted `VitianLocalDB` (`id, encryptedData, lastDate`) enabling reuse/stale reads and resilience; UI surfaces "No proper Internet Connection..." when offline and may fall back to cached data where implemented.
+### 2.1 A typical request from tap to screen
+1. **Prepare:** confirm there’s a valid session (session path, auth headers, application number) and that the device is online.
+2. **Build & send:** choose the right action and request style (standard, encrypted, or file upload), add headers and the encrypted body when needed, and send it (usually with about a 5-second timeout).
+3. **On success:** decrypt/read the response, show it, and **save a copy in a local encrypted cache** (with a timestamp) so it can load faster or be reused.
+4. **On failure:** show a helpful message (no internet, timeout, server busy/error). If the problem means the **session expired/invalid**, take the user back to sign-in instead of retrying endlessly.
 
-### 2.3 Data scoping & identifiers
-- `applNo` (student/application number) is a primary identity key injected into many requests.
-- Semester/course/transaction identifiers (`semesterId/SubId`, `course_code/id`, `grievanceId/TransId`, txn/order ids) returned by list endpoints must be passed back to detail/action endpoints.
-- `cvf()` path prefix and auth tokens are **dynamic/session-bound** — not hardcoded constants.
+### 2.2 Caching and offline behavior
+- The app keeps an **encrypted local database** (`VitianLocalDB`) of cached responses/data. This helps screens load quickly and can provide previously fetched information when the network is poor.
+- When there’s no connection, the app reports it and may show cached data where available—but actions that need the server still require connectivity and a valid session.
 
-### 2.4 Security/validation logic
-- Sensitive payloads encrypted client-side into `encData`; server responses may be decrypted/validated client-side (`Hxf/Ixf`).
-- Time-bound request signing via `S-KEY-USER` (`timestamp|user|vitian` encoded).
-- TLS certificate pinning (Flutter plugin) on top of HTTPS.
-- MPIN/biometric/OTP as step-up or convenience auth; API lockout/timeout messaging handled (e.g. too-many-attempts lockouts).
+### 2.3 How data is scoped
+- **By student:** many requests include the student’s application number.
+- **By semester (and related IDs):** academics are usually tied to the selected semester (and sometimes a course or timetable pattern). The app uses IDs returned by one call (semester, course, grievance, transaction) as inputs to the next.
+- **By session:** the URL path segment and authentication headers are created for the current session and change when you log in again—nothing here should be treated as a permanent, hardcoded value.
 
-## 3. Inferred end-to-end example (exam schedule)
-1. User logs in (`orf` → `appLoginProcess`, `{encData}`) → session established.
-2. App loads semesters (`getSemesterList`, `qrf`) → user selects semester.
-3. App calls `examScheduleView` (`qrf`, params include selected semester context) to `base+cvf()+examScheduleView` with `S-API-KEY`, `S-KEY-USER`, `applNo`.
-4. Response cached/decrypted and rendered as schedule; on session expiry, redirected to sign-in.
+### 2.4 Security and safety checks in the flow
+- Sensitive requests (including login) are sent as **encrypted payloads**; responses may be decrypted by the app.
+- Each authenticated request carries a **time-based signed header** tied to the user/session.
+- Connections to the backend are protected with **certificate pinning**.
+- MPIN, biometrics, and OTP add extra verification for access or specific actions; the app also handles lockouts/too-many-attempts cases with user-facing messages.
 
-## 4. Limits of inference
-- Exact request/response JSON schemas per action (field-level) are partially implicit; `encData` contents and some param maps are constructed at runtime. Use these notes to guide authorized inspection (debug proxy with pinning handled, or instrumented client) for schema-precise integration.
-- Server-side validation/business rules (eligibility, windows, state transitions) are authoritative on VTOP; the client enforces UX-level checks only.
+## 3. Example: checking your exam schedule
+1. Sign in → the app establishes a session.
+2. Fetch the semester list → you pick a semester.
+3. The app requests the exam schedule for that semester → the server returns the schedule.
+4. The app shows it (and caches it). If your session has expired at any point, the app asks you to sign in again first.
+
+## 4. What these notes can’t fully tell you
+- Some **exact field names and response shapes** are built at runtime or encrypted in transit; confirm details with your own authorized, controlled testing if you need schema-level precision.
+- Final decisions like eligibility, payment windows, and status transitions are enforced by the **VTOP server**—the app mainly presents and guides, it doesn’t override server rules.
+- Use this understanding only for your own account and in line with VIT/VTOP policies and applicable law.

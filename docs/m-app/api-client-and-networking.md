@@ -1,78 +1,87 @@
-# API client & networking
+# How the app talks to the server (networking)
 
-Source of truth (recovered): Blutter `asm/aAh.dart` (`class eHa`), `asm/*Ch.dart` call sites, `pp.txt`; native: `classes*.dex` (OkHttp/Paytm), Flutter plugin `http_certificate_pinning`.
+This describes the single, shared networking layer the Flutter app uses for VTOP requests: how it builds URLs, authenticates, encrypts data, sends requests, and handles responses. (Original recovered identifiers are listed in the technical reference at the end.)
 
-## 1. Base URL and routing
+## 1. Where requests go (URLs)
 
-- **Backend base:** `https://vtopcc5.vit.ac.in/` (object pool string)
-- **Dynamic prefix:** `cvf()` on `tLa` (`tLa._dEb` initialized lazily, awaited). Most requests target:
-  - `URL = base + cvf() + action` (e.g. `https://vtopcc5.vit.ac.in/{cvf()}{action}`)
-- **Login (exception):** full static URL `https://vtopcc5.vit.ac.in/login/vitian/appLoginProcess`
+- **Server:** `https://vtopcc5.vit.ac.in/`
+- **Most actions:** the app builds the URL as  
+  **`https://vtopcc5.vit.ac.in/` + `<session path segment>` + `<action name>`**  
+  The middle piece (a session/config-specific path segment) is **not hardcoded**—the app resolves it at runtime from the logged-in session/configuration. You must use the value from a valid session; don’t assume it’s empty or fixed.
+- **Login (special case):** uses a fixed, full URL:  
+  **`https://vtopcc5.vit.ac.in/login/vitian/appLoginProcess`**
 
-> `cvf()` is resolved at runtime from app/config/session state (`tLa`); capture it from a live session (or from decrypted/config responses) when replaying calls. Do not assume it is empty or constant across sessions/builds.
+**Action name** means the server operation being requested (e.g. fetching an exam schedule or profile). See [endpoints.md](endpoints.md) for the recovered action names.
 
-## 2. Core client: `eHa` (`asm/aAh.dart`)
+## 2. The shared API client (what every request goes through)
 
-`eHa` centralizes connectivity checks, header construction, (optional) auth, JSON encoding, request dispatch, response handling/decryption, caching, and session-expiry behavior.
+All VTOP calls flow through one central service in the app that takes care of: checking connectivity, building headers, attaching authentication, formatting/encrypting the body, sending the HTTP request, reading/decrypting the response, caching results, and reacting to expired sessions.
 
-### 2.1 Auth header builder — `Grf()` (async) → `Map<String,String>`
-- `S-API-KEY` = `Crf()` → `await tLa::Pxf()` (instance field; API key/token material)
-- `S-KEY-USER` = `Drf()` → builds and encodes a signed/time-bound value:
-  - computes `timestamp_ms` via `ja::_NYa/pZa` (current epoch ms)
-  - fetches user/credential component via `tLa::Euf()`
-  - composes string: `"{timestamp}|{Euf()}|vitian"`
-  - encodes/encrypts with `uLa::Hv(...)` → header value
-- `Crf()`/`Drf()` depend on late-static `tLa._dEb` and per-session values (`Pxf/Euf`); headers are therefore **session/time-derived** and must be generated fresh per request/session context.
+### 2.1 Authentication headers (added to most requests)
 
-### 2.2 Main executor — `zrf(...)` (async)
-Invoked by all wrappers; performs the actual HTTP call via `_cv::XRe(...)` (Dart HTTP client/transport wrapper).
+For authenticated requests the app computes and sends two custom headers on each call:
 
-**Key behaviors (from asm):**
-- **Connectivity:** checks network via `rLa::mxf()`; aborts/fails gracefully if offline (surfaces "No proper Internet Connection..." flows).
-- **Headers:** starts with `content-type: application/json; charset=UTF-8`; merges caller-supplied headers; when `Brf` (auth flag) is true, merges `Grf()` (adds `S-API-KEY`, `S-KEY-USER`).
-- **Body:** JSON-encodes the parameter/body map (`dart:convert`/`Nnb`/equivalent) and attaches to request.
-- **Method/type:** request object `yv` created with type `tv` indicating POST-style submission to `XRe(url, body, request, ...)`.
-- **Timeout:** optional `timeout` (e.g. ~5,000,000 µs / 5s via `ka` + `_Future.timeout`) depending on `rrf`/flags.
-- **Response handling:** reads status/body; on success may decode/decrypt (`sLa::Ixf`) and return parsed data; on certain failures maps to `hHa`/error states with user-facing messages (e.g. "Invalid request. Please login again.", "Request timed out...").
-- **Caching (local DB):** integrates with `jHa` (e.g. `qnf`/`yrf`/`Dxf`/`Fxf`) storing entries keyed by request/action with timestamps (`gGa`) to serve cached data and/or support resilience.
-- **Session expiry / re-auth:** on invalid/expired session responses, triggers navigation to sign-in (`/sign_in_page`, `package:vtop/main.dart` navigator) via closures in `Erf/_rvb` flow; retries/recursion controlled by `xrf`/`rrf`.
+| Header | What it represents | How it’s produced (inferred) |
+|---|---|---|
+| `S-API-KEY` | A session API key/token | Fetched from the app’s session/config state after login |
+| `S-KEY-USER` | A time-bound, user-tied signature | Built from the current timestamp, a session/user value, and the string `vitian`, then encoded/encrypted (e.g. conceptually `encode("{timestamp_ms}|{user_value}|vitian")`) |
 
-### 2.3 Request wrappers (public/internal API methods)
+Because `S-KEY-USER` includes the current time and session material, **headers are effectively one-time/time-sensitive**—generate them fresh for each request in a valid session rather than reusing old ones.
 
-| Method | Signature (recovered) | URL | Body / params | Auth headers | Notes |
-|---|---|---|---|---|---|
-| `qrf` | `(this, paramsMap, path, {rrf=true})` async | `base + cvf() + path` | JSON map = `paramsMap` + injected `applNo` (`vLa::Kxf("applNo")`) | via `zrf` (default auth on) | General-purpose authenticated action call |
-| `prf` | `(this, path, data)` async | `base + cvf() + path` | `{"encData": Hxf(jsonEncode(data))}` (encrypted) | via `zrf` | Sensitive/data actions using encrypted envelope |
-| `nrf` | `(this, path, data, body)` async | `base + cvf() + path` | encrypted/structured (uses `encData`/`zrf` path) | via `zrf` | Variant used for specific flows |
-| `orf` | `(this, loginData)` async | `https://vtopcc5.vit.ac.in/login/vitian/appLoginProcess` | `{"encData": Hxf(jsonEncode(loginData))}` | `Brf=false, rrf=false` | Login (no session headers/limited retry) |
-| `Hrf` | `(this, formData, file/parts)` async | `base + cvf() + "postGrievanceForm"` | multipart/form-data (file upload + fields) | `Grf()` merged explicitly | Grievance submission with attachments |
-| `srf/vrf/wrf` | (async variants) | `base + cvf() + path` (or specific composition) | JSON / `encData` depending on variant | per variant | Specialized actions; routed through `zrf` |
-| `Erf/_rvb` | helpers | n/a | n/a | n/a | Error/redirect/retry & UI navigation helpers |
+### 2.2 What the request looks like on the wire
 
-> `Hxf`/`Ixf` (`sLa`) perform payload encryption and response decryption/interpretation respectively. Exact cipher/mode/padding/IV and key sourcing are in Dart/native crypto helpers not fully string-lifted here; `encData` is the on-wire encrypted blob.
+- **Method:** POST
+- **Content type:** `application/json; charset=UTF-8` (for JSON actions); grievance submission with attachments uses `multipart/form-data`
+- **Body formats (depending on the action):**
+  - **Plain JSON parameters** – a JSON object of parameters, with the student’s **application number** automatically added by the client.
+  - **Encrypted payload** – the parameters are JSON-encoded, encrypted, and sent as `{ "encData": "<encrypted_blob>" }`. (Login always uses this form.)
+  - **Multipart form** – form fields plus file attachment(s) for grievance submission.
+- **Timeout:** requests are given a short timeout (around 5 seconds in the recovered behavior) and may be retried/cancelled according to the call type.
+- **Transport:** sent through the app’s HTTP executor over HTTPS (with certificate pinning enforced by the app).
 
-## 3. Common request pattern (reconstructed)
+### 2.3 How responses are handled
 
-1. Ensure session/config initialized (`tLa` / `cvf`, `Pxf/Euf`, `applNo`).
-2. Build action name `path` (e.g. `examScheduleView`, `myProfileInfo`) and params/body.
-3. Choose wrapper:
-   - `qrf` for plain JSON + `applNo` actions.
-   - `prf/nrf/srf/vrf/wrf` for encrypted `encData` or special forms.
-   - `orf` for login; `Hrf` for multipart grievance upload.
-4. Client adds `content-type: application/json; charset=UTF-8`, derives `S-API-KEY`/`S-KEY-USER` (when required), POSTs to `base+cvf()+path`.
-5. Handle decrypted response or session-expiry (re-login).
+- The client reads the status and body, then **decrypts/decodes** the response where applicable before returning it to the app.
+- On success the data is shown in the UI and **cached locally** (in an encrypted on-device database, keyed with timestamps) so it can be reused or help with intermittent connectivity.
+- On failure it maps errors to user messages (e.g. network issues, timeouts, “Invalid request. Please login again.”, server errors).
 
-## 4. Native/network transport & pinning
+### 2.4 Session expiry and re-authentication
 
-- **`http_certificate_pinning` plugin** (`diefferson.http_certificate_pinning.HttpCertificatePinningPlugin`): enforces TLS certificate pinning for app HTTP(S) calls (pin set/config in Dart/app config; not exposed as plaintext in snapshot).
-- **OkHttp3 (bundled):** `OkHttpClient` with interceptors, `CookieJar`, `CertificatePinner` available to native/SDK flows.
-- **Connectivity & errors:** timeouts, "Server error/bad syntax", "Request timed out. Slow internet or Server is busy..." surfaced to UI.
+If the server indicates the session is invalid/expired, the client stops treating it as a normal data error: it clears/refreshes the relevant state and **navigates the user back to the sign-in screen** so they can log in again. After a fresh login, the session path segment, headers, and application number are regenerated and requests work again.
 
-## 5. Best-use guidance
+## 3. Request types the app uses
 
-- **Always mirror session semantics:** obtain/refresh `cvf()`, `applNo`, `S-API-KEY`/`S-KEY-USER` from a legitimate authenticated session; never reuse stale time-bound headers.
-- **Respect encryption:** for `prf/nrf/orf/wrf` paths, send the same `encData` envelope (correct key/IV/algo derived as the app does) — plaintext bodies will be rejected.
-- **Rate/behavior:** client enforces ~5s timeouts, retries, and caching; avoid aggressive parallel polling against VTOP.
-- **Session handling:** detect "Invalid request. Please login again." / 401-like states and re-authenticate instead of blind retries.
-- **Pinning:** direct replay tooling must account for certificate pinning (use the app’s pinned channel or an authorized test environment).
-- **Compliance:** interact only with your own account/data and in accordance with VIT/VTOP terms of use.
+The app chooses a request style based on what the action needs:
+
+| Request style | When it’s used | URL | Body | Auth headers |
+|---|---|---|---|---|
+| **Login request** | Signing in | Fixed login URL | Encrypted payload `{ "encData": ... }` | No pre-existing session headers |
+| **Standard data/action request** | Most “get data / do action” calls | `base + session path + action` | JSON parameters + application number | Yes (API key + signed user header) |
+| **Encrypted data request** | Sensitive actions (and some data calls) | `base + session path + action` | Encrypted payload `{ "encData": ... }` | Yes |
+| **File upload request** | Submitting a grievance with attachments | `base + session path + postGrievanceForm` | Multipart form data + files | Yes |
+| **Other specialized variants** | Specific flows | `base + session path + action` | JSON or encrypted, per flow | Per flow |
+
+## 4. Typical request flow (end to end)
+
+1. **Confirm session:** have a valid logged-in session so the app knows the session path segment, can compute auth headers, and knows the student application number.
+2. **Pick the action:** choose the server action name for the screen/task (e.g. exam schedule, profile, attendance).
+3. **Build the body:** assemble parameters; the client adds the application number for standard calls, or encrypts the whole payload into `encData` for encrypted/login calls.
+4. **Attach headers & send:** set JSON content type, add `S-API-KEY` and `S-KEY-USER` when required, POST to the composed URL.
+5. **Process the result:** decrypt/parse the response, use/cache it; if the session is rejected, prompt sign-in again.
+
+## 5. Transport security and native networking
+
+- **Certificate pinning:** the app uses the `http_certificate_pinning` Flutter plugin so HTTPS connections to the backend are pinned (the connection is rejected if the certificate doesn’t match what the app expects).
+- **Native HTTP stack:** the Android side bundles OkHttp (with support for interceptors, cookies, and certificate pinning) used by native components/plugins (e.g. payments).
+- **On-device storage:** cached API data is stored in an encrypted local database (`VitianLocalDB`, table storing an id, encrypted data, and a timestamp).
+
+## 6. Practical guidance
+
+- **Treat the session as dynamic:** the session path segment, API key, signed user header, and application number come from a real, current login—refresh them when you re-authenticate.
+- **Match the request style:** actions that expect an encrypted `encData` body or multipart upload will not work with a plain JSON body.
+- **Be gentle and correct:** keep timeouts/retry behavior reasonable, don’t hammer the server, and always handle “session expired / please log in again” by re-authenticating.
+- **Mind pinning:** any custom client or proxy must account for certificate pinning to connect successfully.
+- **Stay authorized:** only access your own account/data and follow VIT/VTOP terms and applicable law.
+
+## Technical reference (recovered identifiers)
+Central client `eHa` (`asm/aAh.dart`): dynamic path `cvf()` (`tLa`), headers `Grf()`→`S-API-KEY`/`S-KEY-USER` via `Crf()`/`Drf()` (`tLa::Pxf/Euf`, `uLa::Hv`), core executor `zrf()`→`_cv::XRe`, wrappers `orf` (login), `qrf` (standard, injects `applNo` from `vLa::Kxf`), `prf/nrf/srf/vrf/wrf` (encrypted/variants), `Hrf` (multipart `postGrievanceForm`), helpers `Erf/_rvb`; crypto `Hxf` (encrypt) / `Ixf` (decrypt) (`sLa`); cache `jHa`/`gGa`, DB `VitianLocalDB`.

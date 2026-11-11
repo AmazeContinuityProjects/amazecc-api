@@ -1,57 +1,57 @@
-# Native components & security
+# Native components and security
 
-Sources: base APK `classes*.dex` (DEX strings/method tables), Flutter plugins/assets, device split libs, Blutter outputs.
+The VITianCC app is primarily Flutter/Dart, but it also includes native Android components and third-party SDKs. This document summarizes those parts and the security measures observed.
 
-## 1. Native app surface
+## 1. What’s inside the app (native side)
 
-- **Package/activity:** `edu.vit.vitiancc` / `edu.vit.vitiancc.MainActivity` (Flutter embedding: `FlutterActivity` / delegates).
-- **Flutter engine/libs (arm64 split):** `libapp.so` (Dart AOT), `libflutter.so`, `libdatastore_shared_counter.so`, `libtoolChecker.so`.
-- **Frameworks/SDKs present:** Flutter, OkHttp3, Firebase (Core/Installations/Crashlytics/Sessions), Google Play Services, Paytm PGSDK + Easypay Assist, Apache Tika fetcher classes (bundled), AndroidX/Jetpack.
+- **App identity:** Android package `edu.vit.vitiancc` (Flutter-based main activity).
+- **Core runtime:** Flutter engine and the compiled app code (`libapp.so`) in the device-specific split, plus supporting native libraries.
+- **Major libraries/SDKs:** Flutter, OkHttp (HTTP), Firebase (core, sessions, crash reporting, installations/messaging), Google Play services, Paytm Payment Gateway & Easypay Assist, and various Android/Jetpack libraries.
 
-## 2. Networking stack & security controls
+## 2. How connections are protected
 
-### 2.1 Dart/Flutter
-- **HTTP:** Dart `dart:_http` usage with centralized `eHa` client (`_cv::XRe` executor).
-- **Certificate pinning:** plugin `http_certificate_pinning` (`diefferson.http_certificate_pinning.HttpCertificatePinningPlugin`). Registration observed in DEX; pin configuration consumed in Dart layer — protects VTOP/API calls against MITM on untrusted networks (subject to pin set in build).
-- **Payload protection:** request bodies for sensitive/login flows encrypted as `encData` (`sLa::Hxf`), responses decrypted/parsed (`sLa::Ixf`).
-- **Request signing:** custom headers `S-API-KEY`, `S-KEY-USER` (time-bound derivation) per `eHa::Grf`.
+### 2.1 In the Flutter (app) layer
+- **Certificate pinning:** the app uses a certificate-pinning plugin so it only trusts the expected server certificate(s) when talking to the backend. This helps block man-in-the-middle interception on untrusted networks.
+- **Encrypted request payloads:** sensitive requests (including login) send data inside an encrypted `encData` field rather than plain text; responses are decrypted by the app.
+- **Per-request authentication:** authenticated calls include the session API key and a time-based, user-tied header (see [api-client-and-networking.md](api-client-and-networking.md)).
 
-### 2.2 Native (OkHttp3)
-- Bundled `okhttp3.*`: `OkHttpClient`/builder, interceptors & network interceptors, `Cookie`/`CookieJar`, `CertificatePinner` (SHA-1/256 pinning primitives), HTTP/1.1 & HTTP/2, TLS/connection specs.
-- Used by native SDKs/plugins (e.g. Paytm/Easypay) and available to platform channels.
+### 2.2 In the native (Android) layer
+- **OkHttp:** bundled for HTTP on the native side, with support for interceptors, cookies, and certificate pinning—used by native components and SDKs such as the payment flow.
 
-### 2.3 Local data at rest
-- **DB:** `VitianLocalDB` / `VitianDB.db`, table `VitianLocalDB(id INTEGER PRIMARY KEY, encryptedData TEXT, lastDate INTEGER)` — stores encrypted records (cached responses/session-related data).
-- **Auth artifacts:** MPIN/biometric flows and tokens (FCM/session) handled in app; treat device storage as sensitive.
+### 2.3 Data stored on the device
+- **Local cache/database:** the app keeps an encrypted local database (`VitianLocalDB`) for cached responses and related data (records stored with an id, encrypted content, and a timestamp).
+- **Sensitive items:** session-related values, tokens, MPIN/biometric state, and cached student data should all be treated as sensitive.
 
-## 3. Third-party/service integrations
+## 3. Third-party services the app talks to
 
-### 3.1 Paytm Easypay / PGSDK (native)
-- **Classes/methods:** `easypay.appinvoke.manager.PaytmAssist` → `fetchAPIByAppVersion()`, `accessCheckApi()`, `getNetworkType()`; `EasypayWebViewClient.shouldInterceptRequest`; `com.paytm.pgsdk.PaytmPGActivity` (+ inner), `AioMatchUserActivity`.
-- **Endpoints:**
-  - `https://securegw.paytm.in/payassist/api/getURLByAppVersion`
-  - `https://securegw-preprod.paytm.in/payassist/api/getUniqueAssist`
-  - `https://securegw.paytm.in/merchant-settlement-service/paytmAssist/enable`
-  - `https://securegw.paytm.in/payassist/api/submit/event/logs`
-  - `https://secure4.arcot.com/acspage/cap?RID=40147&VAA=B` (3DS/ACS)
-- **Role:** payment assist/config, eligibility/enablement checks, event logging, WebView interception for gateway/ACS flows.
+### 3.1 Paytm (payments) – native integration
+Used for in-app payment/assist flows (separate from the VTOP JSON actions described in [endpoints.md](endpoints.md)).
+
+**What it does:** fetches payment-assist configuration for the app version, checks/enables assist, and reports payment events; payment may run in a WebView flow with 3DS/ACS verification.
+
+**Observed endpoints:**
+- `https://securegw.paytm.in/payassist/api/getURLByAppVersion` – get assist/config URL/info by app version
+- `https://securegw-preprod.paytm.in/payassist/api/getUniqueAssist` – preprod/unique assist lookup
+- `https://securegw.paytm.in/merchant-settlement-service/paytmAssist/enable` – enable/check assist
+- `https://securegw.paytm.in/payassist/api/submit/event/logs` – submit payment/assist events
+- `https://secure4.arcot.com/acspage/cap?RID=40147&VAA=B` – 3DS/ACS (card authentication) page
 
 ### 3.2 Firebase / Google
-- Firebase Installations/Auth tokens, Sessions, Crashlytics (e.g. settings fetch `https://firebase-settings.crashlytics.com/spi/v2/platforms/android/gmp/%s/settings`), Play Services — telemetry, diagnostics, config; FCM messaging tokens observed in app strings.
+Used for app infrastructure such as crash reporting, sessions/diagnostics, configuration, and push/installation tokens (e.g. Crashlytics settings fetched from `https://firebase-settings.crashlytics.com/spi/v2/platforms/android/gmp/%s/settings`). These support app health and messaging, not the student’s academic data itself.
 
-### 3.3 Embedded libraries (not app-owned endpoints)
-- Apache Tika pipes/fetchers (`UrlFetcher`, `FileSystemFetcher`, `FetcherManager`, `FETCH_URL_API`) present as bundled library code; no VIT-specific remote endpoints attributed to them.
+### 3.3 Other bundled code
+Some general-purpose libraries (e.g. file/URL fetcher utilities) are packaged in the app but no VIT-specific server endpoints were attributed to them.
 
-## 4. Observed protections vs. analysis implications
+## 4. What this means in practice
 
-| Control | Effect | Implication for analysis/use |
+| Protection | What it does | Practical implication |
 |---|---|---|
-| Dart AOT (release) | No Dart source/symbols in APK | Requires snapshot tooling (Blutter) for method/string recovery |
-| TLS cert pinning | Rejects non-pinned certs | Traffic interception needs pin-aware approach or authorized test setup |
-| Encrypted `encData` + custom headers | Non-trivial replay | Must reproduce `Hxf` encryption and `S-API-KEY`/`S-KEY-USER` derivation |
-| Dynamic `cvf()`/session tokens | Endpoint prefix/creds rotate | Capture per session; avoid hardcoding |
-| Local encrypted DB/cache | Sensitive data at rest | Handle extracts as confidential |
+| Compiled (release) app code | Ships without readable source | Understanding internals requires analysis tools (as used for these notes) |
+| Certificate pinning | Rejects unexpected server certificates | A normal intercepting proxy won’t work unless pinning is properly handled in an authorized test setup |
+| Encrypted payloads + custom auth headers | Requests aren’t plain/replayable as-is | Reproducing calls requires the same encryption and per-request header generation the app performs |
+| Dynamic session path & tokens | URL segment and credentials are per-session | Capture/derive them from a fresh, valid login; don’t hardcode |
+| Encrypted local cache | Stored data isn’t plain text | Treat any extracted app data as sensitive/confidential |
 
 ## 5. Responsible use
-- These notes are for understanding/maintaining authorized integrations or security research on accounts and systems you are permitted to test.
-- Do not bypass controls to access others’ data; comply with VIT/VTOP policies and applicable law.
+- These notes are intended for understanding the app, supporting your own authorized access, or legitimate security research on accounts and systems you’re permitted to test.
+- Do not bypass protections to access anyone else’s data. Follow VIT/VTOP terms and applicable law.

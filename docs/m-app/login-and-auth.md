@@ -1,57 +1,63 @@
-# Login & authentication
+# Login and authentication
 
-Recovered from: `eHa::orf/Hrf/zrf/Grf/Crf/Drf`, `tLa` (`cvf/Pxf/Euf`), `vLa::Kxf`, `uLa::Hv`, `sLa::Hxf/Ixf`, `pp.txt` routes/strings, Blutter asm `aAh.dart` & callers.
+This explains how a user signs in to VITianCC, how the app establishes a session, how it keeps requests authenticated, and what happens when a session expires.
 
-## 1. Login endpoint
+## 1. How sign-in works
 
-- **URL:** `POST https://vtopcc5.vit.ac.in/login/vitian/appLoginProcess`
-- **Client method:** `eHa::orf(loginData)` (async)
-- **Auth headers:** not attached as session headers for this call (`Brf=false` path); request sent without pre-established `S-API-KEY`/`S-KEY-USER` session pair.
-- **Retry/timeout flags:** `rrf=false` (reduced/disabled retry behavior vs standard calls).
-- **Content-Type:** `application/json; charset=UTF-8` (via `zrf`).
+### The login request
+- **Endpoint:** `POST https://vtopcc5.vit.ac.in/login/vitian/appLoginProcess`
+- **Sent as:** JSON with an encrypted body (no pre-existing session auth headers)  
+  - The app collects the login details, converts them to JSON, **encrypts** them, and sends:  
+    `{ "encData": "<encrypted_payload>" }`
+- **Observed details:** the login payload includes a `mobile` field; other credential fields (such as username/application number/password/OTP, depending on the flow) are assembled at runtime. The exact field list should be confirmed from a controlled, authorized capture because the payload is encrypted.
 
-### 1.1 Request body (on-wire shape)
-- `loginData` (Dart map of credentials/fields) is serialized to JSON and **encrypted**:
-  - `encData = sLa::Hxf(jsonEncode(loginData))`
-- Sent as: `{ "encData": "<encrypted>" }`
+### What a successful login gives the app
+On success, the server/app provides the information needed to make further calls for that session, including:
+- a **session-specific URL path segment** used to build most API URLs,
+- values used to generate the **authentication headers** (`S-API-KEY` and the time-bound `S-KEY-USER`),
+- the student **application number**, which the app attaches to many requests.
 
-**Observed/likely credential fields (from pp/asm):** `mobile` (seen in login arg construction), plus standard VTOP/VITian credentials (e.g. user id/application no/password/OTP/MPIN context depending on flow). Exact field names must be confirmed by decrypting a controlled capture or inspecting `Hxf` input assembly in the relevant caller.
+On failure, the app shows an authentication/error message and stays on (or returns to) the sign-in flow.
 
-### 1.2 Response
-- Processed by `zrf` (decrypt/parse via `sLa::Ixf` where applicable); on success app establishes session/config used to derive `cvf()`, `Pxf/Euf` (→ `S-API-KEY`/`S-KEY-USER`), and `applNo`. On failure, user-facing auth/error states are shown.
+## 2. How the app stays authenticated (after login)
 
-## 2. Post-login session material
+For most actions after login, the app sends two headers with every request:
 
-| Element | Source | Purpose |
+- **`S-API-KEY`** – a session API key/token obtained from the logged-in session.
+- **`S-KEY-USER`** – a fresh, time-based value computed for the request (derived from the current time, a session/user component, and `vitian`, then encoded/encrypted). Because it’s time-bound, it must be generated per request, not reused.
+
+The app also **automatically includes the student application number** in the body of standard (non-login) action requests.
+
+> In plain terms: logging in once isn’t enough by itself—the app proves the session on every call using these headers plus the session-specific URL path.
+
+## 3. Extra sign-in and verification options (on the device)
+
+Besides the main account login, the app supports convenience/step-up checks:
+
+| Option | What it does | Notes (from app behavior) |
 |---|---|---|
-| `cvf()` | `tLa::cvf()` (late-static `_dEb`) | Dynamic URL path/prefix segment: requests go to `base + cvf() + action` |
-| `S-API-KEY` | `Crf()` → `tLa::Pxf()` | Per-session/request auth header value |
-| `S-KEY-USER` | `Drf()` → `uLa::Hv("{ts_ms}|{tLa::Euf()}|vitian")` | Time-bound signed header (recomputed; ties request to user/time) |
-| `applNo` | `vLa::Kxf("applNo")` | Injected into bodies of `qrf` calls (student/application identifier) |
+| **MPIN (6-digit PIN)** | Quick unlock/sign-in within the app | Screens/flows for setting and entering MPIN; actions to set and validate the MPIN (`setMpin`, `validateMpin`). “Forgot MPIN” falls back to login. |
+| **Biometric (fingerprint/face)** | Unlock using device biometrics | “Login Using FingerPrint” and biometric prompts/lockout messages; biometric events can be logged (`biometricLog`). |
+| **OTP** | One-time code for sensitive steps | Used in flows like wallet/payment (e.g. submitting/validating an OTP). |
 
-All of the above are runtime/session-derived; valid calls require an authenticated context consistent with the app’s crypto and server expectations.
+These help control access on the device, but **server access still depends on a valid VTOP session and correct authenticated requests**.
 
-## 3. Local/device authentication factors
+## 4. Session expiry and logging out
 
-The app supports additional device-level auth around app access/session continuity (UI/flow strings in snapshot):
+### When the session expires or becomes invalid
+- The server may respond in a way the app treats as “session no longer valid” (e.g. an “Invalid request. Please login again.” case).
+- When this happens, the app **stops the current flow and sends you to the sign-in screen** (it does not keep retrying with stale credentials). Locally cached data may remain, but protected actions require a fresh login.
 
-- **MPIN:** 6-digit PIN — routes/actions & strings: `/mPinScreenView`, `/mpin_set_page`, "Enter 6 Digit Login in PIN", "Forgot MPIN? (or) Login", actions `setMpin`, `validateMpin`.
-- **Biometric:** fingerprint/biometrics — "Login Using FingerPrint", biometric auth prompts/lockout handling, action `biometricLog` (logged via `qrf` with params like `fromDate/toDate`).
-- **OTP:** `/otp_new_screen`, `submitOtp` (wallet/payment flow), "Wallet Adjustment OTP".
+### Logging out
+- The app provides a logout action that tells the server to end the session and then returns the user to sign-in. On logout you should expect local session state to be cleared/reset.
 
-These gate/augment access locally but server-side authorization still depends on valid VTOP session, headers, and (where used) encrypted payloads.
+## 5. Practical tips
 
-## 4. Session lifecycle & expiry handling
+- **Log in before doing anything else:** all data-fetching actions assume an active session (session path segment, headers, application number).
+- **Refresh after re-login:** every time you authenticate again, recompute/use the new session values—don’t carry over old headers or path segments.
+- **Expect encryption:** the login (and some other) requests are encrypted into `encData`; sending plain credentials/params where encryption is required won’t work.
+- **Handle expiry gracefully:** if a call is rejected as an invalid session, re-authenticate and retry the action.
+- **Keep credentials safe:** only use your own account, over a trusted connection, and in accordance with VIT/VTOP policies.
 
-- **Detection:** API responses indicating invalid/expired session (e.g. "Invalid request. Please login again.") are handled in `zrf/_rvb/Erf`.
-- **Behavior:** client may clear/refresh cached state and **navigate to sign-in** (`/sign_in_page`, main navigator `Qrc` in `package:vtop/main.dart`) instead of continuing with stale credentials.
-- **Re-auth:** user re-authenticates (credentials/MPIN/biometric as applicable); app reinitializes `tLa`/session values, after which `cvf`, `S-API-KEY`, `S-KEY-USER`, and `applNo` become valid for subsequent `qrf/prf/nrf/...` calls.
-- **Logout:** action `logOut` (routed through `qrf`/API) available; UI confirms "Do you want to logout?".
-
-## 5. Best-use / integration guidance
-
-- **Perform login first:** obtain session by calling `appLoginProcess` with correctly constructed & encrypted `encData`; persist returned session material needed to derive `cvf/Pxf/Euf/applNo`.
-- **Regenerate headers per request context:** `S-KEY-USER` is time-bound (`timestamp|...|vitian`); generate fresh values aligned with the app’s algorithm/clock.
-- **Carry `applNo`:** for `qrf`-style actions, include/inject `applNo` as the client does.
-- **Handle re-login:** on session-invalid responses, stop, re-authenticate, refresh derived headers/prefix, then retry.
-- **Security:** credentials and `encData`/headers are sensitive—handle only for your own account, over TLS, respecting certificate pinning and institutional policy.
+## Technical reference (recovered identifiers)
+Login: `eHa::orf` → `appLoginProcess`, body `{encData: sLa::Hxf(...)}`; session/config: `tLa` (`cvf`, `Pxf`, `Euf`), headers `Grf/Crf/Drf` (`S-API-KEY`, `S-KEY-USER` via `uLa::Hv`), `applNo` via `vLa::Kxf`; session-expiry handling in `zrf/_rvb/Erf` with navigation to `/sign_in_page`; MPIN/biometric/OTP actions & routes as noted.
