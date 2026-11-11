@@ -95,6 +95,8 @@ export async function upsertPerson(
   registerNo: string = ""
 ): Promise<{ handle: string; created: boolean }> {
   const pool = getDbPool();
+  const cleanRegNo = registerNo.trim().toUpperCase();
+  const cleanName = displayName.trim();
 
   for (let attempt = 0; attempt < 6; attempt++) {
     try {
@@ -102,11 +104,11 @@ export async function upsertPerson(
         `INSERT INTO ${PERSON_TABLE} (owner_key, handle, display_name, register_no)
          VALUES ($1, $2, $3, $4)
          ON CONFLICT (owner_key) DO UPDATE
-           SET display_name = EXCLUDED.display_name,
+           SET display_name = CASE WHEN EXCLUDED.display_name <> '' THEN EXCLUDED.display_name ELSE ${PERSON_TABLE}.display_name END,
                register_no = CASE WHEN EXCLUDED.register_no <> '' THEN EXCLUDED.register_no ELSE ${PERSON_TABLE}.register_no END,
                updated_at = NOW()
          RETURNING handle, (created_at = updated_at) AS fresh`,
-        [ownerKey, randomHandle(), displayName, registerNo]
+        [ownerKey, randomHandle(), cleanName, cleanRegNo]
       );
       return { handle: rows[0].handle as string, created: Boolean(rows[0].fresh) };
     } catch (err: unknown) {

@@ -23,6 +23,7 @@ export type FfcsOffering = {
   /** e.g. "B1+TB1" or "L31+L32"; "NIL" for project components. */
   slot: string;
   faculty: string;
+  facultyId?: string;
 };
 
 export type FfcsReport = {
@@ -116,6 +117,7 @@ export function parseReport(csv: string): Map<string, FfcsOffering> {
     room: col("ROOM"),
     slot: col("SLOT"),
     faculty: col("EMPLOYEE NAME"),
+    facultyId: col("ERP ID") >= 0 ? col("ERP ID") : col("EMPLOYEE ID") >= 0 ? col("EMPLOYEE ID") : col("FACULTY ID"),
   };
   if (idx.classId < 0 || idx.code < 0 || idx.slot < 0) {
     throw new Error("report is missing CLASS ID, COURSE CODE or SLOT");
@@ -135,6 +137,7 @@ export function parseReport(csv: string): Map<string, FfcsOffering> {
       room: at(r, idx.room),
       slot: at(r, idx.slot).toUpperCase(),
       faculty: at(r, idx.faculty),
+      facultyId: idx.facultyId >= 0 ? at(r, idx.facultyId) : undefined,
     });
   }
   return offerings;

@@ -56,10 +56,22 @@ export function ensureFfcsMatchSchema(): Promise<void> {
     await pool.query(`
       DELETE FROM ${FFCS_MATCH_TABLE} a USING ${FFCS_MATCH_TABLE} b
        WHERE a.semester_id = b.semester_id
-         AND a.register_no = b.register_no
+         AND UPPER(a.register_no) = UPPER(b.register_no)
          AND a.register_no <> ''
          AND a.updated_at < b.updated_at;
     `);
+
+    // Deduplicate stale app-number / non-proper entries when a proper regNo exists for the same student
+    await pool.query(`
+      DELETE FROM ${FFCS_MATCH_TABLE} a USING ${FFCS_MATCH_TABLE} b
+       WHERE a.semester_id = b.semester_id
+         AND a.owner_key <> b.owner_key
+         AND UPPER(TRIM(a.display_name)) = UPPER(TRIM(b.display_name))
+         AND a.display_name <> ''
+         AND b.register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$'
+         AND NOT (a.register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$');
+    `);
+
     await pool.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS ${FFCS_MATCH_TABLE}_sem_reg_unique
         ON ${FFCS_MATCH_TABLE} (semester_id, register_no)
@@ -165,14 +177,32 @@ export async function publishEntry(
   displayName: string = ""
 ): Promise<FfcsMatchEntry | null> {
   const pool = getDbPool();
-  if (regNo) {
+  const cleanRegNo = regNo.trim().toUpperCase();
+  const cleanName = displayName.trim();
+  const isProperReg = /^[0-9]{2}[A-Z]{3}[0-9]{4,5}$/i.test(cleanRegNo);
+
+  if (cleanRegNo) {
     // Uniqueness: remove any other registration under this regNo for this semester
     await pool.query(
       `DELETE FROM ${FFCS_MATCH_TABLE}
-        WHERE semester_id = $1 AND register_no = $2 AND owner_key <> $3`,
-      [semesterId, regNo, ownerKey]
+        WHERE semester_id = $1 AND UPPER(register_no) = $2 AND owner_key <> $3`,
+      [semesterId, cleanRegNo, ownerKey]
     );
+
+    // If caller has a proper registration number and display name, purge any stale
+    // application-number / non-proper reg row for the same student in this semester
+    if (isProperReg && cleanName) {
+      await pool.query(
+        `DELETE FROM ${FFCS_MATCH_TABLE}
+          WHERE semester_id = $1
+            AND owner_key <> $2
+            AND UPPER(TRIM(display_name)) = UPPER($3)
+            AND NOT (register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$')`,
+        [semesterId, ownerKey, cleanName]
+      );
+    }
   }
+
   const t = FFCS_MATCH_TABLE;
   const expired = `${t}.window_started_at < NOW() - INTERVAL '24 hours'`;
   const unchanged = `(${t}.class_ids = EXCLUDED.class_ids AND ${t}.source = EXCLUDED.source)`;
@@ -192,7 +222,7 @@ export async function publishEntry(
        window_started_at = CASE WHEN ${expired} THEN NOW() ELSE ${t}.window_started_at END
      WHERE ${expired} OR ${unchanged} OR ${t}.changes_in_window < $8
      RETURNING ${ENTRY_COLUMNS}`,
-    [ownerKey, semesterId, classIds, source, discoverable, regNo, displayName, MAX_CHANGES_PER_DAY]
+    [ownerKey, semesterId, classIds, source, discoverable, cleanRegNo, cleanName, MAX_CHANGES_PER_DAY]
   );
   return rows.length ? toEntry(rows[0]) : null;
 }
@@ -204,32 +234,51 @@ export async function backfillRegisterNo(
   displayName: string = "",
   handle: string = ""
 ): Promise<void> {
-  if (!regNo && !displayName) return;
+  const cleanRegNo = regNo.trim().toUpperCase();
+  const cleanName = displayName.trim();
+  if (!cleanRegNo && !cleanName) return;
   const pool = getDbPool();
-  if (regNo) {
+  const isProperReg = /^[0-9]{2}[A-Z]{3}[0-9]{4,5}$/i.test(cleanRegNo);
+
+  if (cleanRegNo) {
     await pool.query(
       `DELETE FROM ${FFCS_MATCH_TABLE}
-        WHERE semester_id = $1 AND register_no = $2 AND owner_key <> $3`,
-      [semesterId, regNo, ownerKey]
+        WHERE semester_id = $1 AND UPPER(register_no) = $2 AND owner_key <> $3`,
+      [semesterId, cleanRegNo, ownerKey]
     );
+
+    if (isProperReg && cleanName) {
+      await pool.query(
+        `DELETE FROM ${FFCS_MATCH_TABLE}
+          WHERE semester_id = $1
+            AND owner_key <> $2
+            AND UPPER(TRIM(display_name)) = UPPER($3)
+            AND NOT (register_no ~* '^[0-9]{2}[A-Z]{3}[0-9]{4,5}$')`,
+        [semesterId, ownerKey, cleanName]
+      );
+    }
   }
+
+  // If a row exists for (owner_key, semester_id), replace the registration number with the proper one
   const { rows } = await pool.query(
     `UPDATE ${FFCS_MATCH_TABLE}
-        SET register_no = CASE WHEN register_no = '' AND $1 <> '' THEN $1 ELSE register_no END,
-            display_name = CASE WHEN display_name = '' AND $4 <> '' THEN $4 ELSE display_name END
-      WHERE owner_key = $2 AND semester_id = $3 AND (register_no = '' OR display_name = '')
-      RETURNING class_ids, discoverable`,
-    [regNo, ownerKey, semesterId, displayName]
+        SET register_no = CASE WHEN $1 <> '' THEN $1 ELSE register_no END,
+            display_name = CASE WHEN $4 <> '' THEN $4 ELSE display_name END,
+            updated_at = NOW()
+      WHERE owner_key = $2 AND semester_id = $3
+      RETURNING class_ids, discoverable, register_no`,
+    [cleanRegNo, ownerKey, semesterId, cleanName]
   );
-  if (rows.length && regNo) {
+
+  if (rows.length && cleanRegNo) {
     const classIds = (rows[0].class_ids as string[]) ?? [];
     const discoverable = Boolean(rows[0].discoverable);
     if (classIds.length > 0) {
       await registerStudentClasses(
         semesterId,
         classIds,
-        regNo,
-        displayName,
+        cleanRegNo,
+        cleanName,
         handle,
         ownerKey,
         discoverable
