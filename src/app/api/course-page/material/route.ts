@@ -137,7 +137,9 @@ export async function POST(req: Request) {
       filenameFromContentDisposition(String(vtopRes.headers?.["content-disposition"] ?? "")) ||
       `vtop-${action}`;
 
-    return new Response(buffer, {
+    // BodyInit is typed off the DOM lib; a Buffer is not structurally one of
+    // its members, so hand Response a real Uint8Array backed by an ArrayBuffer.
+    return new Response(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type": String(vtopRes.headers?.["content-type"] ?? "application/octet-stream"),
