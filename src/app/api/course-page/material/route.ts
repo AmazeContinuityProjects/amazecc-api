@@ -31,14 +31,19 @@ function actionConfig(action: DownloadAction | string): { url: string; body: Rec
         body: { semesterId: "", classId: "" },
       };
     case "all-materials":
-      return {
-        url: "/vtop/academics/common/allCourseMeterialDownload",
-        body: { materialMode: "2", uploadView: "1", semesterSubId: "", classId: "" },
-      };
-    case "general-materials":
+      // VTOP's own "Download ALL Materials" button submits allMaterialDownloadForm
+      // with materialMode=1. Verified against VTOP: mode 1 is the (currently empty)
+      // bulk bucket for this course; mode 2 is the general/shared descriptor.
       return {
         url: "/vtop/academics/common/allCourseMeterialDownload",
         body: { materialMode: "1", uploadView: "1", semesterSubId: "", classId: "" },
+      };
+    case "general-materials":
+      // VTOP's "Download General Materials" button submits allCourseMaterialDownloadForm
+      // with materialMode=2. Verified against VTOP: returns the 657 KB descriptor ZIP.
+      return {
+        url: "/vtop/academics/common/allCourseMeterialDownload",
+        body: { materialMode: "2", uploadView: "1", semesterSubId: "", classId: "" },
       };
     default:
       throw new Error(`Unsupported action: ${action}`);

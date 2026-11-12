@@ -45,6 +45,7 @@ import { URLSearchParams } from "url";
 import { parseCoursePage } from "@/lib/parsers/course-page";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
 import { parseCourseClasses } from "@/lib/parsers/course-classes";
+import { parseCoursePageMaterials } from "@/lib/parsers/course-page-materials";
 
 export async function POST(req: Request) {
   try {
@@ -72,6 +73,17 @@ export async function POST(req: Request) {
       { headers: baseHeaders }
     );
 
+    // Session-priming is best-effort: VTOP sometimes 404s these warmers (e.g. an
+    // unknown slotId) even though the session is primed fine by the first call.
+    // A priming failure must not sink the whole detail fetch — log and continue.
+    const prime = async (label: string, url: string, body: Record<string, string>) => {
+      try {
+        await client.post(url, new URLSearchParams(body).toString(), { headers: baseHeaders });
+      } catch (err) {
+        console.warn(`course-page priming ${label} failed (continuing):`, err instanceof Error ? err.message : String(err));
+      }
+    };
+
     if (formData) {
       const { semesterSubId, courseCode, slotId, faculty } = formData;
       const ts = Date.now().toString();
@@ -81,10 +93,10 @@ export async function POST(req: Request) {
 
       if (formData.viewDetail) {
         // Prime session sequentially (even for current semester)
-        await client.post("/vtop/getCourseForCoursePage", new URLSearchParams({ _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
+        await prime("getCourseForCoursePage", "/vtop/getCourseForCoursePage", { _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts });
         if (formData.slotId && formData.faculty) {
-          await client.post("/vtop/getSlotIdForCoursePage", new URLSearchParams({ _csrf: csrf, classId: formData.classId, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
-          await client.post("/vtop/getFacultyForCoursePage", new URLSearchParams({ _csrf: csrf, classId: formData.classId, slotId: formData.slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
+          await prime("getSlotIdForCoursePage", "/vtop/getSlotIdForCoursePage", { _csrf: csrf, classId: formData.classId, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts });
+          await prime("getFacultyForCoursePage", "/vtop/getFacultyForCoursePage", { _csrf: csrf, classId: formData.classId, slotId: formData.slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: formData.semSubId || "", authorizedID, x: ts });
         }
         ajaxUrl = "/vtop/processViewStudentCourseDetail";
         ajaxParams = {
@@ -129,10 +141,10 @@ export async function POST(req: Request) {
         };
       } else if (faculty) {
         // Prime session sequentially (even for current semester)
-        await client.post("/vtop/getCourseForCoursePage", new URLSearchParams({ _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
-        await client.post("/vtop/getSlotIdForCoursePage", new URLSearchParams({ _csrf: csrf, classId: courseCode, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
-        await client.post("/vtop/getFacultyForCoursePage", new URLSearchParams({ _csrf: csrf, classId: courseCode, slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts }).toString(), { headers: baseHeaders });
-        
+        await prime("getCourseForCoursePage", "/vtop/getCourseForCoursePage", { _csrf: csrf, paramReturnId: "getCourseForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts });
+        await prime("getSlotIdForCoursePage", "/vtop/getSlotIdForCoursePage", { _csrf: csrf, classId: courseCode, praType: "source", paramReturnId: "getSlotIdForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts });
+        await prime("getFacultyForCoursePage", "/vtop/getFacultyForCoursePage", { _csrf: csrf, classId: courseCode, slotId, praType: "source", paramReturnId: "getFacultyForCoursePage", semSubId: semesterSubId || "", authorizedID, x: ts });
+
         ajaxUrl = "/vtop/getCourseDetailsForCoursePage";
         ajaxParams = {
           _csrf: csrf,
@@ -149,21 +161,30 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Invalid formData" }, { status: 400 });
       }
 
-      const dataResp = await client.post(
-        ajaxUrl,
-        new URLSearchParams(ajaxParams).toString(),
-        { headers: baseHeaders }
-      );
+      let dataResp;
+      try {
+        dataResp = await client.post(
+          ajaxUrl,
+          new URLSearchParams(ajaxParams).toString(),
+          { headers: baseHeaders }
+        );
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`course-page ${ajaxUrl} failed (semSubId=${ajaxParams.semSubId ?? ""} classId=${ajaxParams.classId ?? ""} slotId=${ajaxParams.slotId ?? ""}):`, msg);
+        return NextResponse.json({ success: false, error: `VTOP ${ajaxUrl} failed: ${msg}` }, { status: 502 });
+      }
 
       if (formData.viewDetail || ajaxUrl === "/vtop/getCourseDetailsForCoursePage") {
         const parsed = parseVtopHtml(dataResp.data);
         const classOptions = parseCourseClasses(dataResp.data);
+        const materials = parseCoursePageMaterials(dataResp.data);
         return NextResponse.json({
           success: true,
           ...parsed,
           results: {
             ...parsed,
             classOptions,
+            materials,
           },
         });
       }
