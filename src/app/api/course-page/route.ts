@@ -44,6 +44,7 @@ import VTOPClient from "@/lib/clients/VTOPClient";
 import { URLSearchParams } from "url";
 import { parseCoursePage } from "@/lib/parsers/course-page";
 import { parseVtopHtml } from "@/lib/parsers/auto-parse";
+import { parseCourseClasses } from "@/lib/parsers/course-classes";
 
 export async function POST(req: Request) {
   try {
@@ -153,6 +154,19 @@ export async function POST(req: Request) {
         new URLSearchParams(ajaxParams).toString(),
         { headers: baseHeaders }
       );
+
+      if (formData.viewDetail || ajaxUrl === "/vtop/getCourseDetailsForCoursePage") {
+        const parsed = parseVtopHtml(dataResp.data);
+        const classOptions = parseCourseClasses(dataResp.data);
+        return NextResponse.json({
+          success: true,
+          ...parsed,
+          results: {
+            ...parsed,
+            classOptions,
+          },
+        });
+      }
 
       const parsed = parseVtopHtml(dataResp.data);
       return NextResponse.json({ success: true, results: parsed });
