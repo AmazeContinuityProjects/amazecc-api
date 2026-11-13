@@ -9,6 +9,27 @@ description: "A tour through src/app/api/login/route.ts, captcha.ts and solveCap
 
 Crate-layout: `src/app/api/login/` — `route.ts` (the handler), `captcha.ts` (captcha fetcher), `solveCaptcha.ts` (offline solver), `bitmaps.ts` (411 KB of model weights).
 
+```mermaid
+sequenceDiagram
+  autonumber
+  participant App
+  participant L as /api/login handler
+  participant CAP as captcha.ts
+  participant S as solveCaptcha (bitmaps.ts)
+  participant VTOP as VTOP
+  App->>L: POST { username, password }
+  L->>CAP: getCaptcha()
+  CAP->>VTOP: fetch login page + csrf + captcha img
+  VTOP-->>CAP: base64 image
+  CAP-->>L: captchaBase64 + cookies + csrf
+  L->>S: solveCaptcha(img)
+  S-->>L: guess (single-layer perceptron, offline)
+  L->>VTOP: POST /vtop/login (verifyMenu, cookies, _csrf)
+  VTOP-->>L: 302 → dashboard HTML
+  L->>L: regex authorizedID + csrf from HTML
+  L-->>App: { success, cookies, csrf, authorizedID, clubToken? }
+```
+
 ## The handler's skeleton
 
 ```ts

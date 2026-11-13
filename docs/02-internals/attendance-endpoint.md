@@ -10,6 +10,17 @@ description: "Anatomy of src/app/api/attendance/route.ts: the merge with timetab
 **Endpoint:** `POST /api/attendance`  
 **Contract:** `{ attRes: { semester, attendance }, marksRes }` — raw shape, NOT `{success}`.
 
+```mermaid
+flowchart TD
+  BODY[POST body<br/>cookies/authorizedID/csrf/semesterId] --> SCRAPE1[VTOP attendance page]
+  BODY --> SCRAPE2[VTOP timetable page]
+  SCRAPE1 --> MERGE[mergeAttendanceWithTimetable]
+  SCRAPE2 --> MERGE
+  MERGE --> FANOUT[processViewAttendanceDetail<br/>per-course, concurrency 3]
+  FANOUT --> PARSE[cheerio → attendanceItem[]]
+  PARSE --> ENVELOPE["{ attRes, marksRes }"]
+```
+
 ## The merger (`mergeAttendanceWithTimetable`)
 
 VTOP's attendance sheet and timetable live on different pages. The route merges them on `courseCode`:

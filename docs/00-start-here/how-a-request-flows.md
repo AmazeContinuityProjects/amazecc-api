@@ -9,6 +9,28 @@ description: "From curl to JSON in six steps: the proxy, the route handler, the 
 
 Here is exactly what happens when you POST to `https://api.amazecc.com/api/attendance`:
 
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as curl / browser
+  participant P as proxy.ts (CORS + security headers)
+  participant R as route.ts handler
+  participant V as VTOPClient (axios)
+  participant UT as VTOP (upstream)
+  participant DB as Postgres
+  C->>P: POST /api/attendance
+  P->>R: forward (stamps CORS)
+  R->>R: parse body: cookies / authorizedID / csrf / semesterId
+  R->>V: .post(url, params)
+  V->>UT: HTTPS request + Cookie + Referer
+  UT-->>V: HTML page
+  V-->>R: HTML
+  R->>R: cheerio parse → typed rows
+  R->>DB: maybe read/write (buses, marks stats, social…)
+  DB-->>R: rows
+  R-->>C: { attRes, marksRes } (or raw payload / binary)
+```
+
 ## Step 1 — The proxy (src/proxy.ts)
 
 Every request to `/api/*` passes through `proxy.ts` first. It does two things and then gets out of the way:
