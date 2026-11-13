@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Wallet"
 description: "Admin - GET /api/admin/gorobo/wallet. Wallet dashboard: balances and transaction ledger."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/admin/gorobo/wallet`

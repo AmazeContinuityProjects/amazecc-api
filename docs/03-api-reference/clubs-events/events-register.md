@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Register"
 description: "Clubs & Events - POST /api/events/register. EventHub registration proxy. May return HTML auto-form for payment steps."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/events/register`

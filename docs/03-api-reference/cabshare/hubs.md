@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Hubs"
 description: "CabShare - GET /api/cabshare/hubs. Pickup hubs (hostel gates) from our DB."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/cabshare/hubs`

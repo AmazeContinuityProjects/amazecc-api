@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Claim"
 description: "Social (FFCS Partners) - POST /api/social/pair/claim. Claim a pairing by handle. Mutual secret is minted, hashed at rest, AES-GCM-encrypted so the non-claiming peer can fetch it later."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/social/pair/claim`

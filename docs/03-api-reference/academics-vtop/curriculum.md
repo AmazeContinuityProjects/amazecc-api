@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Curriculum"
 description: "Academics & VTOP - POST /api/curriculum. Extracts course list + pageCsrf needed for WADE/minors flows; auto-follows to the curriculum category view."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/curriculum`

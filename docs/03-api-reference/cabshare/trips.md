@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Trips"
 description: "CabShare - POST/GET /api/cabshare/trips. Trip planning board for hostel cab-shares. POST creates; GET lists for a date/hub."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST, GET /api/cabshare/trips`

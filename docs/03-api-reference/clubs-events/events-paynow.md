@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Paynow"
 description: "Clubs & Events - POST /api/events/paynow. Paytm-style payment form passthrough — the frontend renders the HTML in a hidden iframe/frame."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/events/paynow`

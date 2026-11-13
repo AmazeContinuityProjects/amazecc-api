@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Whoami"
 description: "Academics & VTOP - POST /api/whoami. Scrapes ~10 VTOP profile endpoints sequentially (deliberately — avoids VTOP rate issues). Used by the app on every cold start (cache_whoami)"
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/whoami`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Waitlist"
 description: "CabShare - POST /api/cabshare/waitlist. Join the waitlist for a full trip."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/cabshare/waitlist`

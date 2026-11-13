@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "SYNC"
 description: "Academics & VTOP - POST /api/marks/sync. Marks contribution endpoint — the privacy-preserving sync: verify + fetch, then write class_* tables server-side."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/marks/sync`

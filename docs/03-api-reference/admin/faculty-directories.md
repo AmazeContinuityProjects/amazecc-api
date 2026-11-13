@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Faculty Directories"
 description: "Admin - GET/POST/PUT/DELETE /api/admin/faculty-directories. Manage faculty directory school URLs. Requires faculty-directories permission."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST, PUT, DELETE /api/admin/faculty-directories`

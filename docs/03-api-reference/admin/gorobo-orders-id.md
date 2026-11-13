@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Orders [id]"
 description: "Admin - GET/PUT/PATCH /api/admin/gorobo/orders/[id]. Order detail/edit (items, quote, status). parseQuoteBody handles both item and status updates."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, PUT, PATCH /api/admin/gorobo/orders/[id]`

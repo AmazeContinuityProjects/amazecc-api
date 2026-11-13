@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Archive Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/archive. archive with optional reason."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/gorobo/orders/[id]/archive`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Details"
 description: "Clubs & Events - GET/POST /api/club-admin/details. Club profile editing (branding, showcase projects, popular events)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/club-admin/details`

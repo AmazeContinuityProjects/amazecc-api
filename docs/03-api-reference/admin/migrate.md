@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Migrate"
 description: "Admin - POST/GET /api/admin/migrate. Runs inline DDL migrations for every table in the codebase. GET is a connectivity check."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST, GET /api/admin/migrate`

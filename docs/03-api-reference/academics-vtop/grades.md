@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Grades"
 description: "Academics & VTOP - POST /api/grades. Unified endpoint: /api/all-grades is served through here. adaptUnifiedGradesResponse() in the app normalizes to _gradesSummary, allGrades_."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/grades`

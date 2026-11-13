@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Clubs & Events - POST /api/events/download. EventHub asset/ticket download proxy (binary)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/events/download`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Search"
 description: "LMS & Koha - GET /api/koha/search. Public Koha OPAC RSS search proxy. ?idx&q&count&offset — idx is the search-index selector (kw/title/...)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/koha/search`

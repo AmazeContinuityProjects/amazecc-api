@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Material"
 description: "Academics & VTOP - POST /api/course-page/material. Course material downloads (PDF/zip streams) via VTOP binary endpoints, returns base64 or proxied file data."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/course-page/material`

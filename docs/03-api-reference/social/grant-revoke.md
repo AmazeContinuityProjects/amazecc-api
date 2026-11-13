@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Revoke"
 description: "Social (FFCS Partners) - POST /api/social/grant/revoke. Severs a pairing in both directions (idempotent). Secret check is redundant — the body proves possession anyway, but it is verified."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/social/grant/revoke`

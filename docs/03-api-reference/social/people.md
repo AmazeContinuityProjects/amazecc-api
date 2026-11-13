@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "People"
 description: "Social (FFCS Partners) - POST /api/social/people. Resolve a Crockford handle (AMZ-XXXX-XXXX) to a person card."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/social/people`

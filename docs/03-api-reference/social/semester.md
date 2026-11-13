@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Semester"
 description: "Social (FFCS Partners) - GET /api/social/semester. Server-resolved current campus semester (cached in app_config — not per-user). No semester readable from the VTOP dropdown."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/social/semester`

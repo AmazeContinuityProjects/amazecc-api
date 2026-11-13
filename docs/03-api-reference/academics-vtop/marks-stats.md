@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Stats"
 description: "Academics & VTOP - POST/GET /api/marks/stats. Class-wide marks stats for shared pooling (feeds /api/marks/sync). GET variant reads same data."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST, GET /api/marks/stats`

@@ -190,13 +190,14 @@ const pageFor = (inv) => {
     : "| _none_ | - | - |";
   const pathParam = inv.path.includes("[") ? `\n\n> Path parameter: the bracketed segment is part of the route (e.g. \`[id]\`).` : "";
 
-  return `${MARKER}
----
+  return `---
 title: "${titleFor(inv.path)}"
 description: "${cat.title} - ${inv.methods.join("/")} ${inv.path}. ${inv.notes.slice(0, 140).replace(/[{}]/g, "_")}"
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+${MARKER}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # \`${inv.methods.join(", ")} ${inv.path}\`
@@ -244,11 +245,12 @@ const indexPage = (cat, routes) => {
         `| ${r.methods.map((m) => m.toLowerCase()).join(", ")} | \`${r.path}\` | ${AUTH_LABEL[r.auth]?.name ?? r.auth} | ${r.rl && r.rl !== "-" ? r.rl : "-"} |`,
     )
     .join("\n");
-  return `${MARKER}
----
+  return `---
 title: "${cat.title}"
 description: "Every ${cat.title} endpoint: method, path, auth and rate limits."
 ---
+
+${MARKER}
 
 # ${cat.title}
 
@@ -284,7 +286,7 @@ for (const [dir, routes] of Object.entries(byCat)) {
   const content = indexPage(cat, routes);
   if (CHECK) {
     if (!existsSync(indexFile)) console.error("MISSING:", indexFile);
-  } else if (!existsSync(indexFile) || readFileSync(indexFile, "utf8").startsWith(MARKER)) {
+  } else if (!existsSync(indexFile) || readFileSync(indexFile, "utf8").includes(MARKER)) {
     writeFileSync(indexFile, content, "utf8");
     written++;
   } else skipped++;
@@ -304,7 +306,7 @@ for (const [dir, routes] of Object.entries(byCat)) {
       if (!existsSync(file)) console.error("MISSING:", file);
       continue;
     }
-    if (!existsSync(file) || readFileSync(file, "utf8").startsWith(MARKER)) {
+    if (!existsSync(file) || readFileSync(file, "utf8").includes(MARKER)) {
       writeFileSync(file, page, "utf8");
       written++;
     } else skipped++;

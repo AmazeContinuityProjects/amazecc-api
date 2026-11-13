@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Bulk"
 description: "QBank - POST /api/qbank/admin/questions/bulk. Bulk-insert questions from an OCR pass."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/qbank/admin/questions/bulk`

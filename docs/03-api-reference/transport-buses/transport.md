@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Transport"
 description: "Transport & Buses - POST /api/transport. VTOP bus registration status + QR code + payment link for the route."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/transport`

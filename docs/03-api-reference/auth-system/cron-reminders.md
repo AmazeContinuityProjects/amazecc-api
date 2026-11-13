@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Reminders"
 description: "Auth & System - GET/POST /api/cron/reminders. VIT student Vitol reminder push fan-out. Authorization: Bearer $CRON_SECRET (timingSafeEqual)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/cron/reminders`

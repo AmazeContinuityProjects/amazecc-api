@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Notifications"
 description: "CabShare - GET/PATCH /api/cabshare/notifications. CabShare notifications. PATCH marks read."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, PATCH /api/cabshare/notifications`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Docs"
 description: "Auth & System - GET /api/docs. swagger-jsdoc aggregate of the @openapi JSDoc blocks in route files. Mostly placeholders — use this handbook instead."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/docs`

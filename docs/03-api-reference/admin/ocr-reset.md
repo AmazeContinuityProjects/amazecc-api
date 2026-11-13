@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Reset"
 description: "Admin - POST /api/admin/ocr/reset. Reset OCR state back to PENDING."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/ocr/reset`

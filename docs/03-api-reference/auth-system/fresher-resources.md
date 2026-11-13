@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Fresher Resources"
 description: "Auth & System - GET /api/fresher-resources. Public list of fresher orientation resources from our DB."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/fresher-resources`

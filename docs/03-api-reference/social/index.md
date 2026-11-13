@@ -1,8 +1,9 @@
-{/* generated: aapi1 */}
 ---
 title: "Social (FFCS Partners)"
 description: "Every Social (FFCS Partners) endpoint: method, path, auth and rate limits."
 ---
+
+{/* generated: aapi1 */}
 
 # Social (FFCS Partners)
 

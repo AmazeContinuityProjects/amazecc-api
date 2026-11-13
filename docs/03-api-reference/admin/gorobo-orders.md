@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Orders"
 description: "Admin - GET/POST /api/admin/gorobo/orders. Order list + create (admin can create on behalf). Query ?status&search."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/gorobo/orders`

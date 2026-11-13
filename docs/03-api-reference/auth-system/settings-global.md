@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Global"
 description: "Auth & System - GET /api/settings/global. Public global config (maintenance banner etc.) for the app to poll."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/settings/global`

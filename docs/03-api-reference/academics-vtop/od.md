@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "OD"
 description: "Academics & VTOP - POST /api/od. On-duty (OD) requests: /vtop/proctor/viewOdDetails via getVtopReferer."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/od`

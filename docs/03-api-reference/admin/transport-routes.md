@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Routes"
 description: "Admin - GET/POST /api/admin/transport/routes. Transport route CRUD. transport permission."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/transport/routes`

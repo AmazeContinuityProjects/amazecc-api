@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Fresher Resources"
 description: "Admin - GET/POST /api/admin/fresher-resources. Fresher orientation resources CRUD. fresher-resources permission."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/fresher-resources`

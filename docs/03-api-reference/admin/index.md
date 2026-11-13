@@ -1,8 +1,9 @@
-{/* generated: aapi1 */}
 ---
 title: "Admin"
 description: "Every Admin endpoint: method, path, auth and rate limits."
 ---
+
+{/* generated: aapi1 */}
 
 # Admin
 

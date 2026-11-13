@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Tokens"
 description: "Academics & VTOP - POST /api/marks/tokens. Marks sync tokens for the client (legacy tokens still honored)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/marks/tokens`

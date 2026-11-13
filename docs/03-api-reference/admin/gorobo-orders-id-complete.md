@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Complete Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/complete. confirmed → completed; computes wallet entries (split customer/vendor)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/gorobo/orders/[id]/complete`

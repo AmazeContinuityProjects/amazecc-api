@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Stock"
 description: "Admin - PATCH /api/admin/gorobo/items/stock. Adjust stock by delta or set stockQuantity."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `PATCH /api/admin/gorobo/items/stock`

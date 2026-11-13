@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Stops"
 description: "Admin - POST /api/admin/transport/routes/[id]/stops. Bulk-replace stops for a route."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/transport/routes/[id]/stops`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Finance"
 description: "Finance - POST /api/finance. Fees: no-dues view + finance endpoints. ~460 LOC — the second-largest route in the codebase."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/finance`

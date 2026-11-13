@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Users [username]"
 description: "Admin - PATCH/DELETE /api/admin/users/[username]. Update or deactivate an admin user (deactivation revokes at next request — verifyAdminToken re-checks the DB)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `PATCH, DELETE /api/admin/users/[username]`

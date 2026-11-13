@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Status"
 description: "Auth & System - GET /api/notifications/status. Reads notification preferences per user. ?endpoint filter."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/notifications/status`

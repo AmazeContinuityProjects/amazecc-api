@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Questions"
 description: "QBank - GET/POST/PATCH/DELETE /api/qbank/admin/questions. Question CRUD. qbank admin routes all use requireAdminAuth + _success,data_."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST, PATCH, DELETE /api/qbank/admin/questions`

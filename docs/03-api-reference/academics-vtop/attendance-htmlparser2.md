@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Attendance Htmlparser2"
 description: "Academics & VTOP - POST /api/attendance/htmlparser2. Same contract as /api/attendance, built on parseDocument + css-select instead of Cheerio. Performance/portability variant."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/attendance/htmlparser2`
