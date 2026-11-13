@@ -36,6 +36,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `raw {text:'API is working'}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 ## Try it live
 
 <EndpointTry path="/api/status" method="get" auth="none" />

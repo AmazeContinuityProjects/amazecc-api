@@ -39,6 +39,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `{success,tokens,legacy}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/academics-vtop.md)
+
 **Rate limit:** 60/min/IP
 
 ## Try it live

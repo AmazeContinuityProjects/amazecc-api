@@ -36,6 +36,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `raw array of events (not enveloped)`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/clubs-events.md)
+
 ## Try it live
 
 <EndpointTry path="/api/events" method="get" auth="none" />

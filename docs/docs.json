@@ -303,6 +303,24 @@
             ]
           },
           {
+            "group": "Response Shapes",
+            "root": "05-reference/response-shapes/index",
+            "pages": [
+              "05-reference/response-shapes/academics-vtop",
+              "05-reference/response-shapes/admin",
+              "05-reference/response-shapes/auth-system",
+              "05-reference/response-shapes/cabshare",
+              "05-reference/response-shapes/clubs-events",
+              "05-reference/response-shapes/faculty",
+              "05-reference/response-shapes/finance",
+              "05-reference/response-shapes/gorobo",
+              "05-reference/response-shapes/lms-koha",
+              "05-reference/response-shapes/qbank",
+              "05-reference/response-shapes/social",
+              "05-reference/response-shapes/transport-buses"
+            ]
+          },
+          {
             "group": "The VITianCC App (RE Notes)",
             "root": "m-app/index",
             "pages": [

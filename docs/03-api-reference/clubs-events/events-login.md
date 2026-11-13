@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,jsessionid} / {success:false,error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/clubs-events.md)
+
 ## Try it live
 
 <EndpointTry path="/api/events/login" method="post" auth="none" />

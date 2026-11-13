@@ -30,7 +30,7 @@ const SECTIONS = [
     ],
   },
   { group: "Operations", icon: "wrench", expanded: true, keys: ["04-operations"] },
-  { group: "Reference", icon: "book", expanded: true, keys: ["05-reference", "m-app"] },
+  { group: "Reference", icon: "book", expanded: true, keys: ["05-reference", "05-reference/response-shapes", "m-app"] },
 ];
 const TITLES = {
   "00-start-here": "Start Here",
@@ -50,6 +50,7 @@ const TITLES = {
   "03-api-reference/admin": "Admin",
   "04-operations": "Operations",
   "05-reference": "Reference",
+  "05-reference/response-shapes": "Response Shapes",
   "m-app": "The VITianCC App (RE Notes)",
 };
 const EXPANDED = new Set(["00-start-here", "01-authentication", "03-api-reference/academics-vtop"]);
@@ -64,6 +65,8 @@ function walk(dir, depth = 0) {
   return out;
 }
 
+const ALL_KEYS = SECTIONS.flatMap((s) => s.keys);
+
 const buildGroup = (key) => {
   const dir = join(DOCS, key);
   try {
@@ -71,7 +74,11 @@ const buildGroup = (key) => {
   } catch {
     return null;
   }
-  const pages = walk(dir).sort();
+  // Skip pages that belong to a nested child key (e.g. 05-reference/response-shapes).
+  const nested = ALL_KEYS.filter((k) => k !== key && k.startsWith(key + "/"));
+  const pages = walk(dir)
+    .sort()
+    .filter((p) => !nested.some((k) => p === k || p.startsWith(k + "/")));
   const root = pages.find((p) => p === `${key}/index`);
   if (!root && pages.length === 0) return null;
   const rest = pages.filter((p) => p !== root);

@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `raw Moodle scrape incl. {status} / {error} — not enveloped`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/lms-koha.md)
+
 ## Try it live
 
 <EndpointTry path="/api/vitol-data" method="post" auth="moodle" />

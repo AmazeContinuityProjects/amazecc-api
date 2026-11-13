@@ -43,6 +43,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `{success,semesterId,classes} or buildState() spread; GET reads ?classIds&semesterId`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/social.md)
+
 **Rate limit:** 30/min/IP
 
 ## Try it live

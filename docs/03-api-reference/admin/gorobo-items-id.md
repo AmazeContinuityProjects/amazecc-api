@@ -43,6 +43,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,item|message}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/admin.md)
+
 ## Try it live
 
 <EndpointTry path="/api/admin/gorobo/items/[id]" method="put" auth="gorobo-admin" />

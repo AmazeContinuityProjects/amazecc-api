@@ -41,6 +41,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,items,count,page,pages,total}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/gorobo.md)
+
 ## Try it live
 
 <EndpointTry path="/api/gorobo/items" method="get" auth="none" />

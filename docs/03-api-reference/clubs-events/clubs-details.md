@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,clubs}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/clubs-events.md)
+
 ## Try it live
 
 <EndpointTry path="/api/clubs/details" method="get" auth="none" />

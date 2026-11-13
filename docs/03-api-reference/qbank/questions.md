@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,data}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/qbank.md)
+
 ## Try it live
 
 <EndpointTry path="/api/qbank/questions" method="get" auth="none" />

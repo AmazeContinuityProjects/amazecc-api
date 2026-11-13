@@ -45,6 +45,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `{success,grantId,secret,peer,visibility,created,detail}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/social.md)
+
 **Rate limit:** 30/hour/IP
 
 ## Try it live

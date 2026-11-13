@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,promoted} toggle`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/clubs-events.md)
+
 **Rate limit:** 30/min/IP
 
 ## Try it live

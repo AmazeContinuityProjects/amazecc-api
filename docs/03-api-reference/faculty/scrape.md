@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,faculties}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/faculty.md)
+
 **Rate limit:** 10/min/IP
 
 ## Try it live

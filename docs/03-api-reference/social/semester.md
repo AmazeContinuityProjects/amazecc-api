@@ -40,6 +40,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,semesterId,semesterLabel,resolvedAt,detail}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/social.md)
+
 ## Try it live
 
 <EndpointTry path="/api/social/semester" method="get" auth="none" />

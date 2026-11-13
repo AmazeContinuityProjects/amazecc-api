@@ -39,6 +39,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `binary stream / {success:false,error,snippet}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/academics-vtop.md)
+
 ## Try it live
 
 <EndpointTry path="/api/circulars/download" method="post" auth="vtop" />

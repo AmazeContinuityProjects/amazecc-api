@@ -38,6 +38,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `{attRes:{semester,attendance},marksRes:{courses,cgpa}} (raw, NOT {success}) / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/academics-vtop.md)
+
 ## Try it live
 
 <EndpointTry path="/api/attendance" method="post" auth="vtop" />

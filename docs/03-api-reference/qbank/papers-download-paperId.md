@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `binary stream / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/qbank.md)
+
 ## Try it live
 
 <EndpointTry path="/api/qbank/papers/download/[paperId]" method="get" auth="none" />

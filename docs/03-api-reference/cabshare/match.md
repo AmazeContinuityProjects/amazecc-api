@@ -39,6 +39,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,message}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/cabshare.md)
+
 ## Try it live
 
 <EndpointTry path="/api/cabshare/match" method="post" auth="cabshare" />
