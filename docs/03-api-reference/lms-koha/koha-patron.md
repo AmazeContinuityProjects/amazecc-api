@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Patron"
 description: "LMS & Koha - POST /api/koha/patron. Patron account scrape (opac-user.pl etc.) via CGI. Koha credentials in body — session never stored server-side."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/koha/patron`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Rules [id]"
 description: "Admin - DELETE /api/admin/transport/rules/[id]. Delete one rule."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `DELETE /api/admin/transport/rules/[id]`

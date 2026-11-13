@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Availability"
 description: "LMS & Koha - GET /api/koha/availability. Koha item availability proxy. ?biblionumbers=comma,list"
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/koha/availability`

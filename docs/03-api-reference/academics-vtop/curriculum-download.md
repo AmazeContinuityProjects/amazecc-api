@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Academics & VTOP - POST /api/curriculum/download. Binary proxy (syllabus PDF). On upstream failure, returns the first ~200 bytes as snippet for debugging."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/curriculum/download`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Academics & VTOP - POST /api/circulars/download. Binary proxy for circular PDFs."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/circulars/download`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Confirm Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/confirm. pending → confirmed."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/gorobo/orders/[id]/confirm`

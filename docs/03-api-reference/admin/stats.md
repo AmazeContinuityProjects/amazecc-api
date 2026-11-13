@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Stats"
 description: "Admin - GET /api/admin/stats. Admin dashboard numbers (users, logs, storage)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/admin/stats`

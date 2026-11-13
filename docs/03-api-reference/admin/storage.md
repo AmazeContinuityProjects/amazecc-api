@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Storage"
 description: "Admin - GET/POST /api/admin/storage. Storage/files dashboard; POST runs classification of papers (remote-URL / B2 / DIRECT_JSON)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/storage`

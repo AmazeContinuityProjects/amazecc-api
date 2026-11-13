@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Match"
 description: "CabShare - POST /api/cabshare/match. Confirm/decline a cab-share match for a trip."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/cabshare/match`

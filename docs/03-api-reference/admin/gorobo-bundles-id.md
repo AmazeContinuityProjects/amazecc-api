@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Bundles [id]"
 description: "Admin - PUT/DELETE /api/admin/gorobo/bundles/[id]. Edit/remove a bundle."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `PUT, DELETE /api/admin/gorobo/bundles/[id]`

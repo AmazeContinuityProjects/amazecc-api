@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Login"
 description: "Clubs & Events - POST /api/events/login. Eventhub login. jsessionid must be cached by the client; EventHub sessions live long."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/events/login`

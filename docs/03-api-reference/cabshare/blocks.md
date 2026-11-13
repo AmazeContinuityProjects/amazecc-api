@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Blocks"
 description: "CabShare - POST/DELETE /api/cabshare/blocks. Block or unblock a co-rider."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST, DELETE /api/cabshare/blocks`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Auth"
 description: "CabShare - POST /api/cabshare/auth. CabShare login: verifies against VTOP with an offline-solved captcha, upserts cabshare_users, issues a cabshare token (30d)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/cabshare/auth`

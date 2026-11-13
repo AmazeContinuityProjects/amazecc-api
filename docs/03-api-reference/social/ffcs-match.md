@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "FFCS Match"
 description: "Social (FFCS Partners) - GET/POST /api/social/ffcs-match. Friend-finder: who is in my classes. Server computes reciprocal pairing only — never exposes non-shared info."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/social/ffcs-match`

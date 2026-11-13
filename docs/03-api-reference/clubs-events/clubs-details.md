@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Details"
 description: "Clubs & Events - GET /api/clubs/details. Public club directory from our DB."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/clubs/details`

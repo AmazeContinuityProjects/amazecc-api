@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Promote"
 description: "Clubs & Events - POST /api/club-admin/feed/promote. Member-counted promote toggle. Intentionally PUBLIC (backlog: only rate limit) — flagged in docs."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/club-admin/feed/promote`

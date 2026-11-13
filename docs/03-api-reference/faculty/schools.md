@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Schools"
 description: "Faculty Directory - GET /api/faculty/schools. Faculty-directory schools from our DB (seeded from VIT faculty pages)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/faculty/schools`

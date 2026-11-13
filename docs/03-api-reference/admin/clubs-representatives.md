@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Representatives"
 description: "Admin - GET/POST/DELETE /api/admin/clubs/representatives. Assign/remove club representatives. GET ?club_id."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST, DELETE /api/admin/clubs/representatives`

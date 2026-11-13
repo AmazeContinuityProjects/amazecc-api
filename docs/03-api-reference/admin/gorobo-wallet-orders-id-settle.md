@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Settle Orders ID"
 description: "Admin - POST /api/admin/gorobo/wallet/orders/[id]/settle. Mark order wallet entries settled (actual settlement happens outside this repo)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/gorobo/wallet/orders/[id]/settle`

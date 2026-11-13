@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Users"
 description: "Admin - GET/POST /api/admin/users. Admin user management. GET lists; POST creates with role+permissions."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/users`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Items"
 description: "GoRobo Shop - GET /api/gorobo/items. Public catalog (CDN-cached). Query: ?category&limit&page&q."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/gorobo/items`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Bundles"
 description: "Admin - GET/POST /api/admin/gorobo/bundles. Bundle (kit) management."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, POST /api/admin/gorobo/bundles`

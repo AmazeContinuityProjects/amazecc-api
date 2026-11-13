@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Items [id]"
 description: "Admin - PUT/DELETE /api/admin/gorobo/items/[id]. Update/remove one item."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `PUT, DELETE /api/admin/gorobo/items/[id]`

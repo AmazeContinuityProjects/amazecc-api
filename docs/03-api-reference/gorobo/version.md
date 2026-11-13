@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Version"
 description: "GoRobo Shop - GET /api/gorobo/version. Catalog cache-bust fingerprint. The client polls this to invalidate local catalog cache."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/gorobo/version`

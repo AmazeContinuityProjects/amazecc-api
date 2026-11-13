@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Courses"
 description: "QBank - GET /api/qbank/courses. Courses that have published papers/questions."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/qbank/courses`

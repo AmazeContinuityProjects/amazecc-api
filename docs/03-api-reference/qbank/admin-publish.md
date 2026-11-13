@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Publish"
 description: "QBank - POST /api/qbank/admin/publish. Publishes a paper (approval_status=APPROVED)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/qbank/admin/publish`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Routes [id]"
 description: "Admin - GET/PUT/DELETE /api/admin/transport/routes/[id]. Single route management."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET, PUT, DELETE /api/admin/transport/routes/[id]`

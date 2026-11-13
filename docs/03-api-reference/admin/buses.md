@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Buses"
 description: "Admin - POST /api/admin/buses. Replace the buses table from an array upload (import of updated routes)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/buses`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Attendance"
 description: "Academics & VTOP - POST /api/attendance. Merges attendance with timetable (mergeAttendanceWithTimetable) and fans out per-course detail fetches (concurrency 3). attRes.attendance[]."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/attendance`

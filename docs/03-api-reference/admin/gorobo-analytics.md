@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Analytics"
 description: "Admin - GET /api/admin/gorobo/analytics. Sales analytics rollup."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/admin/gorobo/analytics`

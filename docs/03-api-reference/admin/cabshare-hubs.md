@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Hubs"
 description: "Admin - POST/DELETE /api/admin/cabshare/hubs. CabShare hub management. DELETE ?hub_id"
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST, DELETE /api/admin/cabshare/hubs`

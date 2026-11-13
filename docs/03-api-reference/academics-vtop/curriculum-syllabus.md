@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Syllabus"
 description: "Academics & VTOP - POST /api/curriculum/syllabus. Single-course syllabus binary. Same binary proxy pattern as curriculum/download."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/curriculum/syllabus`

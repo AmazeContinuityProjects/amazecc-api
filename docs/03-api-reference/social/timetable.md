@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Timetable"
 description: "Social (FFCS Partners) - POST /api/social/timetable. Read a paired peer's timetable/busy map. 'coarse' visibility strips courses, keeps only busy slots."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/social/timetable`

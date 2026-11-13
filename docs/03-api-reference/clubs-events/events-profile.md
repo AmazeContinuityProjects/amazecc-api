@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Profile"
 description: "Clubs & Events - POST /api/events/profile. Eventhub profile — auto re-auths when the cached session looks like a login page."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/events/profile`

@@ -1,8 +1,9 @@
-{/* generated: aapi1 */}
 ---
 title: "Faculty Directory"
 description: "Every Faculty Directory endpoint: method, path, auth and rate limits."
 ---
+
+{/* generated: aapi1 */}
 
 # Faculty Directory
 

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "OCR"
 description: "Admin - POST /api/admin/ocr. Queue a paper for the external OCR worker (approval_status=OCR_QUEUED)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/admin/ocr`

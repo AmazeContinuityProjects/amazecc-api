@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Visibility"
 description: "Social (FFCS Partners) - POST /api/social/grant/visibility. Flip a pairing grant between coarse and full visibility."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/social/grant/visibility`

@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Login"
 description: "Auth & System - POST /api/login. Solves the captcha server-side, POSTs to VTOP, parses authorizedID + _csrf off the dashboard. Issues a club token when the authorizedID has "
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/login`

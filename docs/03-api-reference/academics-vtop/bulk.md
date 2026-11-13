@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Bulk"
 description: "Academics & VTOP - POST /api/bulk. Fans out to internal VTOP proxies (VTOP_PROXIES: hostel-counselling, registration-schedule, exc-registration, course-completion). runVtopPro"
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `POST /api/bulk`

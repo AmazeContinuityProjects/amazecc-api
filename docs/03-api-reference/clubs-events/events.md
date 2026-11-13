@@ -1,10 +1,11 @@
-{/* generated: aapi1 */}
 ---
 title: "Events"
 description: "Clubs & Events - GET /api/events. Public Eventhub scrape. Sets NODE_TLS_REJECT_UNAUTHORIZED=0 (upstream serves a broken chain)."
 ---
 
-import { EndpointTry } from "/snippets/endpoint-try.js";
+{/* generated: aapi1 */}
+
+import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 
 # `GET /api/events`
