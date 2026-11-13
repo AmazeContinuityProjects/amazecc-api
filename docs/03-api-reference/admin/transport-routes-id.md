@@ -3,7 +3,7 @@ title: "Routes [id]"
 description: "Admin - GET/PUT/DELETE /api/admin/transport/routes/[id]. Single route management."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

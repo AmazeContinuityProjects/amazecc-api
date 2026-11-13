@@ -3,7 +3,7 @@ title: "Unarchive Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/unarchive. Undo archive."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

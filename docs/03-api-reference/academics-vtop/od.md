@@ -3,7 +3,7 @@ title: "OD"
 description: "Academics & VTOP - POST /api/od. On-duty (OD) requests: /vtop/proctor/viewOdDetails via getVtopReferer."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

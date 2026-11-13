@@ -3,7 +3,7 @@ title: "Attendance Htmlparser2"
 description: "Academics & VTOP - POST /api/attendance/htmlparser2. Same contract as /api/attendance, built on parseDocument + css-select instead of Cheerio. Performance/portability variant."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

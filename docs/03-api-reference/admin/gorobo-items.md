@@ -3,7 +3,7 @@ title: "Items"
 description: "Admin - GET/POST /api/admin/gorobo/items. Gorobo catalog admin. Query ?search&category&lowStock&limit."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

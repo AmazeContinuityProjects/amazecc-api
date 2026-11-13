@@ -3,7 +3,7 @@ title: "Status"
 description: "Auth & System - GET /api/notifications/status. Reads notification preferences per user. ?endpoint filter."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

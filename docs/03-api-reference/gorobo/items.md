@@ -3,7 +3,7 @@ title: "Items"
 description: "GoRobo Shop - GET /api/gorobo/items. Public catalog (CDN-cached). Query: ?category&limit&page&q."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

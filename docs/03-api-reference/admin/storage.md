@@ -3,7 +3,7 @@ title: "Storage"
 description: "Admin - GET/POST /api/admin/storage. Storage/files dashboard; POST runs classification of papers (remote-URL / B2 / DIRECT_JSON)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

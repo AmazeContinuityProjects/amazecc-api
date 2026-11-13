@@ -3,7 +3,7 @@ title: "Upload"
 description: "QBank - POST /api/qbank/upload. Public upload endpoint — every upload lands PENDING for admin moderation. Flagged in docs: public-write, rate-limit only by platform."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

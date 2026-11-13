@@ -3,7 +3,7 @@ title: "Auth"
 description: "CabShare - POST /api/cabshare/auth. CabShare login: verifies against VTOP with an offline-solved captcha, upserts cabshare_users, issues a cabshare token (30d)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

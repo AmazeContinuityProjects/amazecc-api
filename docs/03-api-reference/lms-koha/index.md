@@ -3,7 +3,7 @@ title: "LMS & Koha"
 description: "Every LMS & Koha endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # LMS & Koha
 

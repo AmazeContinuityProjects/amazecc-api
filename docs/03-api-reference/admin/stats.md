@@ -3,7 +3,7 @@ title: "Stats"
 description: "Admin - GET /api/admin/stats. Admin dashboard numbers (users, logs, storage)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

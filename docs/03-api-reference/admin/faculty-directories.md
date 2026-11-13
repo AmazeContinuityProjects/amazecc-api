@@ -3,7 +3,7 @@ title: "Faculty Directories"
 description: "Admin - GET/POST/PUT/DELETE /api/admin/faculty-directories. Manage faculty directory school URLs. Requires faculty-directories permission."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

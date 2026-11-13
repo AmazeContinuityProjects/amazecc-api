@@ -3,7 +3,7 @@ title: "Download"
 description: "Clubs & Events - POST /api/events/download. EventHub asset/ticket download proxy (binary)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

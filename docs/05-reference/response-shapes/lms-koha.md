@@ -9,7 +9,7 @@ description: "Every response body the Moodle scrapes and the Koha OPAC proxies r
 
 ## POST /api/lms-data
 
-**Envelope:** **raw** - a **bare array**, no envelope · 200 / 400 / 500 · reference: [lms-data](/amazecc-api/03-api-reference/lms-koha/lms-data)
+**Envelope:** **raw** - a **bare array**, no envelope · 200 / 400 / 500 · reference: [lms-data](../../03-api-reference/lms-koha/lms-data.md)
 
 Success: `Assingment[]` (yes, the code's typo) - one entry per assignment event across the **current month's** calendar:
 
@@ -29,14 +29,14 @@ Errors: **no `success` field** - 400 `{ error: "Username and password are requir
 
 ## POST /api/vitol-data
 
-**Envelope:** **raw** - bare array · 200 / 400 / 500 · reference: [vitol-data](/amazecc-api/03-api-reference/lms-koha/vitol-data)
+**Envelope:** **raw** - bare array · 200 / 400 / 500 · reference: [vitol-data](../../03-api-reference/lms-koha/vitol-data.md)
 
 Success: `Assingment[]` - same as lms-data but **current + next month** calendars (deduped by `url`); keys differ: **`opens`** (activity-dates string containing "Opens:"/"Opened:"), `done` ("Finished" quiz attempt marker), and **no `teachers` field**. Body must include `vitolSite` (selects the Moodle instance).
 **Typed?** Local unexported `Assingment`.
 
 ## GET /api/koha/search
 
-**Envelope:** success-wrapped (public) · 200 / 500 · reference: [koha/search](/amazecc-api/03-api-reference/lms-koha/koha-search)
+**Envelope:** success-wrapped (public) · 200 / 500 · reference: [koha/search](../../03-api-reference/lms-koha/koha-search.md)
 
 Query params: `?idx` (index selector - `kw`/`title`/…), `?q`, `?count` (default 20, cap 100), `?offset`. Empty `q` short-circuits to `{ success: true, books: [], total: 0 }` - count/query fields absent.
 Otherwise: `{ success: true, books, total, query, offset, count }` where `books[]` = OPAC RSS items:
@@ -54,7 +54,7 @@ Otherwise: `{ success: true, books, total, query, offset, count }` where `books[
 
 ## GET /api/koha/detail
 
-**Envelope:** success-wrapped (public) · 200 / 400 / 500 · reference: [koha/detail](/amazecc-api/03-api-reference/lms-koha/koha-detail)
+**Envelope:** success-wrapped (public) · 200 / 400 / 500 · reference: [koha/detail](../../03-api-reference/lms-koha/koha-detail.md)
 
 `?biblionumber=` (validated `^[0-9]+$`): `{ success: true, book }`:
 
@@ -69,7 +69,7 @@ Otherwise: `{ success: true, books, total, query, offset, count }` where `books[
 
 ## GET /api/koha/availability
 
-**Envelope:** success-wrapped (public) · 200 / 500 · reference: [koha/availability](/amazecc-api/03-api-reference/lms-koha/koha-availability)
+**Envelope:** success-wrapped (public) · 200 / 500 · reference: [koha/availability](../../03-api-reference/lms-koha/koha-availability.md)
 
 `?biblionumbers=comma,separated` (deduped, cap 50, non-numeric dropped): `{ success: true, items }`
 
@@ -80,7 +80,7 @@ Item: `{itemId, barcode, homeLibrary (home_library_id), holdingLibrary (holding_
 
 ## POST /api/koha/patron
 
-**Envelope:** success-wrapped · 200 / 400 / 401 / 500 · reference: [koha/patron](/amazecc-api/03-api-reference/lms-koha/koha-patron)
+**Envelope:** success-wrapped · 200 / 400 / 401 / 500 · reference: [koha/patron](../../03-api-reference/lms-koha/koha-patron.md)
 
 Body `{card, password, page?}` - two distinct 200 shapes:
 

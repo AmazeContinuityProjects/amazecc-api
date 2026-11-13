@@ -3,7 +3,7 @@ title: "GoRobo Shop"
 description: "Every GoRobo Shop endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # GoRobo Shop
 

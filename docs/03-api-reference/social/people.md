@@ -3,7 +3,7 @@ title: "People"
 description: "Social (FFCS Partners) - POST /api/social/people. Resolve a Crockford handle (AMZ-XXXX-XXXX) to a person card."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

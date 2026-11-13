@@ -3,7 +3,7 @@ title: "Hostel"
 description: "Academics & VTOP - POST /api/hostel. Hostel block/room/mess + leave history. Raw envelope, not _success_-wrapped."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

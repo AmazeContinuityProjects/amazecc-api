@@ -3,7 +3,7 @@ title: "Availability"
 description: "LMS & Koha - GET /api/koha/availability. Koha item availability proxy. ?biblionumbers=comma,list"
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

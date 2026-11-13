@@ -3,7 +3,7 @@ title: "Import To Storage"
 description: "QBank - POST /api/qbank/admin/import-to-storage. Resolves Google Drive links → uploads PDF buffer to B2 → rewrites file_url to the anonymous download route."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

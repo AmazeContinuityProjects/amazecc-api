@@ -3,7 +3,7 @@ title: "Reminders"
 description: "Auth & System - GET/POST /api/cron/reminders. VIT student Vitol reminder push fan-out. Authorization: Bearer $CRON_SECRET (timingSafeEqual)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

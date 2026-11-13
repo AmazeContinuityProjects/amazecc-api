@@ -3,7 +3,7 @@ title: "Download"
 description: "Academics & VTOP - POST /api/curriculum/download. Binary proxy (syllabus PDF). On upstream failure, returns the first ~200 bytes as snippet for debugging."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

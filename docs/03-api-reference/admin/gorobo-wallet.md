@@ -3,7 +3,7 @@ title: "Wallet"
 description: "Admin - GET /api/admin/gorobo/wallet. Wallet dashboard: balances and transaction ledger."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Stock"
 description: "Admin - PATCH /api/admin/gorobo/items/stock. Adjust stock by delta or set stockQuantity."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

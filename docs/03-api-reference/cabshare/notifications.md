@@ -3,7 +3,7 @@ title: "Notifications"
 description: "CabShare - GET/PATCH /api/cabshare/notifications. CabShare notifications. PATCH marks read."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

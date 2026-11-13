@@ -3,7 +3,7 @@ title: "Orders"
 description: "GoRobo Shop - POST /api/gorobo/orders. Public order placement (rate-limited). Pending → confirmed by admin."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

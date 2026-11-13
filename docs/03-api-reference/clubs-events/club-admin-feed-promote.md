@@ -3,7 +3,7 @@ title: "Promote"
 description: "Clubs & Events - POST /api/club-admin/feed/promote. Member-counted promote toggle. Intentionally PUBLIC (backlog: only rate limit) — flagged in docs."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Complete Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/complete. confirmed → completed; computes wallet entries (split customer/vendor)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

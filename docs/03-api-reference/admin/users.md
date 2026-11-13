@@ -3,7 +3,7 @@ title: "Users"
 description: "Admin - GET/POST /api/admin/users. Admin user management. GET lists; POST creates with role+permissions."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

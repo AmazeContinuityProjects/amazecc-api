@@ -3,7 +3,7 @@ title: "Analytics"
 description: "Admin - GET /api/admin/gorobo/analytics. Sales analytics rollup."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

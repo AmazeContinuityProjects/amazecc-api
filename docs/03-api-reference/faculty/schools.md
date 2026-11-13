@@ -3,7 +3,7 @@ title: "Schools"
 description: "Faculty Directory - GET /api/faculty/schools. Faculty-directory schools from our DB (seeded from VIT faculty pages)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

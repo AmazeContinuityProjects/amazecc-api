@@ -3,7 +3,7 @@ title: "Login"
 description: "Clubs & Events - POST /api/events/login. Eventhub login. jsessionid must be cached by the client; EventHub sessions live long."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

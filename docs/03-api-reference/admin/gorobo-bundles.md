@@ -3,7 +3,7 @@ title: "Bundles"
 description: "Admin - GET/POST /api/admin/gorobo/bundles. Bundle (kit) management."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

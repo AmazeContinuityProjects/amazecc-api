@@ -3,7 +3,7 @@ title: "Rules [id]"
 description: "Admin - DELETE /api/admin/transport/rules/[id]. Delete one rule."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

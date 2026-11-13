@@ -3,7 +3,7 @@ title: "FFCS Match"
 description: "Social (FFCS Partners) - GET/POST /api/social/ffcs-match. Friend-finder: who is in my classes. Server computes reciprocal pairing only — never exposes non-shared info."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Hubs"
 description: "Admin - POST/DELETE /api/admin/cabshare/hubs. CabShare hub management. DELETE ?hub_id"
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

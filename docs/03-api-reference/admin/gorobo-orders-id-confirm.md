@@ -3,7 +3,7 @@ title: "Confirm Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/confirm. pending → confirmed."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

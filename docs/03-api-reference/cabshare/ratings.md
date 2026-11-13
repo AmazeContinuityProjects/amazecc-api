@@ -3,7 +3,7 @@ title: "Ratings"
 description: "CabShare - POST /api/cabshare/ratings. Rate a co-rider after a trip."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

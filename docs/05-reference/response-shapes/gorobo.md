@@ -11,7 +11,7 @@ description: "Every response body the public GoRobo catalog and orders return, f
 
 ## GET /api/gorobo/items
 
-**Envelope:** success-wrapped (public) · 200 / 500 / 503 · reference: [gorobo/items](/amazecc-api/03-api-reference/gorobo/items)
+**Envelope:** success-wrapped (public) · 200 / 500 / 503 · reference: [gorobo/items](../../03-api-reference/gorobo/items.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -36,7 +36,7 @@ Query params: `?category=`, `?limit=`, `?page=` (requires limit), `?q=`. Success
 
 ## POST /api/gorobo/orders
 
-**Envelope:** success-wrapped (public) · **201** / 400 / 429 / 500 · reference: [gorobo/orders](/amazecc-api/03-api-reference/gorobo/orders)
+**Envelope:** success-wrapped (public) · **201** / 400 / 429 / 500 · reference: [gorobo/orders](../../03-api-reference/gorobo/orders.md)
 
 Success (HTTP **201**):
 
@@ -57,7 +57,7 @@ Errors: 400 (invalid JSON / name-length / phone format / items array ≤100 line
 
 ## POST /api/gorobo/seed
 
-**Envelope:** success-wrapped (admin) · 200 / 400 / 401 / 500 / 503 · reference: [gorobo/seed](/amazecc-api/03-api-reference/gorobo/seed)
+**Envelope:** success-wrapped (admin) · 200 / 400 / 401 / 500 / 503 · reference: [gorobo/seed](../../03-api-reference/gorobo/seed.md)
 
 Requires `Authorization: Bearer <admin token>` with **`gorobo` permission** (superadmins bypass). Body `{items, replace?}` - `replace` defaults to **true** (rows absent from the payload are DELETED). Success: `{ success: true, message: "GoRoBo items seeded successfully", stats: {items: number, replaced: boolean} }` - stats counts the payload, not the DB.
 401 uses `message` again: `{ success: false, message: "Unauthorized" }`.
@@ -65,7 +65,7 @@ Requires `Authorization: Bearer <admin token>` with **`gorobo` permission** (sup
 
 ## GET /api/gorobo/version
 
-**Envelope:** success-wrapped (public) · 200 / 500 / 503 · reference: [gorobo/version](/amazecc-api/03-api-reference/gorobo/version)
+**Envelope:** success-wrapped (public) · 200 / 500 / 503 · reference: [gorobo/version](../../03-api-reference/gorobo/version.md)
 
 `{ success: true, count: number, lastUpdate: string|null }` - `count` = rows in `gorobo_items`, `lastUpdate` = `max(updated_at)::text` (null on empty table). Success carries `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`. Cheap freshness probe - the client polls this to invalidate its local catalog cache.
 **Typed?** No.

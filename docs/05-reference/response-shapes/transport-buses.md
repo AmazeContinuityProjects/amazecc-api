@@ -9,7 +9,7 @@ description: "Every response body the bus directory and VTOP transport registrat
 
 ## POST /api/transport
 
-**Envelope:** mixed - success enveloped; **every error is also HTTP 200** except 400 · 200 / 400 · reference: [transport](/amazecc-api/03-api-reference/transport-buses/transport)
+**Envelope:** mixed - success enveloped; **every error is also HTTP 200** except 400 · 200 / 400 · reference: [transport](../../03-api-reference/transport-buses/transport.md)
 
 Success:
 | Field | Type | Meaning |
@@ -33,7 +33,7 @@ Failure (all **HTTP 200** unless noted): `{ hasRegistration: false, error: "Empt
 
 ## GET /api/buses
 
-**Envelope:** success-wrapped (public, no auth) · **always 200** · reference: [buses](/amazecc-api/03-api-reference/transport-buses/buses)
+**Envelope:** success-wrapped (public, no auth) · **always 200** · reference: [buses](../../03-api-reference/transport-buses/buses.md)
 
 Success: `{ success: true, buses, rules }` - plus `{ error: "Internal server error" }` on the outer catch **with `success:true` still set** (the two keys coexist).
 

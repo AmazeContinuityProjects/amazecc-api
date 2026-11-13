@@ -3,7 +3,7 @@ title: "Blocks"
 description: "CabShare - POST/DELETE /api/cabshare/blocks. Block or unblock a co-rider."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

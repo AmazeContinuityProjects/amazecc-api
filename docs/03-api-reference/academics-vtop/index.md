@@ -3,7 +3,7 @@ title: "Academics & VTOP"
 description: "Every Academics & VTOP endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # Academics & VTOP
 

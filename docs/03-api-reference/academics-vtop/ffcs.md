@@ -3,7 +3,7 @@ title: "FFCS"
 description: "Academics & VTOP - POST /api/ffcs. All-in bundle (17 KB route). section=schedule/feedback/wishlist returns only that slice. Body section of the file for each mode."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

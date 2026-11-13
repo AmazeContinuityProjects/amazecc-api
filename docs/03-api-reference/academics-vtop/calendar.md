@@ -3,7 +3,7 @@ title: "Calendar"
 description: "Academics & VTOP - POST /api/calendar. Academic calendar scrape. Raw JSON, not _success_-enveloped."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
