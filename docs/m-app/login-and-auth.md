@@ -1,3 +1,8 @@
+---
+title: "VITianCC: login and auth"
+description: "How the official app signs in: S-API-KEY headers, the encrypted dynamic path and what happens when a session expires."
+---
+
 # Login and authentication
 
 This explains how a user signs in to VITianCC, how the app establishes a session, how it keeps requests authenticated, and what happens when a session expires.

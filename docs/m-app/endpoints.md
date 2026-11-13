@@ -1,3 +1,8 @@
+---
+title: "VITianCC: endpoints catalog"
+description: "The server actions the app calls, what each is for, and how to interpret them."
+---
+
 # Server actions the app uses (endpoint catalog)
 
 This is a plain-English catalog of the server actions the VITianCC app calls on `https://vtopcc5.vit.ac.in/`. For each area you’ll see what the action is for, what information it typically needs, and how to interpret/use it well. (How requests are built, authenticated, and encrypted is covered in [api-client-and-networking.md](api-client-and-networking.md) and [login-and-auth.md](login-and-auth.md).)

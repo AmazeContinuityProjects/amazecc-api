@@ -1,3 +1,8 @@
+---
+title: "VITianCC: API client and networking"
+description: "How the app builds request URLs, authenticates, encrypts payloads and caches responses."
+---
+
 # How the app talks to the server (networking)
 
 This describes the single, shared networking layer the Flutter app uses for VTOP requests: how it builds URLs, authenticates, encrypts data, sends requests, and handles responses. (Original recovered identifiers are listed in the technical reference at the end.)

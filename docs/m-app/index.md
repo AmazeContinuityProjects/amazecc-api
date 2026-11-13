@@ -1,3 +1,8 @@
+---
+title: "The VITianCC app notes"
+description: "Reverse-engineering notes on VIT's official Android app (edu.vit.vitiancc): login, endpoints, business logic and security - reference, not the web-scrape path."
+---
+
 # VITianCC Mobile App – How It Works (Reverse-Engineering Notes)
 
 This folder documents what the **VITianCC** Android app (`edu.vit.vitiancc`) does, how it talks to VIT’s servers, how login works, and how its main features behave. It is written from a static analysis of the app (APK + device split, including the compiled Flutter code) so you can understand the app in plain language.
