@@ -41,6 +41,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,order} / {success:false,error|message}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/gorobo.md)
+
 **Rate limit:** 5/min/IP
 
 ## Try it live

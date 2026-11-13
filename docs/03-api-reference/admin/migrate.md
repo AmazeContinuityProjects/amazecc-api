@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,message,tables} / {connected,db,tables,serverTime} (GET health-check)`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/admin.md)
+
 **Rate limit:** 3/5min
 
 ## Try it live

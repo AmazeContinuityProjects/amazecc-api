@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,stats}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/cabshare.md)
+
 ## Try it live
 
 <EndpointTry path="/api/cabshare/stats" method="get" auth="none" />

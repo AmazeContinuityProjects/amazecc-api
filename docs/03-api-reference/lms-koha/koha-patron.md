@@ -40,6 +40,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,data,page} / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/lms-koha.md)
+
 ## Try it live
 
 <EndpointTry path="/api/koha/patron" method="post" auth="none" />

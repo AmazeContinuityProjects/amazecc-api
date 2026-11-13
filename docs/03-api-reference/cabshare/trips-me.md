@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,my_trips,joined_trips}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/cabshare.md)
+
 ## Try it live
 
 <EndpointTry path="/api/cabshare/trips/me" method="get" auth="cabshare" />

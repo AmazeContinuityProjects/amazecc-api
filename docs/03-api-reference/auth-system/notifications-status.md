@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `raw {vitol,vitol_reminder_day,vitol_reminder_time} / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 ## Try it live
 
 <EndpointTry path="/api/notifications/status" method="get" auth="none" />

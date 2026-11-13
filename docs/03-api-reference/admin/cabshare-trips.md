@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,trips} / {success,message}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/admin.md)
+
 ## Try it live
 
 <EndpointTry path="/api/admin/cabshare/trips" method="get" auth="gorobo-admin" />

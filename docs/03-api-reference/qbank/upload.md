@@ -43,6 +43,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,sourceId}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/qbank.md)
+
 ## Try it live
 
 <EndpointTry path="/api/qbank/upload" method="post" auth="none" />

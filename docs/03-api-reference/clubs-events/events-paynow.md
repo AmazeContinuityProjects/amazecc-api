@@ -40,6 +40,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{status:'payment_form',html,tcUrl} / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/clubs-events.md)
+
 ## Try it live
 
 <EndpointTry path="/api/events/paynow" method="post" auth="eventhub" />

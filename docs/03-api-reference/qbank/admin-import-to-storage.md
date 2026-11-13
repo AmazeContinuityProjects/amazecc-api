@@ -38,6 +38,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,fileUrl,fileSize}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/qbank.md)
+
 ## Try it live
 
 <EndpointTry path="/api/qbank/admin/import-to-storage" method="post" auth="admin" />

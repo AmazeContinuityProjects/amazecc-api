@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,message} / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 ## Try it live
 
 <EndpointTry path="/api/cron/reminders" method="get" auth="cron" />

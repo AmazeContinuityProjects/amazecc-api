@@ -36,6 +36,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `raw OpenAPI spec object`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 ## Try it live
 
 <EndpointTry path="/api/docs" method="get" auth="none" />

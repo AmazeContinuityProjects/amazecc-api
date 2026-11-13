@@ -42,6 +42,8 @@ Exactly what to put in the body (never the URL): `{cookies, authorizedID, csrf}`
 
 > Full shape: `{success,hasRegistration,busRouteId,busUrl,qrCode,pageCsrf} / {error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/transport-buses.md)
+
 ## Try it live
 
 <EndpointTry path="/api/transport" method="post" auth="vtop" />

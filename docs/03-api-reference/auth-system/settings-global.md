@@ -37,6 +37,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,config}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 ## Try it live
 
 <EndpointTry path="/api/settings/global" method="get" auth="none" />

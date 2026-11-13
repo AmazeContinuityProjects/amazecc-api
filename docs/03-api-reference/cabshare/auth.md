@@ -40,6 +40,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,user,token} / {success:false,error|message}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/cabshare.md)
+
 **Rate limit:** 5/min/IP
 
 ## Try it live

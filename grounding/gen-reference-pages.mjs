@@ -225,6 +225,8 @@ ${jsonLiteral(skeletonFromReturns(inv.returns) ?? { success: true })}
 \`\`\`
 
 > Full shape: \`${inv.returns}\`
+
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/${cat.dir}.md)
 ${inv.rl && inv.rl !== "-" ? `\n**Rate limit:** ${inv.rl}\n` : ""}
 ## Try it live
 

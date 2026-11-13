@@ -41,6 +41,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,books,total,query,count,offset}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/lms-koha.md)
+
 ## Try it live
 
 <EndpointTry path="/api/koha/search" method="get" auth="none" />

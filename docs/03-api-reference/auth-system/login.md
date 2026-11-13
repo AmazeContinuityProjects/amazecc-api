@@ -43,6 +43,8 @@ import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
 > Full shape: `{success,message,cookies,csrf,authorizedID,clubToken?,clubRoles?} / {success:false,message|error}`
 
+Field-by-field breakdown with types: [Response shapes ->](../../05-reference/response-shapes/auth-system.md)
+
 **Rate limit:** 5/min/IP
 
 ## Try it live
