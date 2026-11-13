@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Auth & System"
 description: "Every Auth & System endpoint: method, path, auth and rate limits."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Profile"
 description: "Clubs & Events - POST /api/events/profile. Eventhub profile — auto re-auths when the cached session looks like a login page."

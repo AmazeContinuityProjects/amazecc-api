@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Reps"
 description: "Clubs & Events - GET/POST/DELETE /api/club-admin/reps. Club representative management; super reps may manage everyone."

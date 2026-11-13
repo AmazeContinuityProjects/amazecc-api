@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Availability"
 description: "LMS & Koha - GET /api/koha/availability. Koha item availability proxy. ?biblionumbers=comma,list"

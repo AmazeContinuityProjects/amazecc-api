@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Storage"
 description: "Admin - GET/POST /api/admin/storage. Storage/files dashboard; POST runs classification of papers (remote-URL / B2 / DIRECT_JSON)."

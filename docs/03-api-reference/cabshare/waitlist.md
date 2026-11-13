@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Waitlist"
 description: "CabShare - POST /api/cabshare/waitlist. Join the waitlist for a full trip."

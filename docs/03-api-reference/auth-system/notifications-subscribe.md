@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Subscribe"
 description: "Auth & System - POST /api/notifications/subscribe. Register a web-push subscription. Public by design (the app must call it pre-sync)."

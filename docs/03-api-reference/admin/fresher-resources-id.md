@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Fresher Resources [id]"
 description: "Admin - PATCH/DELETE /api/admin/fresher-resources/[id]. Update or remove a single fresher resource."

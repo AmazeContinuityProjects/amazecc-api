@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Hubs"
 description: "Admin - POST/DELETE /api/admin/cabshare/hubs. CabShare hub management. DELETE ?hub_id"

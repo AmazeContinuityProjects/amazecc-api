@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "OD"
 description: "Academics & VTOP - POST /api/od. On-duty (OD) requests: /vtop/proctor/viewOdDetails via getVtopReferer."

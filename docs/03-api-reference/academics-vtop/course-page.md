@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Course Page"
 description: "Academics & VTOP - POST /api/course-page. Course view page scrape: parseCoursePage/parseCourseClasses/parseCoursePageMaterials. Heavy parser, ~300 lines of cheerio selectors."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Publish"
 description: "QBank - POST /api/qbank/admin/publish. Publishes a paper (approval_status=APPROVED)."

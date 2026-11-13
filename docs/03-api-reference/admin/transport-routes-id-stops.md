@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Stops"
 description: "Admin - POST /api/admin/transport/routes/[id]/stops. Bulk-replace stops for a route."

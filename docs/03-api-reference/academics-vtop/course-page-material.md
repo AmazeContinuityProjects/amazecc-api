@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Material"
 description: "Academics & VTOP - POST /api/course-page/material. Course material downloads (PDF/zip streams) via VTOP binary endpoints, returns base64 or proxied file data."

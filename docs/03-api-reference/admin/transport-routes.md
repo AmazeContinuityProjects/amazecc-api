@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Routes"
 description: "Admin - GET/POST /api/admin/transport/routes. Transport route CRUD. transport permission."

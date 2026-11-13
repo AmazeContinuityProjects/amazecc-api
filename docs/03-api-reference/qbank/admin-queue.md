@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Queue"
 description: "QBank - GET/PATCH /api/qbank/admin/queue. Moderation queue list (GET) and whitelisted status updates (PATCH)."

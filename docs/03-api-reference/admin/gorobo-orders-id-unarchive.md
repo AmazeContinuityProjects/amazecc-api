@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Unarchive Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/unarchive. Undo archive."

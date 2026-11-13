@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Questions"
 description: "QBank - GET /api/qbank/questions. Approved questions for a course. ?course filter."

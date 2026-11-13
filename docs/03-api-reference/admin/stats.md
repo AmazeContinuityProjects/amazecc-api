@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Stats"
 description: "Admin - GET /api/admin/stats. Admin dashboard numbers (users, logs, storage)."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Stats"
 description: "Academics & VTOP - POST/GET /api/marks/stats. Class-wide marks stats for shared pooling (feeds /api/marks/sync). GET variant reads same data."

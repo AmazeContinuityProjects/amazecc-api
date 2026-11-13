@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Blocks"
 description: "CabShare - POST/DELETE /api/cabshare/blocks. Block or unblock a co-rider."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Orders [id]"
 description: "Admin - GET/PUT/PATCH /api/admin/gorobo/orders/[id]. Order detail/edit (items, quote, status). parseQuoteBody handles both item and status updates."

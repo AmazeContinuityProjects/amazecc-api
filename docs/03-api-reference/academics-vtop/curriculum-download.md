@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Academics & VTOP - POST /api/curriculum/download. Binary proxy (syllabus PDF). On upstream failure, returns the first ~200 bytes as snippet for debugging."

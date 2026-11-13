@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Auth"
 description: "CabShare - POST /api/cabshare/auth. CabShare login: verifies against VTOP with an offline-solved captcha, upserts cabshare_users, issues a cabshare token (30d)."

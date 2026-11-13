@@ -1,5 +1,5 @@
 // Generates the per-endpoint reference pages under docs/03-api-reference/ from
-// grounding/route-inventory.json. Pages carry a `<!-- generated: aapi1 -->`
+// grounding/route-inventory.json. Pages carry a `{/* generated: aapi1 */}`
 // marker; hand-written pages (marker absent) are never overwritten. Idempotent.
 // Usage: node grounding/gen-reference-pages.mjs [--check]
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
@@ -9,7 +9,7 @@ const ROOT = process.cwd();
 const INVENTORY = join(ROOT, "grounding", "route-inventory.json");
 const DOCS = join(ROOT, "docs", "03-api-reference");
 const CHECK = process.argv.includes("--check");
-const MARKER = "<!-- generated: aapi1 -->";
+const MARKER = "{/* generated: aapi1 */}";
 
 const CATS = {
   auth: { dir: "auth-system", title: "Auth & System", intro: "The door in and the lights that say the server is alive. Log in here, check the heartbeat, broadcast a push notification, or ask the gateway what it is." },

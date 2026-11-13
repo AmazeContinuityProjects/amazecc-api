@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Calendar"
 description: "Academics & VTOP - POST /api/calendar. Academic calendar scrape. Raw JSON, not _success_-enveloped."

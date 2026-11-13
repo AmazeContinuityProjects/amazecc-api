@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Users"
 description: "Admin - GET/POST /api/admin/users. Admin user management. GET lists; POST creates with role+permissions."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Docs"
 description: "Auth & System - GET /api/docs. swagger-jsdoc aggregate of the @openapi JSDoc blocks in route files. Mostly placeholders — use this handbook instead."

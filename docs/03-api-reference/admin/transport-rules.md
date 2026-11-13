@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Rules"
 description: "Admin - GET/POST /api/admin/transport/rules. Transport rules CRUD."

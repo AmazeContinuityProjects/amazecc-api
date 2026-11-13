@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Items"
 description: "Admin - GET/POST /api/admin/gorobo/items. Gorobo catalog admin. Query ?search&category&lowStock&limit."

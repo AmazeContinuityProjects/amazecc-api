@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Landing Page"
 description: "Clubs & Events - GET/POST /api/club-admin/landing-page. Club landing-page config (theme + curated showcase rail)."

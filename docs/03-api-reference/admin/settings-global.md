@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Global"
 description: "Admin - PUT /api/admin/settings/global. Set global config keys (writes app_config)."

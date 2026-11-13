@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Import To Storage"
 description: "QBank - POST /api/qbank/admin/import-to-storage. Resolves Google Drive links → uploads PDF buffer to B2 → rewrites file_url to the anonymous download route."

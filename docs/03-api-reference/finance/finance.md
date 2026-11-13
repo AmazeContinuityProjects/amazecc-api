@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Finance"
 description: "Finance - POST /api/finance. Fees: no-dues view + finance endpoints. ~460 LOC — the second-largest route in the codebase."

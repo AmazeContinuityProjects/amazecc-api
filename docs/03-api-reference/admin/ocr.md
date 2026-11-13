@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "OCR"
 description: "Admin - POST /api/admin/ocr. Queue a paper for the external OCR worker (approval_status=OCR_QUEUED)."

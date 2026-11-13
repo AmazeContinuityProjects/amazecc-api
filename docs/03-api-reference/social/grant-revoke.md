@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Revoke"
 description: "Social (FFCS Partners) - POST /api/social/grant/revoke. Severs a pairing in both directions (idempotent). Secret check is redundant — the body proves possession anyway, but it is verified."

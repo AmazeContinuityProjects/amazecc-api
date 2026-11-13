@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Register"
 description: "Clubs & Events - POST /api/events/register. EventHub registration proxy. May return HTML auto-form for payment steps."

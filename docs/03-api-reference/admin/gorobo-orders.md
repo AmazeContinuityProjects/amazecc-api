@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Orders"
 description: "Admin - GET/POST /api/admin/gorobo/orders. Order list + create (admin can create on behalf). Query ?status&search."

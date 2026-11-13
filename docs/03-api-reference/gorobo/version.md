@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Version"
 description: "GoRobo Shop - GET /api/gorobo/version. Catalog cache-bust fingerprint. The client polls this to invalidate local catalog cache."

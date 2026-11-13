@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Reject"
 description: "QBank - POST /api/qbank/admin/reject. Rejects a paper (back to PENDING / set REJECTED)."

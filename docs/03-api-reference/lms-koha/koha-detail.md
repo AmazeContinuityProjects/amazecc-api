@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Detail"
 description: "LMS & Koha - GET /api/koha/detail. Koha biblio detail proxy. ?biblionumber"

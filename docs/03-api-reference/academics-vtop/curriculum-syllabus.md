@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Syllabus"
 description: "Academics & VTOP - POST /api/curriculum/syllabus. Single-course syllabus binary. Same binary proxy pattern as curriculum/download."

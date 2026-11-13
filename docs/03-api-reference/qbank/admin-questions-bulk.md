@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Bulk"
 description: "QBank - POST /api/qbank/admin/questions/bulk. Bulk-insert questions from an OCR pass."

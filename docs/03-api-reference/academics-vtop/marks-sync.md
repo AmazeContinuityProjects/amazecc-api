@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "SYNC"
 description: "Academics & VTOP - POST /api/marks/sync. Marks contribution endpoint — the privacy-preserving sync: verify + fetch, then write class_* tables server-side."

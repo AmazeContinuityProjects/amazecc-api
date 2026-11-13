@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Trips"
 description: "CabShare - POST/GET /api/cabshare/trips. Trip planning board for hostel cab-shares. POST creates; GET lists for a date/hub."

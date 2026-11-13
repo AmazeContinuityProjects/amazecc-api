@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Seed"
 description: "GoRobo Shop - POST /api/gorobo/seed. Seed the catalog from src/data/gorobo/items.json. Admin + gorobo permission."

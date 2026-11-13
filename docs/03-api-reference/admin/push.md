@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Push"
 description: "Admin - POST /api/admin/push. Broadcast a web-push notification to all subscriptions."

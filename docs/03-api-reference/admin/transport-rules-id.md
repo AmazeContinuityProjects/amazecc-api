@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Rules [id]"
 description: "Admin - DELETE /api/admin/transport/rules/[id]. Delete one rule."

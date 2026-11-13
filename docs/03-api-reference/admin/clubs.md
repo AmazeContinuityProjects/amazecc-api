@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Clubs"
 description: "Admin - GET/POST /api/admin/clubs. Club directory CRUD."

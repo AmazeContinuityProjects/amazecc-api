@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Students"
 description: "Admin - POST/DELETE /api/admin/transport/students. Map students to routes. DELETE ?routeId."

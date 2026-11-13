@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Academics & VTOP"
 description: "Every Academics & VTOP endpoint: method, path, auth and rate limits."

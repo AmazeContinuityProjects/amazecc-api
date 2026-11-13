@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "People"
 description: "Social (FFCS Partners) - POST /api/social/people. Resolve a Crockford handle (AMZ-XXXX-XXXX) to a person card."
