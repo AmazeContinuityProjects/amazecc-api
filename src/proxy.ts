@@ -20,6 +20,10 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  // Let cross-origin callers read what they need to save a returned file
+  // sensibly — without this the filename is invisible and a proxy that
+  // streams a 0-byte body looks identical to one serving an empty bucket.
+  response.headers.set("Access-Control-Expose-Headers", "Content-Disposition, Content-Length, Content-Type");
   response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
   response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version, X-Club-Id");
