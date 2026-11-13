@@ -3,7 +3,7 @@ title: "CabShare"
 description: "Every CabShare endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # CabShare
 

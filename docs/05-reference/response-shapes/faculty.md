@@ -9,7 +9,7 @@ description: "Every response body the faculty directory routes return, field by 
 
 ## GET /api/faculty/schools
 
-**Envelope:** success-wrapped (public, unauthenticated) · 200 / 500 · reference: [faculty/schools](/amazecc-api/03-api-reference/faculty/schools)
+**Envelope:** success-wrapped (public, unauthenticated) · 200 / 500 · reference: [faculty/schools](../../03-api-reference/faculty/schools.md)
 
 Success: `{ success: true, schools }` - `SELECT id, school_name FROM faculty_directory_urls ORDER BY school_name ASC` → `{id, school_name}[]` - **snake_case** keys, deliberately different from the `schoolId` parameter used by scrape.
 Error: `{ success: false, schools: [], error: publicErrorMessage(error) }` (500) - `schools: []` present even on failure.
@@ -17,7 +17,7 @@ Error: `{ success: false, schools: [], error: publicErrorMessage(error) }` (500)
 
 ## POST /api/faculty/scrape
 
-**Envelope:** success-wrapped (public, rate-limited 10/min/IP) · 200 / 400 / 404 / 429 / 500 · reference: [faculty/scrape](/amazecc-api/03-api-reference/faculty/scrape)
+**Envelope:** success-wrapped (public, rate-limited 10/min/IP) · 200 / 400 / 404 / 429 / 500 · reference: [faculty/scrape](../../03-api-reference/faculty/scrape.md)
 
 Body `{schoolId}` - scrapes the VIT faculty directory page (allow-listed via `vitUrl`, 1-2 outbound fetches; if no cards are found it auto-discovers a `*-faculty` subpage and **rewrites `faculty_directory_urls.url`** for next time). Success:
 

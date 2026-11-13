@@ -3,7 +3,7 @@ title: "Representatives"
 description: "Admin - GET/POST/DELETE /api/admin/clubs/representatives. Assign/remove club representatives. GET ?club_id."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

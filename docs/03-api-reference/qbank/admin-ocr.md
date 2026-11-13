@@ -3,7 +3,7 @@ title: "OCR"
 description: "QBank - POST /api/qbank/admin/ocr. Sets approval_status=OCR_QUEUED for the external local OCR worker."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

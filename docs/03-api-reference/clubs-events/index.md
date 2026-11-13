@@ -3,7 +3,7 @@ title: "Clubs & Events"
 description: "Every Clubs & Events endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # Clubs & Events
 

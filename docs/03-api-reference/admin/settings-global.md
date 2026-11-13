@@ -3,7 +3,7 @@ title: "Global"
 description: "Admin - PUT /api/admin/settings/global. Set global config keys (writes app_config)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

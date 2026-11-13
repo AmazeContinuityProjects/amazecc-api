@@ -3,7 +3,7 @@ title: "Trips"
 description: "CabShare - POST/GET /api/cabshare/trips. Trip planning board for hostel cab-shares. POST creates; GET lists for a date/hub."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

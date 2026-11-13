@@ -3,7 +3,7 @@ title: "Vitol Data"
 description: "LMS & Koha - POST /api/vitol-data. VIT Online (Vitol) Moodle. vitolSite selects the LMS instance if multiple."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

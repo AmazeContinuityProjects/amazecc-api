@@ -3,7 +3,7 @@ title: "Students"
 description: "Admin - POST/DELETE /api/admin/transport/students. Map students to routes. DELETE ?routeId."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

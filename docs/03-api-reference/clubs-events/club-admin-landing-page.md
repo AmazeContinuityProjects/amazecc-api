@@ -3,7 +3,7 @@ title: "Landing Page"
 description: "Clubs & Events - GET/POST /api/club-admin/landing-page. Club landing-page config (theme + curated showcase rail)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

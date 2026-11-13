@@ -3,7 +3,7 @@ title: "Papers"
 description: "QBank - GET /api/qbank/papers. APPROVED papers list. ?course filter. Anonymous download via /api/qbank/papers/download/[paperId]."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

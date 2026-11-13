@@ -3,7 +3,7 @@ title: "Paynow"
 description: "Clubs & Events - POST /api/events/paynow. Paytm-style payment form passthrough — the frontend renders the HTML in a hidden iframe/frame."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Fresher Resources"
 description: "Admin - GET/POST /api/admin/fresher-resources. Fresher orientation resources CRUD. fresher-resources permission."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

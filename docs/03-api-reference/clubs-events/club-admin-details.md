@@ -3,7 +3,7 @@ title: "Details"
 description: "Clubs & Events - GET/POST /api/club-admin/details. Club profile editing (branding, showcase projects, popular events)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

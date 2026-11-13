@@ -3,7 +3,7 @@ title: "Detail"
 description: "LMS & Koha - GET /api/koha/detail. Koha biblio detail proxy. ?biblionumber"
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

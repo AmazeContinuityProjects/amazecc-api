@@ -3,7 +3,7 @@ title: "Queue"
 description: "QBank - GET/PATCH /api/qbank/admin/queue. Moderation queue list (GET) and whitelisted status updates (PATCH)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

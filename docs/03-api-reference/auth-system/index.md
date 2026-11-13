@@ -3,7 +3,7 @@ title: "Auth & System"
 description: "Every Auth & System endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # Auth & System
 

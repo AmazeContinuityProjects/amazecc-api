@@ -3,7 +3,7 @@ title: "Placements"
 description: "Admin - GET/POST /api/admin/transport/placements. Bus placement assignments (hostel → stop)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

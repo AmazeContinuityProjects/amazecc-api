@@ -3,7 +3,7 @@ title: "Unsubscribe"
 description: "Auth & System - POST /api/notifications/unsubscribe. Unregister a web-push subscription."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

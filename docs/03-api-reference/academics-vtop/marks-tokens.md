@@ -3,7 +3,7 @@ title: "Tokens"
 description: "Academics & VTOP - POST /api/marks/tokens. Marks sync tokens for the client (legacy tokens still honored)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Bulk"
 description: "QBank - POST /api/qbank/admin/questions/bulk. Bulk-insert questions from an OCR pass."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

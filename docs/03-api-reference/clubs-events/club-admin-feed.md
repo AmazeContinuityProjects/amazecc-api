@@ -3,7 +3,7 @@ title: "Feed"
 description: "Clubs & Events - GET/POST/DELETE /api/club-admin/feed. Club feed CRUD. Promote endpoint is separate: POST /api/club-admin/feed/promote."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

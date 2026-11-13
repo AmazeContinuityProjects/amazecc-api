@@ -3,7 +3,7 @@ title: "Courses"
 description: "QBank - GET /api/qbank/courses. Courses that have published papers/questions."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "SYNC"
 description: "Academics & VTOP - POST /api/marks/sync. Marks contribution endpoint — the privacy-preserving sync: verify + fetch, then write class_* tables server-side."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Health"
 description: "Auth & System - GET /api/health. Trivial liveness probe for monitors."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

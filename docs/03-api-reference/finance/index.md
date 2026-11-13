@@ -3,7 +3,7 @@ title: "Finance"
 description: "Every Finance endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # Finance
 

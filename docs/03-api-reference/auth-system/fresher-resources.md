@@ -3,7 +3,7 @@ title: "Fresher Resources"
 description: "Auth & System - GET /api/fresher-resources. Public list of fresher orientation resources from our DB."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

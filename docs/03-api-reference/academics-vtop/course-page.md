@@ -3,7 +3,7 @@ title: "Course Page"
 description: "Academics & VTOP - POST /api/course-page. Course view page scrape: parseCoursePage/parseCourseClasses/parseCoursePageMaterials. Heavy parser, ~300 lines of cheerio selectors."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

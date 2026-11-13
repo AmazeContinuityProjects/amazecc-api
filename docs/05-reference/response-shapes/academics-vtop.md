@@ -14,7 +14,7 @@ Typed coverage is best in this section: the VTOP page contracts live in `src/typ
 ## POST /api/whoami
 
 **Envelope:** success-wrapped (200) · 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/whoami)
+[Reference page](../../03-api-reference/academics-vtop/whoami.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -54,7 +54,7 @@ Typed coverage is best in this section: the VTOP page contracts live in `src/typ
 ## POST /api/attendance
 
 **Envelope:** raw (not success-wrapped) · 200 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/attendance)
+[Reference page](../../03-api-reference/academics-vtop/attendance.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -85,14 +85,14 @@ Typed coverage is best in this section: the VTOP page contracts live in `src/typ
 ## POST /api/attendance/htmlparser2
 
 **Envelope:** raw · 200 / 500 - identical contract to `/api/attendance` (HTML is parsed with htmlparser2/css-select instead of cheerio; same merge, same polymorphic `viewLink`, same raw envelope).
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/attendance-htmlparser2)
+[Reference page](../../03-api-reference/academics-vtop/attendance-htmlparser2.md)
 
 <Note>Side effect you can't see in the payload: records your enrollment (`recordEnrollment`) which feeds `/api/marks/stats` authorization. Failures are logged, never thrown.</Note>
 
 ## POST /api/grades
 
 **Envelope:** success-wrapped · 200 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/grades)
+[Reference page](../../03-api-reference/academics-vtop/grades.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -113,7 +113,7 @@ Typed coverage is best in this section: the VTOP page contracts live in `src/typ
 ## POST /api/ffcs
 
 **Envelope:** success-wrapped · 200 / 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/ffcs)
+[Reference page](../../03-api-reference/academics-vtop/ffcs.md)
 
 Section filter in the body: `section: "registration" | "feedback" | "wishlist" | "schedule" | "qcm" | "qcm-view" | "all"` (default `all`). Keys for sections you didn't ask for are **absent** from the JSON.
 
@@ -138,7 +138,7 @@ Section filter in the body: `section: "registration" | "feedback" | "wishlist" |
 ## POST /api/bulk
 
 **Envelope:** success-wrapped · 200 / 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/bulk)
+[Reference page](../../03-api-reference/academics-vtop/bulk.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -156,7 +156,7 @@ Section filter in the body: `section: "registration" | "feedback" | "wishlist" |
 ## POST /api/course-page
 
 **Envelope:** success-wrapped · 200 / 400 / 500 / 502
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/course-page)
+[Reference page](../../03-api-reference/academics-vtop/course-page.md)
 
 Body-dependent response - four shapes depending on `formData`:
 
@@ -176,7 +176,7 @@ Body-dependent response - four shapes depending on `formData`:
 ## POST /api/course-page/material
 
 **Envelope:** binary passthrough · 200 (bytes) / 400 / 500 / 5xx≥500→502
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/course-page-material)
+[Reference page](../../03-api-reference/academics-vtop/course-page-material.md)
 
 | Header | Contents |
 |---|---|
@@ -193,7 +193,7 @@ Body `action`: `reference-material` (`/vtop/downloadPdf` - needs `semSubId, clas
 ## POST /api/curriculum
 
 **Envelope:** success-wrapped · 200 / 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/curriculum)
+[Reference page](../../03-api-reference/academics-vtop/curriculum.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -211,7 +211,7 @@ Body `action`: `reference-material` (`/vtop/downloadPdf` - needs `semSubId, clas
 ## POST /api/curriculum/download
 
 **Envelope:** binary passthrough · 200 (bytes) / 400 / 500 / 502
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/curriculum-download)
+[Reference page](../../03-api-reference/academics-vtop/curriculum-download.md)
 
 Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Content-Type` (default `application/octet-stream`) and `Content-Disposition` (default `attachment; filename="curriculum.<zip|pdf>"`). No JSON payload. Error bodies: `400 {error}` / `502 { success: false, error, snippet }` (first \~300 bytes of upstream body, whitespace-collapsed) / `500 { success: false, error }`.
 
@@ -220,12 +220,12 @@ Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Conten
 ## POST /api/curriculum/syllabus
 
 **Envelope:** binary passthrough · 200 / 400 / 500 / 502 - same pattern as curriculum/download, requires `courseCode` body param; default filename `<courseCode>_syllabus.<zip|pdf>`.
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/curriculum-syllabus)
+[Reference page](../../03-api-reference/academics-vtop/curriculum-syllabus.md)
 
 ## POST /api/calendar
 
 **Envelope:** raw · 200 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/calendar)
+[Reference page](../../03-api-reference/academics-vtop/calendar.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -240,7 +240,7 @@ Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Conten
 ## POST /api/circulars
 
 **Envelope:** success-wrapped · 200 / 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/circulars)
+[Reference page](../../03-api-reference/academics-vtop/circulars.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -254,12 +254,12 @@ Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Conten
 ## POST /api/circulars/download
 
 **Envelope:** binary passthrough · 200 / 400 / 500 / 502 - circular PDF bytes; `circularId` required; error bodies as above; default filename `circular.pdf`.
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/circulars-download)
+[Reference page](../../03-api-reference/academics-vtop/circulars-download.md)
 
 ## POST /api/hostel
 
 **Envelope:** raw · 200 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/hostel)
+[Reference page](../../03-api-reference/academics-vtop/hostel.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -271,7 +271,7 @@ Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Conten
 ## POST /api/od
 
 **Envelope:** success-wrapped · 200 / 400 / 500
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/od)
+[Reference page](../../03-api-reference/academics-vtop/od.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -286,7 +286,7 @@ Syllabus PDF/zip bytes from `/vtop/curriculum-download`. Headers: VTOP's `Conten
 ## POST /api/marks/stats
 
 **Envelope:** success-wrapped · rate-limited (60/min/IP) · 200 / 400 / 401 / 429 / 500 / 503 (GET → 405)
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/marks-stats)
+[Reference page](../../03-api-reference/academics-vtop/marks-stats.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -304,7 +304,7 @@ Error branches carry `{ success: false, error, detail }` - `detail` is the machi
 ## POST /api/marks/sync
 
 **Envelope:** success-wrapped · rate-limited (20/min/IP) · 200 / 400 / 401 / 429 / 502 / 500 / 503
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/marks-sync)
+[Reference page](../../03-api-reference/academics-vtop/marks-sync.md)
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -319,7 +319,7 @@ Error branches carry `{ success: false, error, detail }` - `detail` is the machi
 ## POST /api/marks/tokens
 
 **Envelope:** success-wrapped · rate-limited (60/min/IP) · 200 / 400 / 401 / 429 / 500 / 503
-[Reference page](/amazecc-api/03-api-reference/academics-vtop/marks-tokens)
+[Reference page](../../03-api-reference/academics-vtop/marks-tokens.md)
 
 | Field | Type | Meaning |
 |---|---|---|

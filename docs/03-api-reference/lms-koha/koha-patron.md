@@ -3,7 +3,7 @@ title: "Patron"
 description: "LMS & Koha - POST /api/koha/patron. Patron account scrape (opac-user.pl etc.) via CGI. Koha credentials in body — session never stored server-side."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Buses"
 description: "Admin - POST /api/admin/buses. Replace the buses table from an array upload (import of updated routes)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -3,7 +3,7 @@ title: "Bulk"
 description: "Academics & VTOP - POST /api/bulk. Fans out to internal VTOP proxies (VTOP_PROXIES: hostel-counselling, registration-schedule, exc-registration, course-completion). runVtopPro"
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

@@ -9,7 +9,7 @@ description: "Every response body the finance route returns, field by field - pe
 
 ## POST /api/finance
 
-**Envelope:** success-wrapped with **dynamic per-section keys** · 200 / 400 / 500 · reference: [finance](/amazecc-api/03-api-reference/finance/finance)
+**Envelope:** success-wrapped with **dynamic per-section keys** · 200 / 400 / 500 · reference: [finance](../../03-api-reference/finance/finance.md)
 
 Body: `{cookies, authorizedID, csrf, section?: "all"|"dues"|"receipts"|"receipt"|"wallet"|"bank"|"library", applNo?}` (`section` defaults to `"all"`).
 

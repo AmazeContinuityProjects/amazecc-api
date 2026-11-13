@@ -3,7 +3,7 @@ title: "Publish"
 description: "QBank - POST /api/qbank/admin/publish. Publishes a paper (approval_status=APPROVED)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

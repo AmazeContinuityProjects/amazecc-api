@@ -3,7 +3,7 @@ title: "Version"
 description: "GoRobo Shop - GET /api/gorobo/version. Catalog cache-bust fingerprint. The client polls this to invalidate local catalog cache."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

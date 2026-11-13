@@ -3,7 +3,7 @@ title: "LMS Data"
 description: "LMS & Koha - POST /api/lms-data. LMS (Moodle) LMS login + sesskey + AJAX calls. Credentials only transit in body — never stored."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

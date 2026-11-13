@@ -3,7 +3,7 @@ title: "Rules"
 description: "Admin - GET/POST /api/admin/transport/rules. Transport rules CRUD."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

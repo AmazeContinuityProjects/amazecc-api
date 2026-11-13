@@ -3,7 +3,7 @@ title: "Seed"
 description: "Admin - POST /api/admin/transport/seed. Seed transport data from seed.json (used for initial import)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

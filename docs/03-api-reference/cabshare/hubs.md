@@ -3,7 +3,7 @@ title: "Hubs"
 description: "CabShare - GET /api/cabshare/hubs. Pickup hubs (hostel gates) from our DB."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

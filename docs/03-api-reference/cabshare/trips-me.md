@@ -3,7 +3,7 @@ title: "Me"
 description: "CabShare - GET /api/cabshare/trips/me. Trips I created + trips I joined."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

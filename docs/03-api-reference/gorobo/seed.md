@@ -3,7 +3,7 @@ title: "Seed"
 description: "GoRobo Shop - POST /api/gorobo/seed. Seed the catalog from src/data/gorobo/items.json. Admin + gorobo permission."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

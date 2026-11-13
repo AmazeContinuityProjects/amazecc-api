@@ -3,7 +3,7 @@ title: "Reject"
 description: "QBank - POST /api/qbank/admin/reject. Rejects a paper (back to PENDING / set REJECTED)."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

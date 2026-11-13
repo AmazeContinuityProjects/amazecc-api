@@ -3,7 +3,7 @@ title: "Transport & Buses"
 description: "Every Transport & Buses endpoint: method, path, auth and rate limits."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 # Transport & Buses
 

@@ -3,7 +3,7 @@ title: "Stops"
 description: "Admin - POST /api/admin/transport/routes/[id]/stops. Bulk-replace stops for a route."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

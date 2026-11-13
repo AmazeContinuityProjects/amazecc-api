@@ -13,7 +13,7 @@ description: "Every response body the events proxy and club ecosystem return, fi
 
 ## GET /api/events
 
-**Envelope:** raw - a **bare JSON array** · 200 / 500 · reference: [events](/amazecc-api/03-api-reference/clubs-events/events)
+**Envelope:** raw - a **bare JSON array** · 200 / 500 · reference: [events](../../03-api-reference/clubs-events/events.md)
 
 Each element (from `#events .card` scrape):
 
@@ -32,7 +32,7 @@ Each element (from `#events .card` scrape):
 
 ## POST /api/events/login
 
-**Envelope:** success-wrapped (200) · 200 / 400 / 401 / 500 · reference: [events/login](/amazecc-api/03-api-reference/clubs-events/events-login)
+**Envelope:** success-wrapped (200) · 200 / 400 / 401 / 500 · reference: [events/login](../../03-api-reference/clubs-events/events-login.md)
 
 Success: `{ success: true, jsessionid }` - `jsessionid` is the compound cookie fragment (`"<JSESSIONID>[; cookiesession1=<c>]"`). Error branches: 400 raw `{ error }` (no success flag!) · 401 `{ success: false, error: "Failed to authenticate with Event Hub. Please check your credentials." }` (EventHub returns 200 + login page for bad credentials; detected via `looksLikeLoginPage`).
 **Typed?** Response untyped; `EventHubCredentials` type exists for the request side (`src/lib/eventHubAuth.ts`).
@@ -64,7 +64,7 @@ Failure: 401 `{ error, reason, reauthenticate? }` - `reason` ∈ `session_expire
 
 ## POST /api/events/preview
 
-**Envelope:** raw · 200 / 400 / 401 / 500 · reference: [events/preview](/amazecc-api/03-api-reference/clubs-events/events-preview)
+**Envelope:** raw · 200 / 400 / 401 / 500 · reference: [events/preview](../../03-api-reference/clubs-events/events-preview.md)
 
 Success: `{ eid, imageSrc, description, metaDetails }`
 `imageSrc` = `https://eventhubcc.vit.ac.in/EventHub/image/?id=<eid>` (public poster) · `description` = `.list-group-item` labelled "Event Description" or `''` · `metaDetails` = `Record<string,string>` - every *other* labelled `.list-group-item` (participants, date, venue, time, conducted by…), plus `Total Fees` from `#EventFees1` (defaults `'0'`).
@@ -88,7 +88,7 @@ Errors: 400 `{ error: "Missing eid" }` / `Registration failed with status <n>` �
 
 ## POST /api/events/paynow
 
-**Envelope:** raw · 200 / 400 / 500 · reference: [events/paynow](/amazecc-api/03-api-reference/clubs-events/events-paynow)
+**Envelope:** raw · 200 / 400 / 500 · reference: [events/paynow](../../03-api-reference/clubs-events/events-paynow.md)
 
 Success: `{ status: "payment_form", html, tcUrl }` - `html` is a self-submitting hidden login form to EventHub's mainDashboard; `tcUrl` echoes the pinned payment/T&C URL so the client can redirect after login. No session is built here.
 Errors: 400 `{ error }` (`Missing username, password, or url` / `Invalid url` for non-eventhub URLs).
@@ -103,7 +103,7 @@ Content-Type from upstream (default `application/pdf`); `Content-Disposition` up
 
 ## GET /api/clubs/details
 
-**Envelope:** success-wrapped (public, unauthenticated, no query params) · 200 / 500 · reference: [clubs/details](/amazecc-api/03-api-reference/clubs-events/clubs-details)
+**Envelope:** success-wrapped (public, unauthenticated, no query params) · 200 / 500 · reference: [clubs/details](../../03-api-reference/clubs-events/clubs-details.md)
 
 Success: `{ success: true, clubs }` - raw rows of `club_details` ordered by `club_name` (column set isn't enumerated in repo; known columns from related routes: `club_id, club_name, mission, description, hiring_process, website, recruitment_link, instagram, whatsapp, poc, email, poc_phone, logo_url, updated_at`).
 **Typed?** No.

@@ -3,7 +3,7 @@ title: "Push"
 description: "Admin - POST /api/admin/push. Broadcast a web-push notification to all subscriptions."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

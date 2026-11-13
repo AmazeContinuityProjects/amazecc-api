@@ -3,7 +3,7 @@ title: "Migrate"
 description: "Admin - POST/GET /api/admin/migrate. Runs inline DDL migrations for every table in the codebase. GET is a connectivity check."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 

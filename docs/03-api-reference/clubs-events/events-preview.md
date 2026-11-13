@@ -3,7 +3,7 @@ title: "Preview"
 description: "Clubs & Events - POST /api/events/preview. Event detail page metadata scrape (og:image etc.) for the app's card preview."
 ---
 
-{/* generated: aapi1 */}
+{/* generated: aapi2 */}
 
 import { EndpointTry } from "/snippets/endpoint-try.jsx";
 
