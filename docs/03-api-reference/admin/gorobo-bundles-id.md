@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Bundles [id]"
 description: "Admin - PUT/DELETE /api/admin/gorobo/bundles/[id]. Edit/remove a bundle."

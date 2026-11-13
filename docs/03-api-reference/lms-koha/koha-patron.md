@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Patron"
 description: "LMS & Koha - POST /api/koha/patron. Patron account scrape (opac-user.pl etc.) via CGI. Koha credentials in body — session never stored server-side."

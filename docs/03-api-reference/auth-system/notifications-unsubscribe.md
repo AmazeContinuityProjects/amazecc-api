@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Unsubscribe"
 description: "Auth & System - POST /api/notifications/unsubscribe. Unregister a web-push subscription."

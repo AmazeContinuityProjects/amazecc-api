@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Migrate"
 description: "Admin - POST/GET /api/admin/migrate. Runs inline DDL migrations for every table in the codebase. GET is a connectivity check."

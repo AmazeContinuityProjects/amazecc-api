@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Transport"
 description: "Transport & Buses - POST /api/transport. VTOP bus registration status + QR code + payment link for the route."

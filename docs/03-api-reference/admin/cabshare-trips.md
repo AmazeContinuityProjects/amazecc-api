@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Trips"
 description: "Admin - GET/DELETE /api/admin/cabshare/trips. CabShare trips moderation. DELETE ?trip_id"

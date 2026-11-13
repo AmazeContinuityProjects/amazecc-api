@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "LMS & Koha"
 description: "Every LMS & Koha endpoint: method, path, auth and rate limits."

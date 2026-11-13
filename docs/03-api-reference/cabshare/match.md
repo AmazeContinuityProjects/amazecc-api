@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Match"
 description: "CabShare - POST /api/cabshare/match. Confirm/decline a cab-share match for a trip."

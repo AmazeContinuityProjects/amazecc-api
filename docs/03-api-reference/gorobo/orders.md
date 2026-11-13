@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Orders"
 description: "GoRobo Shop - POST /api/gorobo/orders. Public order placement (rate-limited). Pending → confirmed by admin."

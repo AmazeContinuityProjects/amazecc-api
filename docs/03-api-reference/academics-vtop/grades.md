@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Grades"
 description: "Academics & VTOP - POST /api/grades. Unified endpoint: /api/all-grades is served through here. adaptUnifiedGradesResponse() in the app normalizes to _gradesSummary, allGrades_."

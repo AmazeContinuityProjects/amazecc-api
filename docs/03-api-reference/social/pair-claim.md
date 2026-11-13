@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Claim"
 description: "Social (FFCS Partners) - POST /api/social/pair/claim. Claim a pairing by handle. Mutual secret is minted, hashed at rest, AES-GCM-encrypted so the non-claiming peer can fetch it later."

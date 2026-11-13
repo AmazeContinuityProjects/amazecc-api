@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Items"
 description: "GoRobo Shop - GET /api/gorobo/items. Public catalog (CDN-cached). Query: ?category&limit&page&q."

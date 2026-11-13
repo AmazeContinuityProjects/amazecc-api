@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Clubs & Events - POST /api/events/download. EventHub asset/ticket download proxy (binary)."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Promote"
 description: "Clubs & Events - POST /api/club-admin/feed/promote. Member-counted promote toggle. Intentionally PUBLIC (backlog: only rate limit) — flagged in docs."

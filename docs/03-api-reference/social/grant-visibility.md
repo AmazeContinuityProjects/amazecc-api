@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Visibility"
 description: "Social (FFCS Partners) - POST /api/social/grant/visibility. Flip a pairing grant between coarse and full visibility."

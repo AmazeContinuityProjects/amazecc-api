@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "QBank"
 description: "Every QBank endpoint: method, path, auth and rate limits."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Details"
 description: "Clubs & Events - GET /api/clubs/details. Public club directory from our DB."

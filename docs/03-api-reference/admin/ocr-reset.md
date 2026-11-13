@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Reset"
 description: "Admin - POST /api/admin/ocr/reset. Reset OCR state back to PENDING."

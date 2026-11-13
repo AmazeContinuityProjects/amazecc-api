@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Circulars"
 description: "Academics & VTOP - POST /api/circulars. University circulars list. Partial envelope (known inconsistency)."

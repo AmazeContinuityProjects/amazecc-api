@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Health"
 description: "Auth & System - GET /api/health. Trivial liveness probe for monitors."

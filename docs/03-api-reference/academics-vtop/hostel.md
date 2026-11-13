@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Hostel"
 description: "Academics & VTOP - POST /api/hostel. Hostel block/room/mess + leave history. Raw envelope, not _success_-wrapped."

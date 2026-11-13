@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Global"
 description: "Auth & System - GET /api/settings/global. Public global config (maintenance banner etc.) for the app to poll."

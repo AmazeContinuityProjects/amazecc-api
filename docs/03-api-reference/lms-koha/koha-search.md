@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Search"
 description: "LMS & Koha - GET /api/koha/search. Public Koha OPAC RSS search proxy. ?idx&q&count&offset — idx is the search-index selector (kw/title/...)."

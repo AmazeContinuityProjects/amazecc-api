@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Bundles"
 description: "Admin - GET/POST /api/admin/gorobo/bundles. Bundle (kit) management."

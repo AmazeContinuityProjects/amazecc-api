@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Tokens"
 description: "Academics & VTOP - POST /api/marks/tokens. Marks sync tokens for the client (legacy tokens still honored)."

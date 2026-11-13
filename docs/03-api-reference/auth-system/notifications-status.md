@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Status"
 description: "Auth & System - GET /api/notifications/status. Reads notification preferences per user. ?endpoint filter."

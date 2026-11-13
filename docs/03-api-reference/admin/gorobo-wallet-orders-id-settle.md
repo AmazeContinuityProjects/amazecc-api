@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Settle Orders ID"
 description: "Admin - POST /api/admin/gorobo/wallet/orders/[id]/settle. Mark order wallet entries settled (actual settlement happens outside this repo)."

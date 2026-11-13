@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Paynow"
 description: "Clubs & Events - POST /api/events/paynow. Paytm-style payment form passthrough — the frontend renders the HTML in a hidden iframe/frame."

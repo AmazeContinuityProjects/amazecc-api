@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Analytics"
 description: "Admin - GET /api/admin/gorobo/analytics. Sales analytics rollup."

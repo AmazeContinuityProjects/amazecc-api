@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Buses"
 description: "Transport & Buses - GET /api/buses. Public bus routes + rules + placements from OUR database (with defaultBuses JSON fallback if unreachable)."

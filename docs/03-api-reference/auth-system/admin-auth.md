@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Auth"
 description: "Auth & System - POST /api/admin/auth. Admin login. Verifies creds via loopback /api/login, then issues the HMAC admin token +DB record; ADMIN_VTOP_IDS entries become superadmin."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Events"
 description: "Clubs & Events - GET /api/events. Public Eventhub scrape. Sets NODE_TLS_REJECT_UNAUTHORIZED=0 (upstream serves a broken chain)."

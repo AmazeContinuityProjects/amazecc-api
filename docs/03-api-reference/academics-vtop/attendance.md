@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Attendance"
 description: "Academics & VTOP - POST /api/attendance. Merges attendance with timetable (mergeAttendanceWithTimetable) and fans out per-course detail fetches (concurrency 3). attRes.attendance[]."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Download"
 description: "Academics & VTOP - POST /api/circulars/download. Binary proxy for circular PDFs."

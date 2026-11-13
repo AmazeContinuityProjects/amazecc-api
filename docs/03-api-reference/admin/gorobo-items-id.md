@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Items [id]"
 description: "Admin - PUT/DELETE /api/admin/gorobo/items/[id]. Update/remove one item."

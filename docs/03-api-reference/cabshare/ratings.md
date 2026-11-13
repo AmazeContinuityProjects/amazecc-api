@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Ratings"
 description: "CabShare - POST /api/cabshare/ratings. Rate a co-rider after a trip."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Vitol Data"
 description: "LMS & Koha - POST /api/vitol-data. VIT Online (Vitol) Moodle. vitolSite selects the LMS instance if multiple."

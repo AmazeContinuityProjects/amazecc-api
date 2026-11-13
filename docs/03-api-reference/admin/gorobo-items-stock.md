@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Stock"
 description: "Admin - PATCH /api/admin/gorobo/items/stock. Adjust stock by delta or set stockQuantity."

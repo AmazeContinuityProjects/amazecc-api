@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Archive Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/archive. archive with optional reason."

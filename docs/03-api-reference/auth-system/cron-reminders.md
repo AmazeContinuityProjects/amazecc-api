@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Reminders"
 description: "Auth & System - GET/POST /api/cron/reminders. VIT student Vitol reminder push fan-out. Authorization: Bearer $CRON_SECRET (timingSafeEqual)."

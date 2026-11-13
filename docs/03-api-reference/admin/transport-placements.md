@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Placements"
 description: "Admin - GET/POST /api/admin/transport/placements. Bus placement assignments (hostel → stop)."

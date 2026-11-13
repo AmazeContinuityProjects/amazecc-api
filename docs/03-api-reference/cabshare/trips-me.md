@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Me"
 description: "CabShare - GET /api/cabshare/trips/me. Trips I created + trips I joined."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Wallet"
 description: "Admin - GET /api/admin/gorobo/wallet. Wallet dashboard: balances and transaction ledger."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "GoRobo Shop"
 description: "Every GoRobo Shop endpoint: method, path, auth and rate limits."

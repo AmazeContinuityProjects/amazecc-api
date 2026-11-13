@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "SYNC"
 description: "Social (FFCS Partners) - POST /api/social/identity/sync. The big one — profile sync: resolves identity, semester, timetable (validate parse against config.json), grants and peer list. Backs the Soc"

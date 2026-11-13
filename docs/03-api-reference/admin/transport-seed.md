@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Seed"
 description: "Admin - POST /api/admin/transport/seed. Seed transport data from seed.json (used for initial import)."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Stats"
 description: "CabShare - GET /api/cabshare/stats. Usage stats for the CabShare board."

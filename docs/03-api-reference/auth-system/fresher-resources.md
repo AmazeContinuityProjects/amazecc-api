@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Fresher Resources"
 description: "Auth & System - GET /api/fresher-resources. Public list of fresher orientation resources from our DB."

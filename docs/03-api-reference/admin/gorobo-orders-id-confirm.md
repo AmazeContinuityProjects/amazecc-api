@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Confirm Orders ID"
 description: "Admin - POST /api/admin/gorobo/orders/[id]/confirm. pending → confirmed."

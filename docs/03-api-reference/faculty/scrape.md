@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Scrape"
 description: "Faculty Directory - POST /api/faculty/scrape. Scrapes the VIT faculty directory for a school and caches rows in our DB. Public (rate-limited) — flagged in docs."

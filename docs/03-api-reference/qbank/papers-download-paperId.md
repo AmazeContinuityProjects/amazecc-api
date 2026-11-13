@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Download [paperId]"
 description: "QBank - GET /api/qbank/papers/download/[paperId]. Anonymous streaming download of an APPROVED paper from Backblaze B2."

@@ -1,4 +1,4 @@
-<!-- generated: aapi1 -->
+{/* generated: aapi1 */}
 ---
 title: "Bulk"
 description: "Academics & VTOP - POST /api/bulk. Fans out to internal VTOP proxies (VTOP_PROXIES: hostel-counselling, registration-schedule, exc-registration, course-completion). runVtopPro"
