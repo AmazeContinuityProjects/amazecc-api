@@ -126,7 +126,6 @@ export const EndpointTry = ({
       const { url, headers, finalBody } = buildRequest();
       const res = await fetch(url, { method: methodU, headers, body: finalBody });
       const ms = Math.round(performance.now() - started);
-      const ct = res.headers.get("content-type") || "";
       const text = await res.text();
       let data;
       try { data = JSON.parse(text); } catch { data = text; }

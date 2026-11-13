@@ -2,8 +2,8 @@
 // grounding/route-inventory.json. Pages carry a `<!-- generated: aapi1 -->`
 // marker; hand-written pages (marker absent) are never overwritten. Idempotent.
 // Usage: node grounding/gen-reference-pages.mjs [--check]
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
 
 const ROOT = process.cwd();
 const INVENTORY = join(ROOT, "grounding", "route-inventory.json");
@@ -39,7 +39,6 @@ const AUTH_LABEL = {
   cron: { name: "CRON_SECRET bearer", detail: "`Authorization: Bearer <CRON_SECRET>` compared with `timingSafeEqual`. Server-side only - never call from a browser." },
   "gorobo-admin": { name: "Admin bearer + permission", detail: "`Authorization: Bearer <admin token>` with a per-route permission check (`gorobo`, `faculty-directories`, `fresher-resources`, `transport`). Superadmins bypass." },
 };
-const AUTH_ORDER = ["none", "vtop", "moodle", "admin", "gorobo-admin", "club", "cabshare", "eventhub", "social", "cron"];
 
 const slugify = (path) =>
   path.replace(/^\/api\//, "").replace(/[[\]]/g, "").split("/").filter(Boolean).join("-");
@@ -55,7 +54,6 @@ const titleFor = (path) => {
   const ACTION_PREFIX = { complete: "Complete", confirm: "Confirm", archive: "Archive", unarchive: "Unarchive", reject: "Reject", publish: "Publish", seed: "Seed", promote: "Promote", settle: "Settle", stock: "Stock", clicked: "Clicked" };
   if (segs.length >= 2 && ACTION_PREFIX[segs[segs.length - 1]] && /^\[/.test(segs[segs.length - 2])) {
     action = ACTION_PREFIX[segs[segs.length - 1]];
-    last = segs[segs.length - 2] + " " + segs[segs.length - 3] ?? "";
     return `${action} ${titleCase(segs.slice(-3, -1).join(" ").replace(/[\[\]]/g, ""))}`;
   }
   const cleaned = last.replace(/[[\]]/g, "");
@@ -95,13 +93,14 @@ const skeletonFromReturns = (returns) => {
     if (m) keys.push(m[1]);
     cur = "";
   };
-  for (let i = 0; i <= body.length; i++) {
-    const c = body[i] ?? ",";
+  for (let i = 0; i < body.length; i++) {
+    const c = body[i];
     if (c === "{") d++;
     else if (c === "}") d--;
     else if (d === 0 && c === ",") flush();
     else cur += c;
   }
+  flush();
   const obj = {};
   for (const k of keys) {
     if (k === "success") obj[k] = true;
@@ -171,7 +170,6 @@ const pageFor = (inv) => {
   const isVtopBody = inv.auth === "vtop" || inv.auth === "social";
   const bodyKeys = extractParams(inv.body).filter((_, i) => !["cookies", "authorizedID", "csrf"].includes(inv.body[i]));
   const exampleBody = bodyTemplate(inv);
-  const qs = inv.path.includes("?") ? "" : "";
   const curl = `curl -X ${inv.methods[0]} "https://api.amazecc.com${inv.path}" \\
   -H "Content-Type: application/json"${
     inv.auth === "admin" || inv.auth === "gorobo-admin" || inv.auth === "club" || inv.auth === "cabshare" ? ' \\\n  -H "Authorization: Bearer <token>"' : ""
@@ -262,7 +260,6 @@ ${rows}
 `;
 };
 
-const CAT_LANGUAGES = { auth: "Auth & System" };
 const inventory = JSON.parse(readFileSync(INVENTORY, "utf8"));
 
 const byCat = {};
