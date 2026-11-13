@@ -1,0 +1,320 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "AmazeCC-API",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "icon": "rocket",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Start Here",
+            "root": "00-start-here/index",
+            "pages": [
+              "00-start-here/conventions",
+              "00-start-here/how-a-request-flows",
+              "00-start-here/quickstart"
+            ],
+            "expanded": true
+          }
+        ]
+      },
+      {
+        "group": "Authentication",
+        "icon": "shield-check",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Authentication",
+            "root": "01-authentication/index",
+            "pages": [
+              "01-authentication/admin-auth",
+              "01-authentication/cabshare-auth",
+              "01-authentication/club-auth",
+              "01-authentication/eventhub-auth",
+              "01-authentication/lms-auth",
+              "01-authentication/sessions-and-cookies",
+              "01-authentication/social-identity",
+              "01-authentication/vtop-login"
+            ],
+            "expanded": true
+          }
+        ]
+      },
+      {
+        "group": "Internals",
+        "icon": "cpu",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Internals",
+            "root": "02-internals/index",
+            "pages": [
+              "02-internals/attendance-endpoint",
+              "02-internals/b2-and-ocr",
+              "02-internals/bulk-and-proxies",
+              "02-internals/db-layer",
+              "02-internals/login-endpoint",
+              "02-internals/parsers",
+              "02-internals/social-crypto",
+              "02-internals/vtop-client"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "API Reference",
+        "icon": "book-open",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Auth & System",
+            "root": "03-api-reference/auth-system/index",
+            "pages": [
+              "03-api-reference/auth-system/admin-auth",
+              "03-api-reference/auth-system/cron-reminders",
+              "03-api-reference/auth-system/docs",
+              "03-api-reference/auth-system/fresher-resources",
+              "03-api-reference/auth-system/health",
+              "03-api-reference/auth-system/login",
+              "03-api-reference/auth-system/notifications-status",
+              "03-api-reference/auth-system/notifications-subscribe",
+              "03-api-reference/auth-system/notifications-unsubscribe",
+              "03-api-reference/auth-system/settings-global",
+              "03-api-reference/auth-system/status"
+            ]
+          },
+          {
+            "group": "Academics & VTOP",
+            "root": "03-api-reference/academics-vtop/index",
+            "pages": [
+              "03-api-reference/academics-vtop/attendance",
+              "03-api-reference/academics-vtop/attendance-htmlparser2",
+              "03-api-reference/academics-vtop/bulk",
+              "03-api-reference/academics-vtop/calendar",
+              "03-api-reference/academics-vtop/circulars",
+              "03-api-reference/academics-vtop/circulars-download",
+              "03-api-reference/academics-vtop/course-page",
+              "03-api-reference/academics-vtop/course-page-material",
+              "03-api-reference/academics-vtop/curriculum",
+              "03-api-reference/academics-vtop/curriculum-download",
+              "03-api-reference/academics-vtop/curriculum-syllabus",
+              "03-api-reference/academics-vtop/ffcs",
+              "03-api-reference/academics-vtop/grades",
+              "03-api-reference/academics-vtop/hostel",
+              "03-api-reference/academics-vtop/marks-stats",
+              "03-api-reference/academics-vtop/marks-sync",
+              "03-api-reference/academics-vtop/marks-tokens",
+              "03-api-reference/academics-vtop/od",
+              "03-api-reference/academics-vtop/whoami"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Transport & Buses",
+            "root": "03-api-reference/transport-buses/index",
+            "pages": [
+              "03-api-reference/transport-buses/buses",
+              "03-api-reference/transport-buses/transport"
+            ]
+          },
+          {
+            "group": "Finance",
+            "root": "03-api-reference/finance/index",
+            "pages": [
+              "03-api-reference/finance/finance"
+            ]
+          },
+          {
+            "group": "Clubs & Events",
+            "root": "03-api-reference/clubs-events/index",
+            "pages": [
+              "03-api-reference/clubs-events/club-admin-details",
+              "03-api-reference/clubs-events/club-admin-feed",
+              "03-api-reference/clubs-events/club-admin-feed-promote",
+              "03-api-reference/clubs-events/club-admin-landing-page",
+              "03-api-reference/clubs-events/club-admin-reps",
+              "03-api-reference/clubs-events/clubs-details",
+              "03-api-reference/clubs-events/events",
+              "03-api-reference/clubs-events/events-download",
+              "03-api-reference/clubs-events/events-login",
+              "03-api-reference/clubs-events/events-paynow",
+              "03-api-reference/clubs-events/events-preview",
+              "03-api-reference/clubs-events/events-profile",
+              "03-api-reference/clubs-events/events-register"
+            ]
+          },
+          {
+            "group": "Social (FFCS Partners)",
+            "root": "03-api-reference/social/index",
+            "pages": [
+              "03-api-reference/social/ffcs-match",
+              "03-api-reference/social/grant-revoke",
+              "03-api-reference/social/grant-visibility",
+              "03-api-reference/social/identity-sync",
+              "03-api-reference/social/pair-claim",
+              "03-api-reference/social/people",
+              "03-api-reference/social/semester",
+              "03-api-reference/social/timetable"
+            ]
+          },
+          {
+            "group": "QBank",
+            "root": "03-api-reference/qbank/index",
+            "pages": [
+              "03-api-reference/qbank/admin-import-to-storage",
+              "03-api-reference/qbank/admin-ocr",
+              "03-api-reference/qbank/admin-publish",
+              "03-api-reference/qbank/admin-questions",
+              "03-api-reference/qbank/admin-questions-bulk",
+              "03-api-reference/qbank/admin-queue",
+              "03-api-reference/qbank/admin-reject",
+              "03-api-reference/qbank/courses",
+              "03-api-reference/qbank/papers",
+              "03-api-reference/qbank/papers-download-paperId",
+              "03-api-reference/qbank/questions",
+              "03-api-reference/qbank/upload"
+            ]
+          },
+          {
+            "group": "GoRobo Shop",
+            "root": "03-api-reference/gorobo/index",
+            "pages": [
+              "03-api-reference/gorobo/items",
+              "03-api-reference/gorobo/orders",
+              "03-api-reference/gorobo/seed",
+              "03-api-reference/gorobo/version"
+            ]
+          },
+          {
+            "group": "LMS & Koha",
+            "root": "03-api-reference/lms-koha/index",
+            "pages": [
+              "03-api-reference/lms-koha/koha-availability",
+              "03-api-reference/lms-koha/koha-detail",
+              "03-api-reference/lms-koha/koha-patron",
+              "03-api-reference/lms-koha/koha-search",
+              "03-api-reference/lms-koha/lms-data",
+              "03-api-reference/lms-koha/vitol-data"
+            ]
+          },
+          {
+            "group": "Faculty Directory",
+            "root": "03-api-reference/faculty/index",
+            "pages": [
+              "03-api-reference/faculty/schools",
+              "03-api-reference/faculty/scrape"
+            ]
+          },
+          {
+            "group": "CabShare",
+            "root": "03-api-reference/cabshare/index",
+            "pages": [
+              "03-api-reference/cabshare/auth",
+              "03-api-reference/cabshare/blocks",
+              "03-api-reference/cabshare/hubs",
+              "03-api-reference/cabshare/match",
+              "03-api-reference/cabshare/notifications",
+              "03-api-reference/cabshare/ratings",
+              "03-api-reference/cabshare/stats",
+              "03-api-reference/cabshare/trips",
+              "03-api-reference/cabshare/trips-me",
+              "03-api-reference/cabshare/waitlist"
+            ]
+          },
+          {
+            "group": "Admin",
+            "root": "03-api-reference/admin/index",
+            "pages": [
+              "03-api-reference/admin/buses",
+              "03-api-reference/admin/cabshare-hubs",
+              "03-api-reference/admin/cabshare-trips",
+              "03-api-reference/admin/clubs",
+              "03-api-reference/admin/clubs-representatives",
+              "03-api-reference/admin/faculty-directories",
+              "03-api-reference/admin/fresher-resources",
+              "03-api-reference/admin/fresher-resources-id",
+              "03-api-reference/admin/gorobo-analytics",
+              "03-api-reference/admin/gorobo-bundles",
+              "03-api-reference/admin/gorobo-bundles-id",
+              "03-api-reference/admin/gorobo-items",
+              "03-api-reference/admin/gorobo-items-id",
+              "03-api-reference/admin/gorobo-items-stock",
+              "03-api-reference/admin/gorobo-orders",
+              "03-api-reference/admin/gorobo-orders-id",
+              "03-api-reference/admin/gorobo-orders-id-archive",
+              "03-api-reference/admin/gorobo-orders-id-complete",
+              "03-api-reference/admin/gorobo-orders-id-confirm",
+              "03-api-reference/admin/gorobo-orders-id-unarchive",
+              "03-api-reference/admin/gorobo-wallet",
+              "03-api-reference/admin/gorobo-wallet-orders-id-settle",
+              "03-api-reference/admin/migrate",
+              "03-api-reference/admin/ocr",
+              "03-api-reference/admin/ocr-reset",
+              "03-api-reference/admin/push",
+              "03-api-reference/admin/settings-global",
+              "03-api-reference/admin/stats",
+              "03-api-reference/admin/storage",
+              "03-api-reference/admin/transport-placements",
+              "03-api-reference/admin/transport-routes",
+              "03-api-reference/admin/transport-routes-id",
+              "03-api-reference/admin/transport-routes-id-stops",
+              "03-api-reference/admin/transport-rules",
+              "03-api-reference/admin/transport-rules-id",
+              "03-api-reference/admin/transport-seed",
+              "03-api-reference/admin/transport-students",
+              "03-api-reference/admin/users",
+              "03-api-reference/admin/users-username"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Operations",
+        "icon": "wrench",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Operations",
+            "root": "04-operations/index",
+            "pages": [
+              "04-operations/cron-and-push",
+              "04-operations/deployment",
+              "04-operations/env-vars",
+              "04-operations/security"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Reference",
+        "icon": "book",
+        "expanded": true,
+        "pages": [
+          {
+            "group": "Reference",
+            "root": "05-reference/index",
+            "pages": [
+              "05-reference/m-app",
+              "05-reference/openapi-spec",
+              "05-reference/routes-index",
+              "05-reference/types"
+            ]
+          },
+          {
+            "group": "The VITianCC App (RE Notes)",
+            "root": "m-app/index",
+            "pages": [
+              "m-app/api-client-and-networking",
+              "m-app/business-logic",
+              "m-app/endpoints",
+              "m-app/login-and-auth",
+              "m-app/native-and-security"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
