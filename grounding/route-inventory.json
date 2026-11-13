@@ -1,0 +1,1943 @@
+[
+  {
+    "path": "/api/login",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "username",
+      "password"
+    ],
+    "returns": "{success,message,cookies,csrf,authorizedID,clubToken?,clubRoles?} / {success:false,message|error}",
+    "rl": "5/min/IP",
+    "notes": "Solves the captcha server-side, POSTs to VTOP, parses authorizedID + _csrf off the dashboard. Issues a club token when the authorizedID has club representation.",
+    "cat": "auth"
+  },
+  {
+    "path": "/api/whoami",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,contact,…identity (buildIdentity)} / {error}",
+    "rl": "-",
+    "notes": "Scrapes ~10 VTOP profile endpoints sequentially (deliberately — avoids VTOP rate issues). Used by the app on every cold start (cache_whoami).",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/attendance",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "semesterId"
+    ],
+    "returns": "{attRes:{semester,attendance},marksRes:{courses,cgpa}} (raw, NOT {success}) / {error}",
+    "rl": "-",
+    "notes": "Merges attendance with timetable (mergeAttendanceWithTimetable) and fans out per-course detail fetches (concurrency 3). attRes.attendance[].viewLink becomes an array of per-date status.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/attendance/htmlparser2",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "semesterId"
+    ],
+    "returns": "{attRes,marksRes} (raw) / {error}",
+    "rl": "-",
+    "notes": "Same contract as /api/attendance, built on parseDocument + css-select instead of Cheerio. Performance/portability variant.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/grades",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,semesters,overall} / {error}",
+    "rl": "-",
+    "notes": "Unified endpoint: /api/all-grades is served through here. adaptUnifiedGradesResponse() in the app normalizes to {gradesSummary, allGrades}.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/ffcs",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "semesterId",
+      "section?"
+    ],
+    "returns": "{success,registrationSchedule,feedbackStatus,feedback,wishlist,schedule,qcmView} / {error} — section=narrowed slice",
+    "rl": "-",
+    "notes": "All-in bundle (17 KB route). section=schedule/feedback/wishlist returns only that slice. Body section of the file for each mode.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/bulk",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "endpoints[]",
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,results:{<name>:{…}} / {success:false,error}",
+    "rl": "-",
+    "notes": "Fans out to internal VTOP proxies (VTOP_PROXIES: hostel-counselling, registration-schedule, exc-registration, course-completion). runVtopProxy never throws — per-endpoint {success:false} inside results.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/course-page",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "formData"
+    ],
+    "returns": "{success,results} / {error}",
+    "rl": "-",
+    "notes": "Course view page scrape: parseCoursePage/parseCourseClasses/parseCoursePageMaterials. Heavy parser, ~300 lines of cheerio selectors.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/course-page/material",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "action?",
+      "…params"
+    ],
+    "returns": "{success,…} / {error}",
+    "rl": "-",
+    "notes": "Course material downloads (PDF/zip streams) via VTOP binary endpoints, returns base64 or proxied file data.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/curriculum",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,pageCsrf,…} / {error,success:false}",
+    "rl": "-",
+    "notes": "Extracts course list + pageCsrf needed for WADE/minors flows; auto-follows to the curriculum category view.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/curriculum/download",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "binary stream / {success:false,error,snippet}",
+    "rl": "-",
+    "notes": "Binary proxy (syllabus PDF). On upstream failure, returns the first ~200 bytes as snippet for debugging.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/curriculum/syllabus",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "courseCode"
+    ],
+    "returns": "binary stream / {success:false,error,snippet}",
+    "rl": "-",
+    "notes": "Single-course syllabus binary. Same binary proxy pattern as curriculum/download.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/calendar",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "semesterId"
+    ],
+    "returns": "{calendars,semesterId} (raw) / {error}",
+    "rl": "-",
+    "notes": "Academic calendar scrape. Raw JSON, not {success}-enveloped.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/circulars",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,…} / {error,success:false}",
+    "rl": "-",
+    "notes": "University circulars list. Partial envelope (known inconsistency).",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/circulars/download",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "circularId"
+    ],
+    "returns": "binary stream / {success:false,error,snippet}",
+    "rl": "-",
+    "notes": "Binary proxy for circular PDFs.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/hostel",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{hostelInfo,leaveHistory} (raw) / {error}",
+    "rl": "-",
+    "notes": "Hostel block/room/mess + leave history. Raw envelope, not {success}-wrapped.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/od",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "semesterId"
+    ],
+    "returns": "{success,…} / {error}",
+    "rl": "-",
+    "notes": "On-duty (OD) requests: /vtop/proctor/viewOdDetails via getVtopReferer.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/transport",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,hasRegistration,busRouteId,busUrl,qrCode,pageCsrf} / {error}",
+    "rl": "-",
+    "notes": "VTOP bus registration status + QR code + payment link for the route.",
+    "cat": "transport"
+  },
+  {
+    "path": "/api/finance",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,…} / {error}",
+    "rl": "-",
+    "notes": "Fees: no-dues view + finance endpoints. ~460 LOC — the second-largest route in the codebase.",
+    "cat": "finance"
+  },
+  {
+    "path": "/api/marks/stats",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "classIds"
+    ],
+    "returns": "{success,stats:{<classId>:{mean,median?…}}}",
+    "rl": "60/min/IP",
+    "notes": "Class-wide marks stats for shared pooling (feeds /api/marks/sync). GET variant reads same data.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/marks/sync",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "contributions"
+    ],
+    "returns": "{success,tally,tokens}",
+    "rl": "20/min/IP",
+    "notes": "Marks contribution endpoint — the privacy-preserving sync: verify + fetch, then write class_* tables server-side.",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/marks/tokens",
+    "methods": [
+      "POST"
+    ],
+    "auth": "vtop",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf"
+    ],
+    "returns": "{success,tokens,legacy}",
+    "rl": "60/min/IP",
+    "notes": "Marks sync tokens for the client (legacy tokens still honored).",
+    "cat": "academics"
+  },
+  {
+    "path": "/api/buses",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,buses,rules}",
+    "rl": "-",
+    "notes": "Public bus routes + rules + placements from OUR database (with defaultBuses JSON fallback if unreachable).",
+    "cat": "transport"
+  },
+  {
+    "path": "/api/events",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "raw array of events (not enveloped)",
+    "rl": "-",
+    "notes": "Public Eventhub scrape. Sets NODE_TLS_REJECT_UNAUTHORIZED=0 (upstream serves a broken chain).",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/login",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "username",
+      "password"
+    ],
+    "returns": "{success,jsessionid} / {success:false,error}",
+    "rl": "-",
+    "notes": "Eventhub login. jsessionid must be cached by the client; EventHub sessions live long.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/profile",
+    "methods": [
+      "POST"
+    ],
+    "auth": "eventhub",
+    "body": [
+      "username",
+      "password",
+      "jsessionid"
+    ],
+    "returns": "raw {events,…} / {error,reason}",
+    "rl": "-",
+    "notes": "Eventhub profile — auto re-auths when the cached session looks like a login page.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/preview",
+    "methods": [
+      "POST"
+    ],
+    "auth": "eventhub",
+    "body": [
+      "username",
+      "password",
+      "jsessionid",
+      "eid"
+    ],
+    "returns": "{imageSrc,description,metaDetails,eid} / {error,reason}",
+    "rl": "-",
+    "notes": "Event detail page metadata scrape (og:image etc.) for the app's card preview.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/register",
+    "methods": [
+      "POST"
+    ],
+    "auth": "eventhub",
+    "body": [
+      "username",
+      "password",
+      "jsessionid",
+      "eid"
+    ],
+    "returns": "{status,url|html|reauthenticate,message} / {error,reason}",
+    "rl": "-",
+    "notes": "EventHub registration proxy. May return HTML auto-form for payment steps.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/paynow",
+    "methods": [
+      "POST"
+    ],
+    "auth": "eventhub",
+    "body": [
+      "username",
+      "password",
+      "url"
+    ],
+    "returns": "{status:'payment_form',html,tcUrl} / {error}",
+    "rl": "-",
+    "notes": "Paytm-style payment form passthrough — the frontend renders the HTML in a hidden iframe/frame.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/events/download",
+    "methods": [
+      "POST"
+    ],
+    "auth": "eventhub",
+    "body": [
+      "username",
+      "password",
+      "jsessionid",
+      "url"
+    ],
+    "returns": "binary stream / {error,reason}",
+    "rl": "-",
+    "notes": "EventHub asset/ticket download proxy (binary).",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/clubs/details",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,clubs}",
+    "rl": "-",
+    "notes": "Public club directory from our DB.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/club-admin/details",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "club",
+    "body": [
+      "<details fields>"
+    ],
+    "returns": "{success,details|message} + ?club_id",
+    "rl": "-",
+    "notes": "Club profile editing (branding, showcase projects, popular events).",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/club-admin/feed",
+    "methods": [
+      "GET",
+      "POST",
+      "DELETE"
+    ],
+    "auth": "club",
+    "body": [
+      "<feed fields>"
+    ],
+    "returns": "{success,feed|post} + ?club_id&post_id&vtop_id",
+    "rl": "-",
+    "notes": "Club feed CRUD. Promote endpoint is separate: POST /api/club-admin/feed/promote.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/club-admin/feed/promote",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "post_id",
+      "vtop_id"
+    ],
+    "returns": "{success,promoted} toggle",
+    "rl": "30/min/IP",
+    "notes": "Member-counted promote toggle. Intentionally PUBLIC (backlog: only rate limit) — flagged in docs.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/club-admin/landing-page",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "club",
+    "body": [
+      "club_id",
+      "theme",
+      "showcase_projects",
+      "popular_events"
+    ],
+    "returns": "{success,landingPage|message} + ?club_id",
+    "rl": "-",
+    "notes": "Club landing-page config (theme + curated showcase rail).",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/club-admin/reps",
+    "methods": [
+      "GET",
+      "POST",
+      "DELETE"
+    ],
+    "auth": "club",
+    "body": [
+      "<rep fields>"
+    ],
+    "returns": "{success,reps|isSuperRep|message} + ?club_id&vtop_id",
+    "rl": "-",
+    "notes": "Club representative management; super reps may manage everyone.",
+    "cat": "clubs"
+  },
+  {
+    "path": "/api/lms-data",
+    "methods": [
+      "POST"
+    ],
+    "auth": "moodle",
+    "body": [
+      "username",
+      "pass"
+    ],
+    "returns": "raw Moodle scrape incl. {status} / {error} — not enveloped",
+    "rl": "-",
+    "notes": "LMS (Moodle) LMS login + sesskey + AJAX calls. Credentials only transit in body — never stored.",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/vitol-data",
+    "methods": [
+      "POST"
+    ],
+    "auth": "moodle",
+    "body": [
+      "username",
+      "pass",
+      "vitolSite?"
+    ],
+    "returns": "raw Moodle scrape incl. {status} / {error} — not enveloped",
+    "rl": "-",
+    "notes": "VIT Online (Vitol) Moodle. vitolSite selects the LMS instance if multiple.",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/koha/search",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,books,total,query,count,offset}",
+    "rl": "-",
+    "notes": "Public Koha OPAC RSS search proxy. ?idx&q&count&offset — idx is the search-index selector (kw/title/...).",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/koha/detail",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,book}",
+    "rl": "-",
+    "notes": "Koha biblio detail proxy. ?biblionumber",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/koha/availability",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,items}",
+    "rl": "-",
+    "notes": "Koha item availability proxy. ?biblionumbers=comma,list",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/koha/patron",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "card",
+      "password",
+      "page?"
+    ],
+    "returns": "{success,data,page} / {error}",
+    "rl": "-",
+    "notes": "Patron account scrape (opac-user.pl etc.) via CGI. Koha credentials in body — session never stored server-side.",
+    "cat": "lms"
+  },
+  {
+    "path": "/api/faculty/schools",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,schools}",
+    "rl": "-",
+    "notes": "Faculty-directory schools from our DB (seeded from VIT faculty pages).",
+    "cat": "faculty"
+  },
+  {
+    "path": "/api/faculty/scrape",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "schoolId"
+    ],
+    "returns": "{success,faculties}",
+    "rl": "10/min/IP",
+    "notes": "Scrapes the VIT faculty directory for a school and caches rows in our DB. Public (rate-limited) — flagged in docs.",
+    "cat": "faculty"
+  },
+  {
+    "path": "/api/social/ffcs-match",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "classIds",
+      "semesterId",
+      "op?",
+      "source?",
+      "discoverable?"
+    ],
+    "returns": "{success,semesterId,classes} or buildState() spread; GET reads ?classIds&semesterId",
+    "rl": "30/min/IP",
+    "notes": "Friend-finder: who is in my classes. Server computes reciprocal pairing only — never exposes non-shared info.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/identity/sync",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "proposedSemesterId?"
+    ],
+    "returns": "{success,identity,courses,busyMap,peers,grantSecrets,semesterSource,version}",
+    "rl": "20/min/IP",
+    "notes": "The big one — profile sync: resolves identity, semester, timetable (validate parse against config.json), grants and peer list. Backs the Social + FFCS planner tabs.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/pair/claim",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "handle",
+      "visibility",
+      "expiresInMinutes?"
+    ],
+    "returns": "{success,grantId,secret,peer,visibility,created,detail}",
+    "rl": "30/hour/IP",
+    "notes": "Claim a pairing by handle. Mutual secret is minted, hashed at rest, AES-GCM-encrypted so the non-claiming peer can fetch it later.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/timetable",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "handle|secret",
+      "semester?",
+      "semesterLabel?"
+    ],
+    "returns": "{success,identity,courses,busyMap,visibility,stale,version,detail}",
+    "rl": "120/min/IP",
+    "notes": "Read a paired peer's timetable/busy map. 'coarse' visibility strips courses, keeps only busy slots.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/people",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "handle"
+    ],
+    "returns": "{success,person,detail} / {success:false,error}",
+    "rl": "20/min/IP",
+    "notes": "Resolve a Crockford handle (AMZ-XXXX-XXXX) to a person card.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/grant/visibility",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "grantId",
+      "visibility"
+    ],
+    "returns": "{success,grantId,visibility,detail}",
+    "rl": "60/min/IP",
+    "notes": "Flip a pairing grant between coarse and full visibility.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/grant/revoke",
+    "methods": [
+      "POST"
+    ],
+    "auth": "social",
+    "body": [
+      "cookies",
+      "authorizedID",
+      "csrf",
+      "grantId",
+      "secret?"
+    ],
+    "returns": "{success,revoked,grantId}",
+    "rl": "60/min/IP",
+    "notes": "Severs a pairing in both directions (idempotent). Secret check is redundant — the body proves possession anyway, but it is verified.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/social/semester",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,semesterId,semesterLabel,resolvedAt,detail}",
+    "rl": "-",
+    "notes": "Server-resolved current campus semester (cached in app_config — not per-user). No semester readable from the VTOP dropdown.",
+    "cat": "social"
+  },
+  {
+    "path": "/api/qbank/courses",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "Courses that have published papers/questions.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/papers",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "APPROVED papers list. ?course filter. Anonymous download via /api/qbank/papers/download/[paperId].",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/papers/download/[paperId]",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "binary stream / {error}",
+    "rl": "-",
+    "notes": "Anonymous streaming download of an APPROVED paper from Backblaze B2.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/questions",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "Approved questions for a course. ?course filter.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/upload",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "courseCode",
+      "title",
+      "paperType",
+      "examYear",
+      "examSemester",
+      "uploaderRegNo",
+      "fileUrl"
+    ],
+    "returns": "{success,sourceId}",
+    "rl": "-",
+    "notes": "Public upload endpoint — every upload lands PENDING for admin moderation. Flagged in docs: public-write, rate-limit only by platform.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/questions",
+    "methods": [
+      "GET",
+      "POST",
+      "PATCH",
+      "DELETE"
+    ],
+    "auth": "admin",
+    "body": [
+      "questionId?",
+      "questionText",
+      "options",
+      "correctAnswer",
+      "questionType",
+      "marks",
+      "topicName",
+      "imageUrl",
+      "questionNumber?"
+    ],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "Question CRUD. qbank admin routes all use requireAdminAuth + {success,data}.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/questions/bulk",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId",
+      "questions"
+    ],
+    "returns": "{success,count}",
+    "rl": "-",
+    "notes": "Bulk-insert questions from an OCR pass.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/queue",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId",
+      "…updates"
+    ],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "Moderation queue list (GET) and whitelisted status updates (PATCH).",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/ocr",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success,count}",
+    "rl": "-",
+    "notes": "Sets approval_status=OCR_QUEUED for the external local OCR worker.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/import-to-storage",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success,fileUrl,fileSize}",
+    "rl": "-",
+    "notes": "Resolves Google Drive links → uploads PDF buffer to B2 → rewrites file_url to the anonymous download route.",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/publish",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success}",
+    "rl": "-",
+    "notes": "Publishes a paper (approval_status=APPROVED).",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/qbank/admin/reject",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success}",
+    "rl": "-",
+    "notes": "Rejects a paper (back to PENDING / set REJECTED).",
+    "cat": "qbank"
+  },
+  {
+    "path": "/api/gorobo/items",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,items,count,page,pages,total}",
+    "rl": "-",
+    "notes": "Public catalog (CDN-cached). Query: ?category&limit&page&q.",
+    "cat": "gorobo"
+  },
+  {
+    "path": "/api/gorobo/orders",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "name",
+      "phone",
+      "items[{itemId,qty}]",
+      "deliveryMode?",
+      "mapsUrl?"
+    ],
+    "returns": "{success,order} / {success:false,error|message}",
+    "rl": "5/min/IP",
+    "notes": "Public order placement (rate-limited). Pending → confirmed by admin.",
+    "cat": "gorobo"
+  },
+  {
+    "path": "/api/gorobo/seed",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "items",
+      "replace?"
+    ],
+    "returns": "{success,message,stats}",
+    "rl": "-",
+    "notes": "Seed the catalog from src/data/gorobo/items.json. Admin + gorobo permission.",
+    "cat": "gorobo"
+  },
+  {
+    "path": "/api/gorobo/version",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,count,lastUpdate}",
+    "rl": "-",
+    "notes": "Catalog cache-bust fingerprint. The client polls this to invalidate local catalog cache.",
+    "cat": "gorobo"
+  },
+  {
+    "path": "/api/settings/global",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,config}",
+    "rl": "-",
+    "notes": "Public global config (maintenance banner etc.) for the app to poll.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/admin/settings/global",
+    "methods": [
+      "PUT"
+    ],
+    "auth": "admin",
+    "body": [
+      "key",
+      "value"
+    ],
+    "returns": "{success} / {success:false,error}",
+    "rl": "-",
+    "notes": "Set global config keys (writes app_config).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/notifications/subscribe",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "UserID",
+      "subscription",
+      "vitol_enabled?",
+      "vitol_reminder_day?",
+      "vitol_reminder_time?"
+    ],
+    "returns": "{success} / {error}",
+    "rl": "-",
+    "notes": "Register a web-push subscription. Public by design (the app must call it pre-sync).",
+    "cat": "system"
+  },
+  {
+    "path": "/api/notifications/unsubscribe",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "UserID",
+      "endpoint"
+    ],
+    "returns": "{success} / {error}",
+    "rl": "-",
+    "notes": "Unregister a web-push subscription.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/notifications/status",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "raw {vitol,vitol_reminder_day,vitol_reminder_time} / {error}",
+    "rl": "-",
+    "notes": "Reads notification preferences per user. ?endpoint filter.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/cron/reminders",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "cron",
+    "body": [],
+    "returns": "{success,message} / {error}",
+    "rl": "-",
+    "notes": "VIT student Vitol reminder push fan-out. Authorization: Bearer $CRON_SECRET (timingSafeEqual).",
+    "cat": "system"
+  },
+  {
+    "path": "/api/status",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "raw {text:'API is working'}",
+    "rl": "-",
+    "notes": "Trivial liveness probe.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/health",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "raw {status:'ok'}",
+    "rl": "-",
+    "notes": "Trivial liveness probe for monitors.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/docs",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "raw OpenAPI spec object",
+    "rl": "-",
+    "notes": "swagger-jsdoc aggregate of the @openapi JSDoc blocks in route files. Mostly placeholders — use this handbook instead.",
+    "cat": "system"
+  },
+  {
+    "path": "/api/cabshare/auth",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "username",
+      "password",
+      "phone_number"
+    ],
+    "returns": "{success,user,token} / {success:false,error|message}",
+    "rl": "5/min/IP",
+    "notes": "CabShare login: verifies against VTOP with an offline-solved captcha, upserts cabshare_users, issues a cabshare token (30d).",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/trips",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "hub_id",
+      "travel_date",
+      "preferred_time",
+      "tolerance_hours?",
+      "seat_options?",
+      "gender_preference?",
+      "notes?"
+    ],
+    "returns": "{success,trips|trip_id} + ?date&hub_id (GET)",
+    "rl": "-",
+    "notes": "Trip planning board for hostel cab-shares. POST creates; GET lists for a date/hub.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/trips/me",
+    "methods": [
+      "GET"
+    ],
+    "auth": "cabshare",
+    "body": [],
+    "returns": "{success,my_trips,joined_trips}",
+    "rl": "-",
+    "notes": "Trips I created + trips I joined.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/hubs",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,hubs}",
+    "rl": "-",
+    "notes": "Pickup hubs (hostel gates) from our DB.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/match",
+    "methods": [
+      "POST"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "trip_id",
+      "action",
+      "match_id?"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Confirm/decline a cab-share match for a trip.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/blocks",
+    "methods": [
+      "POST",
+      "DELETE"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "blocked_id"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Block or unblock a co-rider.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/ratings",
+    "methods": [
+      "POST"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "trip_id",
+      "ratee_id",
+      "score",
+      "comment?"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Rate a co-rider after a trip.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/notifications",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "notif_id?"
+    ],
+    "returns": "{success,notifications|message}",
+    "rl": "-",
+    "notes": "CabShare notifications. PATCH marks read.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/waitlist",
+    "methods": [
+      "POST"
+    ],
+    "auth": "cabshare",
+    "body": [
+      "hub_id",
+      "travel_date"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Join the waitlist for a full trip.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/cabshare/stats",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,stats}",
+    "rl": "-",
+    "notes": "Usage stats for the CabShare board.",
+    "cat": "cabshare"
+  },
+  {
+    "path": "/api/admin/auth",
+    "methods": [
+      "POST"
+    ],
+    "auth": "none",
+    "body": [
+      "username",
+      "password"
+    ],
+    "returns": "{success,username,role,permissions,token} / {success:false,message}",
+    "rl": "5/min/IP",
+    "notes": "Admin login. Verifies creds via loopback /api/login, then issues the HMAC admin token +DB record; ADMIN_VTOP_IDS entries become superadmin.",
+    "cat": "auth"
+  },
+  {
+    "path": "/api/admin/users",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "username",
+      "role",
+      "permissions"
+    ],
+    "returns": "{success,users|user}",
+    "rl": "-",
+    "notes": "Admin user management. GET lists; POST creates with role+permissions.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/users/[username]",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "auth": "admin",
+    "body": [
+      "is_active?",
+      "permissions?",
+      "role?"
+    ],
+    "returns": "{success,user|message}",
+    "rl": "-",
+    "notes": "Update or deactivate an admin user (deactivation revokes at next request — verifyAdminToken re-checks the DB).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/stats",
+    "methods": [
+      "GET"
+    ],
+    "auth": "admin",
+    "body": [],
+    "returns": "{success,data}",
+    "rl": "-",
+    "notes": "Admin dashboard numbers (users, logs, storage).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/migrate",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "auth": "admin",
+    "body": [],
+    "returns": "{success,message,tables} / {connected,db,tables,serverTime} (GET health-check)",
+    "rl": "3/5min",
+    "notes": "Runs inline DDL migrations for every table in the codebase. GET is a connectivity check.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/storage",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "action?"
+    ],
+    "returns": "{success,data|missing|missingCount|message}",
+    "rl": "-",
+    "notes": "Storage/files dashboard; POST runs classification of papers (remote-URL / B2 / DIRECT_JSON).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/push",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "title",
+      "body"
+    ],
+    "returns": "{success,message} / {error}",
+    "rl": "-",
+    "notes": "Broadcast a web-push notification to all subscriptions.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/buses",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "<array> of bus objects"
+    ],
+    "returns": "{success,message} / {success:false,message}",
+    "rl": "-",
+    "notes": "Replace the buses table from an array upload (import of updated routes).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/clubs",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "club_id",
+      "club_name",
+      "…"
+    ],
+    "returns": "{success,clubs|club}",
+    "rl": "-",
+    "notes": "Club directory CRUD.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/clubs/representatives",
+    "methods": [
+      "GET",
+      "POST",
+      "DELETE"
+    ],
+    "auth": "admin",
+    "body": [
+      "club_id",
+      "vtop_id"
+    ],
+    "returns": "{success,representatives|representative|message}",
+    "rl": "-",
+    "notes": "Assign/remove club representatives. GET ?club_id.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/faculty-directories",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "id?",
+      "school_name",
+      "url"
+    ],
+    "returns": "{success,directories|message}",
+    "rl": "-",
+    "notes": "Manage faculty directory school URLs. Requires faculty-directories permission.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/fresher-resources",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "title",
+      "description?",
+      "url",
+      "icon?",
+      "sort_order?",
+      "is_active?",
+      "type?",
+      "content?"
+    ],
+    "returns": "{success,resources|resource}",
+    "rl": "-",
+    "notes": "Fresher orientation resources CRUD. fresher-resources permission.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/fresher-resources/[id]",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<partial fields object>"
+    ],
+    "returns": "{success,resource} / {success:true}",
+    "rl": "-",
+    "notes": "Update or remove a single fresher resource.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/ocr",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success,message} / {error}",
+    "rl": "-",
+    "notes": "Queue a paper for the external OCR worker (approval_status=OCR_QUEUED).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/ocr/reset",
+    "methods": [
+      "POST"
+    ],
+    "auth": "admin",
+    "body": [
+      "paperId"
+    ],
+    "returns": "{success,message} / {error}",
+    "rl": "-",
+    "notes": "Reset OCR state back to PENDING.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/routes",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<array> of BusRouteInput"
+    ],
+    "returns": "{success,routes|message}",
+    "rl": "-",
+    "notes": "Transport route CRUD. transport permission.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/routes/[id]",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<route fields>"
+    ],
+    "returns": "{success,route|message}",
+    "rl": "-",
+    "notes": "Single route management.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/routes/[id]/stops",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<array> of BusStop[]"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Bulk-replace stops for a route.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/placements",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<array> of placements"
+    ],
+    "returns": "{success,placements|message}",
+    "rl": "-",
+    "notes": "Bus placement assignments (hostel → stop).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/rules",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<array> of TransportRuleInput"
+    ],
+    "returns": "{success,rules|message}",
+    "rl": "-",
+    "notes": "Transport rules CRUD.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/rules/[id]",
+    "methods": [
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Delete one rule.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/seed",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "routes?",
+      "placements?",
+      "rules?"
+    ],
+    "returns": "{success,stats} / {success,message}",
+    "rl": "-",
+    "notes": "Seed transport data from seed.json (used for initial import).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/transport/students",
+    "methods": [
+      "POST",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<array> of students"
+    ],
+    "returns": "{success,message}",
+    "rl": "-",
+    "notes": "Map students to routes. DELETE ?routeId.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/items",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "name",
+      "category",
+      "basePrice",
+      "margin",
+      "…"
+    ],
+    "returns": "{success,count,items,totalCount,hasMore|item}",
+    "rl": "-",
+    "notes": "Gorobo catalog admin. Query ?search&category&lowStock&limit.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/items/[id]",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "name",
+      "category",
+      "basePrice",
+      "margin",
+      "…"
+    ],
+    "returns": "{success,item|message}",
+    "rl": "-",
+    "notes": "Update/remove one item.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/items/stock",
+    "methods": [
+      "PATCH"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "itemId",
+      "delta",
+      "stockQuantity?"
+    ],
+    "returns": "{success,item}",
+    "rl": "-",
+    "notes": "Adjust stock by delta or set stockQuantity.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "userName",
+      "phoneNumber",
+      "items?"
+    ],
+    "returns": "{success,count,orders|order}",
+    "rl": "-",
+    "notes": "Order list + create (admin can create on behalf). Query ?status&search.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders/[id]",
+    "methods": [
+      "GET",
+      "PUT",
+      "PATCH"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "status?|items/quote fields"
+    ],
+    "returns": "{success,order,wallet}",
+    "rl": "-",
+    "notes": "Order detail/edit (items, quote, status). parseQuoteBody handles both item and status updates.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders/[id]/confirm",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,order}",
+    "rl": "-",
+    "notes": "pending → confirmed.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders/[id]/complete",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,order,wallet}",
+    "rl": "-",
+    "notes": "confirmed → completed; computes wallet entries (split customer/vendor).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders/[id]/archive",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "reason?"
+    ],
+    "returns": "{success,order,wallet}",
+    "rl": "-",
+    "notes": "archive with optional reason.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/orders/[id]/unarchive",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,order,wallet}",
+    "rl": "-",
+    "notes": "Undo archive.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/bundles",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "name",
+      "…"
+    ],
+    "returns": "{success,count,bundles|bundle}",
+    "rl": "-",
+    "notes": "Bundle (kit) management.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/bundles/[id]",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "<bundle fields>"
+    ],
+    "returns": "{success,bundle|message}",
+    "rl": "-",
+    "notes": "Edit/remove a bundle.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/analytics",
+    "methods": [
+      "GET"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,analytics}",
+    "rl": "-",
+    "notes": "Sales analytics rollup.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/wallet",
+    "methods": [
+      "GET"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,summary,transactions}",
+    "rl": "-",
+    "notes": "Wallet dashboard: balances and transaction ledger.",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/gorobo/wallet/orders/[id]/settle",
+    "methods": [
+      "POST"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "party?"
+    ],
+    "returns": "{success,settled,entries}",
+    "rl": "-",
+    "notes": "Mark order wallet entries settled (actual settlement happens outside this repo).",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/cabshare/trips",
+    "methods": [
+      "GET",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [],
+    "returns": "{success,trips} / {success,message}",
+    "rl": "-",
+    "notes": "CabShare trips moderation. DELETE ?trip_id",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/admin/cabshare/hubs",
+    "methods": [
+      "POST",
+      "DELETE"
+    ],
+    "auth": "gorobo-admin",
+    "body": [
+      "hub_name",
+      "…"
+    ],
+    "returns": "{success,hub|message} / {success:false,error}",
+    "rl": "-",
+    "notes": "CabShare hub management. DELETE ?hub_id",
+    "cat": "admin"
+  },
+  {
+    "path": "/api/fresher-resources",
+    "methods": [
+      "GET"
+    ],
+    "auth": "none",
+    "body": [],
+    "returns": "{success,resources}",
+    "rl": "-",
+    "notes": "Public list of fresher orientation resources from our DB.",
+    "cat": "system"
+  }
+]
