@@ -1,3 +1,8 @@
+---
+title: "VITianCC: business logic"
+description: "How the app's features fit together: dashboard, academics, proctor, grievances, hostel, wallet."
+---
+
 # Business logic and how the app behaves
 
 This explains what the VITianCC app does for a student, how its features connect, and the key rules the client follows behind the scenes.

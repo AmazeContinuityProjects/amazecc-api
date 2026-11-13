@@ -1,3 +1,8 @@
+---
+title: "VITianCC: native and security"
+description: "Paytm integration, certificate pinning, local storage and the app's transport security."
+---
+
 # Native components and security
 
 The VITianCC app is primarily Flutter/Dart, but it also includes native Android components and third-party SDKs. This document summarizes those parts and the security measures observed.
