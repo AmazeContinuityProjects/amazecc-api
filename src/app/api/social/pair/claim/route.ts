@@ -36,7 +36,7 @@ const MAX_GRANTS = 200;
 export async function POST(req: Request) {
   const ip = getClientIp(req);
   // Bounds handle enumeration.
-  const rl = checkRateLimit(`social-pair:${ip}`, 30, 3_600_000);
+  const rl = await checkRateLimit(`social-pair:${ip}`, 30, 3_600_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = await readBody(req);

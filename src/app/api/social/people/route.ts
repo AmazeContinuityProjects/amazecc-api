@@ -29,7 +29,7 @@ const HANDLE_RE = /^AMZ-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}$/;
 export async function POST(req: Request) {
   const ip = getClientIp(req);
   // Tight: this is a directory-enumeration surface, so 20/min.
-  const rl = checkRateLimit(`social-people:${ip}`, 20, 60_000);
+  const rl = await checkRateLimit(`social-people:${ip}`, 20, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const body = await readBody(req);

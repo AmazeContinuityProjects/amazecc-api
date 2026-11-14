@@ -50,7 +50,7 @@ function fail(status: number, error: string, extra?: Record<string, unknown>) {
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const rl = checkRateLimit(`marks-tokens:${ip}`, 60, 60_000);
+  const rl = await checkRateLimit(`marks-tokens:${ip}`, 60, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const { cookies, authorizedID, csrf } = (await req

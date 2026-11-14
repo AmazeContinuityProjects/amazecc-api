@@ -141,7 +141,7 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   // This is the only amplification path in the API: one client request becomes
   // 3-4 VTOP requests, so the limit is tighter than a typical read.
-  const rl = checkRateLimit(`social-sync:${ip}`, 20, 60_000);
+  const rl = await checkRateLimit(`social-sync:${ip}`, 20, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
   const { cookies, authorizedID, csrf, proposedSemesterId } = (await req

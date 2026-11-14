@@ -38,6 +38,11 @@ jobs:
       - name: Run ESLint
         run: pnpm lint
 
+      # Ratchet: raise --min as more routes document their responses
+      # (tools/openapi-report.mjs --list shows which do not).
+      - name: OpenAPI response coverage
+        run: node tools/openapi-report.mjs --min 8
+
   build:
     name: Build
     runs-on: ubuntu-latest

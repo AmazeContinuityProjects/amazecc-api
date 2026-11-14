@@ -81,7 +81,7 @@ import { logAdminAction } from '@/lib/audit';
 
 export async function POST(req: Request) {
     const ip = getClientIp(req);
-    const rl = checkRateLimit(`admin-auth:${ip}`, 5, 60000);
+    const rl = await checkRateLimit(`admin-auth:${ip}`, 5, 60000);
     if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
 
     try {
