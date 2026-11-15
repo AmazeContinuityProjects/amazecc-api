@@ -36,6 +36,7 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { vitFetch } from "@/lib/vitFetch";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
 import { publicErrorMessage } from "@/lib/publicError";
 
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
         }
         // Fetch Event Preview
         const previewParams = new URLSearchParams({ eid: String(eid) });
-        const previewRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
+        const previewRes = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
             method: 'POST',
             body: previewParams,
             headers: {

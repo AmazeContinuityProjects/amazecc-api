@@ -39,6 +39,7 @@
         "react-native-web": "^0.21.2",
         "swagger-jsdoc": "^6.3.0",
         "tailwind-merge": "^3.6.0",
+        "undici": "7.29.1",
         "uuid": "^14.0.0",
         "web-push": "^3.6.7"
     },

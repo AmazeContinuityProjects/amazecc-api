@@ -36,6 +36,7 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { vitFetch } from "@/lib/vitFetch";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
 import { eventHubUrl } from "@/lib/upstreamUrl";
 import { publicErrorMessage } from "@/lib/publicError";
@@ -68,7 +69,7 @@ export async function POST(req: Request) {
         }
         // Step 2: Fetch Event Preview to grab hidden tokens
         const previewParams = new URLSearchParams({ eid: String(eid) });
-        const previewRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
+        const previewRes = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/eventPreview', {
             method: 'POST',
             body: previewParams,
             headers: {
@@ -118,7 +119,7 @@ export async function POST(req: Request) {
         registerParams.append('id', String(eid));
 
         // Step 4: Submit Registration
-        const registerRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/registerEvent', {
+        const registerRes = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/registerEvent', {
             method: 'POST',
             body: registerParams,
             headers: {
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
                 } catch {
                     return NextResponse.json({ error: "Unexpected payment redirect target" }, { status: 502 });
                 }
-                const tcRes = await fetch(tcUrl, {
+                const tcRes = await vitFetch(tcUrl, {
                     headers: { 'Cookie': cookie },
                     redirect: 'manual'
                 });
@@ -177,7 +178,7 @@ export async function POST(req: Request) {
                         return NextResponse.json({ error: "Unexpected payment form target" }, { status: 502 });
                     }
                     
-                    const finalPayRes = await fetch(payUrl, {
+                    const finalPayRes = await vitFetch(payUrl, {
                         method: 'POST',
                         body: payData,
                         headers: {

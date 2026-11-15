@@ -36,6 +36,7 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { vitFetch } from "@/lib/vitFetch";
 import { getEventHubCookie, looksLikeLoginPage } from "@/lib/eventHubAuth";
 import { publicErrorMessage } from "@/lib/publicError";
 
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
         }
 
         // Fetch Profile page
-        const profileRes = await fetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
+        const profileRes = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
             method: 'GET',
             headers: {
                 'Cookie': cookie,
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
             if (username && password) {
                 const fresh = await getEventHubCookie({ username, password });
                 if (fresh) {
-                    const retry = await fetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
+                    const retry = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/profile', {
                         method: 'GET',
                         headers: { 'Cookie': fresh, 'User-Agent': 'Mozilla/5.0' }
                     });

@@ -1,3 +1,5 @@
+import { vitFetch } from "./vitFetch";
+
 export type EventHubCredentials = {
   username?: string;
   password?: string;
@@ -38,15 +40,13 @@ export async function getEventHubCookie(
 
   if (!params.username || !params.password) return null;
 
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
   const loginParams = new URLSearchParams({
     username: params.username,
     password: params.password,
     validateVitian: "1",
   });
 
-  const loginRes = await fetch("https://eventhubcc.vit.ac.in/EventHub/mainDashboard", {
+  const loginRes = await vitFetch("https://eventhubcc.vit.ac.in/EventHub/mainDashboard", {
     method: "POST",
     body: loginParams,
     headers: {
@@ -62,8 +62,8 @@ export async function getEventHubCookie(
   // the login form (action="/EventHub/mainDashboard"), a successful one
   // renders the dashboard.
   const rawCookies: string[] =
-    typeof (loginRes.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie === "function"
-      ? (loginRes.headers as Headers & { getSetCookie: () => string[] }).getSetCookie()
+    typeof (loginRes.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie === "function"
+      ? (loginRes.headers as unknown as { getSetCookie: () => string[] }).getSetCookie()
       : (loginRes.headers.get("set-cookie")?.split(/,(?=[^;]+=[^;]+;)/) ?? []);
 
   let jsessionid: string | null = null;

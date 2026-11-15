@@ -35,6 +35,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { vitFetch } from "@/lib/vitFetch";
 import { getEventHubCookie } from "@/lib/eventHubAuth";
 import { eventHubUrl } from "@/lib/upstreamUrl";
 import { publicErrorMessage } from "@/lib/publicError";
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid url" }, { status: 400 });
         }
 
-        const fileRes = await fetch(fileUrl, {
+        const fileRes = await vitFetch(fileUrl, {
             headers: { 'Cookie': cookie, 'User-Agent': 'Mozilla/5.0' },
             redirect: 'follow'
         });
