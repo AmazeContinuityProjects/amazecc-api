@@ -46,8 +46,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing username, password, or url" }, { status: 400 });
         }
 
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
         // Pin the caller-supplied target to Event Hub before echoing it back
         // to the client, so it cannot be used to bounce users elsewhere.
         let tcUrl: string;

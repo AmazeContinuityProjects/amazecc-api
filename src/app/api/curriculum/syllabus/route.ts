@@ -37,6 +37,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { vitFetch } from "@/lib/vitFetch";
 import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
@@ -47,8 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing csrf, authorizedID, or courseCode" }, { status: 400 });
     }
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
+    // TLS verified against VIT's incomplete chain (Sectigo DV R36 pinned in vitFetch).
 
     // Now submit the syllabus download form
     const body = new URLSearchParams();
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     body.append("authorizedID", authorizedID);
     body.append("courseCode", courseCode);
 
-    const downloadRes = await fetch(
+    const downloadRes = await vitFetch(
       "https://vtopcc.vit.ac.in/vtop/courseSyllabusDownload1",
       {
         method: "POST",

@@ -37,6 +37,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { vitFetch } from "@/lib/vitFetch";
 import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
@@ -46,13 +47,12 @@ export async function POST(req: Request) {
     if (!csrf || !authorizedID || !circularId || !cookieHeader)
       return NextResponse.json({ error: "Missing csrf, authorizedID, circularId or cookies" }, { status: 400 });
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
+    // TLS verified against VIT's incomplete chain (Sectigo DV R36 pinned in vitFetch).
     const timestamp = new Date().toUTCString();
     const params = new URLSearchParams({ _csrf: csrf, authorizedID, val: circularId, x: timestamp });
     const url = `https://vtopcc.vit.ac.in/vtop/admissions/viewStatusWiseCostCentreCircularContent?${params}`;
 
-    const downloadRes = await fetch(url, {
+    const downloadRes = await vitFetch(url, {
       method: "GET",
       headers: {
         Cookie: cookieHeader,

@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
+import { vitFetch } from "@/lib/vitFetch";
 import { publicErrorMessage } from "@/lib/publicError";
 
 function looksLikeLoginPage(html: string): boolean {
   return /action=["']\/EventHub\/mainDashboard["']/i.test(html);
 }
 
-function extractCookies(headers: Headers): string {
+function extractCookies(headers: {
+  getSetCookie?: () => string[];
+  get(name: string): string | null;
+}): string {
   const raw: string[] =
-    typeof (headers as Headers & { getSetCookie?: () => string[] }).getSetCookie === "function"
-      ? (headers as Headers & { getSetCookie: () => string[] }).getSetCookie()
+    typeof headers.getSetCookie === "function"
+      ? headers.getSetCookie()
       : (headers.get("set-cookie")?.split(/,(?=[^;]+=[^;]+;)/) ?? []);
   let j: string | null = null;
   let c: string | null = null;
@@ -30,10 +34,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
     }
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
     const loginParams = new URLSearchParams({ username, password, validateVitian: "1" });
-    const loginRes = await fetch("https://eventhubcc.vit.ac.in/EventHub/mainDashboard", {
+    const loginRes = await vitFetch("https://eventhubcc.vit.ac.in/EventHub/mainDashboard", {
       method: "POST",
       body: loginParams,
       headers: {

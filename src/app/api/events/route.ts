@@ -32,12 +32,12 @@
 
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { vitFetch } from "@/lib/vitFetch";
 import { publicErrorMessage } from "@/lib/publicError";
 
 export async function GET() {
     try {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        const response = await fetch('https://eventhubcc.vit.ac.in/EventHub/', {
+        const response = await vitFetch('https://eventhubcc.vit.ac.in/EventHub/', {
             method: 'GET',
             headers: {
                 'User-Agent': 'Mozilla/5.0'

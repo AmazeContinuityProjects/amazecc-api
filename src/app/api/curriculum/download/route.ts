@@ -35,6 +35,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { vitFetch } from "@/lib/vitFetch";
 import { publicErrorMessage } from "@/lib/publicError";
 
 export async function POST(req: Request) {
@@ -45,8 +46,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing csrf or authorizedID" }, { status: 400 });
     }
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
+    // TLS verified against VIT's incomplete chain (Sectigo DV R36 pinned in vitFetch).
     // Submit the curriculum download form
     const body = new URLSearchParams();
     body.append("_csrf", csrf);
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     body.append("authorizedID", authorizedID);
     body.append("regNo", "NONE");
 
-    const downloadRes = await fetch(
+    const downloadRes = await vitFetch(
       "https://vtopcc.vit.ac.in/vtop/academics/curriculDown",
       {
         method: "POST",
