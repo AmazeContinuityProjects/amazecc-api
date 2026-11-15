@@ -1,5 +1,6 @@
 import { getDbPool } from "./db";
 import { maskUserID } from "./mask";
+import { hash } from "./generator";
 import type { BusyMap, SocialCourse } from "./socialTypes";
 
 /**
@@ -71,13 +72,19 @@ export async function ensureSchema(): Promise<void> {
 // aloud or typed from a screenshot.
 const HANDLE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
-function randomHandle(): string {
-  const bytes = new Uint8Array(8);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = Math.floor(Math.random() * 256);
-  }
+/**
+ * Deterministic handle generation based on GENERATOR_KEY.
+ *
+ * The same reg_no always produces the same handle, so it is stable across
+ * server migrations and can be regenerated from the reg_no at any time.
+ */
+function generateHandle(regNo: string): string {
+  const h = hash(`handle::${regNo.trim().toUpperCase()}`);
   let out = "";
-  for (const b of bytes) out += HANDLE_ALPHABET[b % HANDLE_ALPHABET.length];
+  for (let i = 0; i < 8; i++) {
+    const digit = parseInt(h.slice(i * 2, i * 2 + 2), 16);
+    out += HANDLE_ALPHABET[digit % HANDLE_ALPHABET.length];
+  }
   return `AMZ-${out.slice(0, 4)}-${out.slice(4, 8)}`;
 }
 
@@ -108,7 +115,7 @@ export async function upsertPerson(
                register_no = CASE WHEN EXCLUDED.register_no <> '' THEN EXCLUDED.register_no ELSE ${PERSON_TABLE}.register_no END,
                updated_at = NOW()
          RETURNING handle, (created_at = updated_at) AS fresh`,
-        [ownerKey, randomHandle(), cleanName, cleanRegNo]
+        [ownerKey, generateHandle(cleanRegNo), cleanName, cleanRegNo]
       );
       return { handle: rows[0].handle as string, created: Boolean(rows[0].fresh) };
     } catch (err: unknown) {
