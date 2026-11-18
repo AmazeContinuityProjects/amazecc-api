@@ -183,10 +183,18 @@ function addTo(acc: Acc, x: number): Acc {
   return { count, mean, m2 };
 }
 
-/** Sample standard deviation, guarded. `count <= 1` has no spread to report. */
+/**
+ * Sample standard deviation (Bessel-corrected, `m2 / (n − 1)`), guarded.
+ *
+ * VIT computes σ over the whole class (FFCS Academic Regulations v5.0 §9.5). We only
+ * see the students who synced — a subset of that class — so this is an *estimate* of
+ * the class σ, and dividing by `n` would understate it (by ~5% at the 11-student
+ * minimum the client curves on), squeezing every grade band toward the mean.
+ * `count <= 1` has no spread to report.
+ */
 export function standardDeviation(acc: Acc): number {
   if (acc.count <= 1) return 0;
-  return Math.sqrt(Math.max(0, acc.m2) / acc.count);
+  return Math.sqrt(Math.max(0, acc.m2) / (acc.count - 1));
 }
 
 /** Plain SHA-256 hex, matching what the old browser client computed. */
@@ -560,26 +568,35 @@ export async function statsForClasses(
   for (const row of overallRes.rows as Array<Record<string, unknown>>) {
     const acc = toAcc(row);
     const id = row.class_id as string;
-    out[id] = {
-      count: acc.count,
-      mean: acc.mean,
-      sd: standardDeviation(acc),
-      assessments: out[id].assessments,
-    };
+    out[id] = { ...publish(acc), assessments: out[id].assessments };
   }
 
   for (const row of assessmentRes.rows as Array<Record<string, unknown>>) {
     const entry = out[row.class_id as string];
     if (!entry) continue;
     const acc = toAcc(row);
-    entry.assessments[row.assessment_key as string] = {
-      count: acc.count,
-      mean: acc.mean,
-      sd: standardDeviation(acc),
-    };
+    entry.assessments[row.assessment_key as string] = publish(acc);
   }
 
   return out;
+}
+
+/**
+ * Below this many contributors only the count is published.
+ *
+ * A published mean and σ are two equations in the contributors' marks. With one
+ * contributor the mean *is* their mark; with two or three, anyone who knows their
+ * own mark solves the system for everyone else's. From four it is under-determined,
+ * and 5 leaves a margin. Mirrors `MIN_CURVE_SAMPLE` in the client's
+ * `gradeBoundaries.ts`, which will not curve below it either — so nothing the
+ * client uses is lost.
+ */
+export const MIN_PUBLISHED_COUNT = 5;
+
+/** What a reader may see of one accumulator. */
+function publish(acc: Acc): { count: number; mean: number; sd: number } {
+  if (acc.count < MIN_PUBLISHED_COUNT) return { count: Math.max(0, acc.count), mean: 0, sd: 0 };
+  return { count: acc.count, mean: acc.mean, sd: standardDeviation(acc) };
 }
 
 function toAcc(row: Record<string, unknown>): Acc {
